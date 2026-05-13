@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gougle Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root { --topbar:#fff; --line:#e0e0e0; --primary:#1a73e8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Google Sans", "Yu Gothic", Meiryo, sans-serif; background: #f5f5f5; color: #202124; }
+    #site-root { visibility: hidden; }
+    html.token-gate-ok #site-root { visibility: visible; }
+
+    header.topbar {
+      background: var(--topbar); border-bottom: 1px solid var(--line);
+      padding: 8px 14px; display: flex; align-items: center; gap: 10px;
+    }
+    .logo { font-weight: 700; letter-spacing: -0.02em; font-size: 18px; }
+    .logo .g { color: #4285f4 } .logo .o1 { color: #ea4335 } .logo .o2 { color: #fbbc05 }
+    .logo .g2 { color: #34a853 } .logo .l { color: #4285f4 } .logo .e { color: #ea4335 }
+    .searchbar { flex: 1; max-width: 520px; display: flex; gap: 6px; }
+    .searchbar input {
+      flex: 1; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+      font-size: 14px; outline: none;
+    }
+    .searchbar input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,.15); }
+    .searchbar button {
+      padding: 8px 14px; border: none; border-radius: 8px; background: var(--primary);
+      color: #fff; font-weight: 600; cursor: pointer; font-size: 13px;
+    }
+    .searchbar button.alt { background: #fff; color: #202124; border: 1px solid var(--line); }
+    .layout { display: grid; grid-template-columns: 320px 1fr; gap: 0; height: calc(100vh - 53px); }
+    aside.sidepanel { background: #fff; border-right: 1px solid var(--line); overflow-y: auto; }
+    .sp-h { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+    .sp-h h1 { margin: 0; font-size: 16px; }
+    .sp-h p { margin: 4px 0 0; font-size: 12px; color: #5f6368; }
+    .sp-section { padding: 10px 14px; border-bottom: 1px solid var(--line); }
+    .sp-section h2 { margin: 0 0 6px; font-size: 12px; color: #5f6368; letter-spacing: 0.04em; }
+    .sp-list { list-style: none; margin: 0; padding: 0; }
+    .sp-list li { padding: 6px 0; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .pin-mini {
+      width: 10px; height: 10px; border-radius: 999px; flex: 0 0 auto;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+    }
+    .pm-tourism { background: #ea4335; }
+    .pm-civic { background: #1a73e8; }
+    .pm-school { background: #34a853; }
+    .pm-unknown { background: #b0b0b0; }
+
+    #map { width: 100%; height: 100%; }
+    .leaflet-popup-content { font-size: 13px; line-height: 1.55; }
+    .leaflet-popup-content .ptitle { font-weight: 700; margin-bottom: 4px; }
+    .leaflet-popup-content .pmeta { font-size: 11px; color: #5f6368; }
+    .leaflet-popup-content img { max-width: 220px; height: auto; margin-top: 6px; border-radius: 6px; display: block; }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; height: auto; }
+      aside.sidepanel { max-height: 40vh; }
+      #map { height: 60vh; }
+    }
+
+    .ns-denied-overlay {
+      position: fixed; inset: 0; z-index: 999999;
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-family: system-ui, sans-serif;
+      padding: 24px;
+    }
+    .ns-denied-card {
+      max-width: 480px; width: 100%;
+      background: #fff;
+      border: 1px solid #e0e0e0; border-radius: 10px;
+      box-shadow: 0 1px 6px rgba(32,33,36,.18);
+      padding: 26px 22px; text-align: center;
+    }
+    .ns-denied-card h1 { margin: 0 0 10px; font-size: 18px; color: #1a73e8; }
+    .ns-denied-card p { margin: 6px 0; font-size: 13px; color: #5f6368; line-height: 1.7; }
+    .ns-denied-card .small { font-size: 11px; color: #999; margin-top: 14px; }
+  </style>
+  <script>window.__TOKEN_RESOURCE_KEY__ = "ext:gougle-map"</script>
+  <script>
+    window.__TOKEN_DENIED__ = function (msg) {
+      var el = document.createElement("div");
+      el.className = "ns-denied-overlay";
+      el.innerHTML =
+        '<div class="ns-denied-card">' +
+        '<h1>Gougle Map ｜ プライベートマップ</h1>' +
+        '<p>この地図は、特定の共有相手にのみ公開されています。</p>' +
+        '<p>許可されたアカウントでのアクセスをご確認ください。</p>' +
+        '<p class="small">' + String(msg || "").replace(/[<>]/g, "") + '</p>' +
+        '</div>';
+      document.documentElement.appendChild(el);
+    };
+  </script>
+  <script src="./token-gate.js" defer></script>
+</head>
+<body>
+  <div id="site-root">
+    <header class="topbar">
+      <div class="logo"><span class="g">G</span><span class="o1">o</span><span class="o2">u</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span></div>
+      <form class="searchbar" id="searchForm" onsubmit="return false;">
+        <input id="searchInput" type="text" placeholder="場所・住所を検索（例: 霞ノ杜）" />
+        <button id="searchBtn">検索</button>
+        <button id="coordBtn" type="button" class="alt" title="緯度,経度で地点を立てる">座標で立てる</button>
+      </form>
+    </header>
+
+    <div class="layout">
+      <aside class="sidepanel">
+        <div class="sp-h">
+          <h1>霞ノ杜（かすみのもり）</h1>
+          <p>山あいの小さな町。人口およそ3,200人。</p>
+        </div>
+
+        <div class="sp-section">
+          <h2>町の施設</h2>
+          <ul class="sp-list" id="civicList"></ul>
+        </div>
+        <div class="sp-section">
+          <h2>観光地（公開分）</h2>
+          <ul class="sp-list" id="tourismList"></ul>
+        </div>
+        <div class="sp-section">
+          <h2>ユーザ投稿ピン</h2>
+          <ul class="sp-list" id="userList"></ul>
+          <p style="font-size:11px;color:#5f6368;margin:6px 0 0;">※ 投稿者アカウントが削除されたピンも残存しています。</p>
+        </div>
+      </aside>
+
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      var STATE_KEY = "gougle_map_coord_pin_v1";
+
+      function makeIcon(color, opacity) {
+        opacity = opacity == null ? 1 : opacity;
+        var html = '<div style="width:16px;height:16px;border-radius:999px;background:' + color +
+          ';box-shadow:0 0 0 2px #fff,0 0 0 3px rgba(0,0,0,.25);opacity:' + opacity + '"></div>';
+        return L.divIcon({ html: html, iconSize: [16,16], className: "gougle-pin" });
+      }
+
+      function popupHtml(title, meta, body, img) {
+        return '<div class="ptitle">' + title + '</div>' +
+          (meta ? '<div class="pmeta">' + meta + '</div>' : "") +
+          (body ? '<div style="margin-top:4px;">' + body + '</div>' : "") +
+          (img ? '<img src="' + img + '" alt="" />' : "");
+      }
+
+      function start() {
+        var center = [35.42, 138.91];
+        var map = L.map("map").setView(center, 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(map);
+
+        // 役場・小学校
+        var civic = [
+          { id: "yakuba", name: "霞ノ杜町役場", lat: 35.4280, lng: 138.9050, color: "#1a73e8", kind: "civic", body: "町の窓口。月〜金 8:30-17:15" },
+          { id: "school", name: "霞ノ杜町立霞ノ杜小学校", lat: 35.4260, lng: 138.9080, color: "#34a853", kind: "school", body: "1953年開校。" },
+        ];
+        // 観光地5件
+        var tourism = [
+          { id: "spot1", name: "霞ノ杜神社", lat: 35.4250, lng: 138.9100, color: "#ea4335", kind: "tourism" },
+          { id: "spot2", name: "杜の吊り橋", lat: 35.4230, lng: 138.9135, color: "#ea4335", kind: "tourism" },
+          { id: "spot3", name: "霞ノ杜資料館", lat: 35.4275, lng: 138.9095, color: "#ea4335", kind: "tourism" },
+          { id: "spot4", name: "霧見展望休憩所", lat: 35.4310, lng: 138.9170, color: "#ea4335", kind: "tourism" },
+          { id: "spot5", name: "杜の湯（足湯）", lat: 35.4255, lng: 138.9050, color: "#ea4335", kind: "tourism" },
+        ];
+        // 無名ピン（薄グレー）
+        var unknownPin = {
+          id: "unknown",
+          name: "（名称未設定）",
+          lat: 35.4205, lng: 138.9085, color: "#b8b8b8", kind: "unknown",
+          meta: "投稿者: 削除済みアカウント",
+          body: "苔むした石の小道の入口。石に子供の絵（太陽と波）が彫られている。",
+          imgInitial: "./img/stone-path.svg",
+          imgAfterCoord: "./img/note-on-stone.svg",
+          dateAfterCoord: "2024/10/03"
+        };
+
+        function bindList(list, items) {
+          var el = document.getElementById(list);
+          el.innerHTML = "";
+          items.forEach(function (it) {
+            var li = document.createElement("li");
+            var dot = document.createElement("span");
+            dot.className = "pin-mini " + (it.kind === "tourism" ? "pm-tourism" : it.kind === "school" ? "pm-school" : it.kind === "civic" ? "pm-civic" : "pm-unknown");
+            li.appendChild(dot);
+            var label = document.createElement("span");
+            label.textContent = it.name;
+            li.appendChild(label);
+            li.style.cursor = "pointer";
+            li.addEventListener("click", function () {
+              map.setView([it.lat, it.lng], 16);
+              if (it._marker) it._marker.openPopup();
+            });
+            el.appendChild(li);
+          });
+        }
+
+        function addStandardMarker(it) {
+          var marker = L.marker([it.lat, it.lng], { icon: makeIcon(it.color, 1) }).addTo(map);
+          marker.bindPopup(popupHtml(it.name, it.kind === "tourism" ? "観光地" : it.kind === "school" ? "公的施設（小学校）" : "公的施設", it.body || "", ""));
+          it._marker = marker;
+        }
+
+        civic.forEach(addStandardMarker);
+        tourism.forEach(addStandardMarker);
+
+        // 無名ピン
+        var unknownMarker = L.marker([unknownPin.lat, unknownPin.lng], { icon: makeIcon("#b0b0b0", 0.75) }).addTo(map);
+        function refreshUnknownPopup() {
+          var hasCoord = !!localStorage.getItem(STATE_KEY);
+          var html = popupHtml(
+            unknownPin.name,
+            unknownPin.meta,
+            unknownPin.body + (hasCoord ? '<div style="margin-top:6px;font-size:11px;color:#5f6368;">撮影: ' + unknownPin.dateAfterCoord + '</div>' : ""),
+            hasCoord ? unknownPin.imgAfterCoord : unknownPin.imgInitial
+          );
+          unknownMarker.bindPopup(html);
+        }
+        refreshUnknownPopup();
+        unknownPin._marker = unknownMarker;
+
+        // 自前ピン（座標で立てる）
+        var coordMarker = null;
+        function renderCoordPin() {
+          var raw = localStorage.getItem(STATE_KEY);
+          if (!raw) return;
+          var parts = raw.split(",");
+          var lat = parseFloat(parts[0]);
+          var lng = parseFloat(parts[1]);
+          if (isNaN(lat) || isNaN(lng)) return;
+          if (coordMarker) { map.removeLayer(coordMarker); }
+          coordMarker = L.marker([lat, lng], { icon: makeIcon("#fbbc05", 1) }).addTo(map);
+          coordMarker.bindPopup(popupHtml("入力された地点", lat.toFixed(4) + ", " + lng.toFixed(4), "あなたが地図に立てたピン。", ""));
+        }
+        renderCoordPin();
+
+        function placeCoord(lat, lng) {
+          if (isNaN(lat) || isNaN(lng)) {
+            window.alert("緯度,経度の形式で入力してください（例: 35.42, 138.91）");
+            return;
+          }
+          localStorage.setItem(STATE_KEY, lat + "," + lng);
+          renderCoordPin();
+          refreshUnknownPopup();
+          map.setView([lat, lng], 16);
+          if (coordMarker) coordMarker.openPopup();
+        }
+
+        // 検索（フェイク・霞ノ杜のみマッチ）
+        document.getElementById("searchBtn").addEventListener("click", function () {
+          var q = (document.getElementById("searchInput").value || "").trim();
+          if (!q) return;
+          if (/霞ノ杜|かすみのもり|kasuminomori/i.test(q)) {
+            map.setView(center, 13);
+          } else if (/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(q)) {
+            var p = q.split(",");
+            placeCoord(parseFloat(p[0]), parseFloat(p[1]));
+          } else {
+            window.alert("該当する場所が見つかりませんでした。");
+          }
+        });
+        // 座標で立てる
+        document.getElementById("coordBtn").addEventListener("click", function () {
+          var s = window.prompt("緯度, 経度を入力（例: 35.42, 138.91）");
+          if (!s) return;
+          var p = s.split(",");
+          placeCoord(parseFloat(p[0]), parseFloat(p[1]));
+        });
+
+        bindList("civicList", civic);
+        bindList("tourismList", tourism);
+        bindList("userList", [unknownPin]);
+      }
+
+      var t = setInterval(function () {
+        if (document.documentElement.classList.contains("token-gate-ok")) {
+          clearInterval(t);
+          start();
+        }
+      }, 80);
+    })();
+  </script>
+</body>
+</html>
