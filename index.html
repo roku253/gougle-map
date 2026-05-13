@@ -4,76 +4,156 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gougle Map</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <style>
-    :root { --topbar:#fff; --line:#e0e0e0; --primary:#1a73e8; }
+    :root { --topbar:#fff; --line:#e0e0e0; --primary:#1a73e8; --map-bg:#f0ece4; }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: "Google Sans", "Yu Gothic", Meiryo, sans-serif; background: #f5f5f5; color: #202124; }
+    body { margin: 0; font-family: "Google Sans","Yu Gothic",Meiryo,sans-serif; background: #f5f5f5; color: #202124; overflow: hidden; }
     #site-root { visibility: hidden; }
     html.token-gate-ok #site-root { visibility: visible; }
 
-    header.topbar {
-      background: var(--topbar); border-bottom: 1px solid var(--line);
-      padding: 8px 14px; display: flex; align-items: center; gap: 10px;
-    }
-    .logo { font-weight: 700; letter-spacing: -0.02em; font-size: 18px; }
+    .topbar { background: var(--topbar); border-bottom: 1px solid var(--line); padding: 8px 14px; display: flex; align-items: center; gap: 10px; }
+    .logo { font-weight: 700; letter-spacing: -0.02em; font-size: 20px; }
     .logo .g { color: #4285f4 } .logo .o1 { color: #ea4335 } .logo .o2 { color: #fbbc05 }
     .logo .g2 { color: #34a853 } .logo .l { color: #4285f4 } .logo .e { color: #ea4335 }
     .searchbar { flex: 1; max-width: 520px; display: flex; gap: 6px; }
-    .searchbar input {
-      flex: 1; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
-      font-size: 14px; outline: none;
-    }
+    .searchbar input { flex: 1; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; outline: none; }
     .searchbar input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,.15); }
-    .searchbar button {
-      padding: 8px 14px; border: none; border-radius: 8px; background: var(--primary);
-      color: #fff; font-weight: 600; cursor: pointer; font-size: 13px;
-    }
+    .searchbar button { padding: 8px 14px; border: none; border-radius: 8px; background: var(--primary); color: #fff; font-weight: 600; cursor: pointer; font-size: 13px; }
     .searchbar button.alt { background: #fff; color: #202124; border: 1px solid var(--line); }
+
     .layout { display: grid; grid-template-columns: 320px 1fr; gap: 0; height: calc(100vh - 53px); }
     aside.sidepanel { background: #fff; border-right: 1px solid var(--line); overflow-y: auto; }
     .sp-h { padding: 12px 14px; border-bottom: 1px solid var(--line); }
     .sp-h h1 { margin: 0; font-size: 16px; }
     .sp-h p { margin: 4px 0 0; font-size: 12px; color: #5f6368; }
+    .sp-tab-row { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
+    .sp-tab { flex: 1; padding: 8px 4px; font-size: 12px; text-align: center; cursor: pointer; color: #5f6368; border-bottom: 2px solid transparent; }
+    .sp-tab.active { color: #1a73e8; border-bottom-color: #1a73e8; font-weight: 600; }
     .sp-section { padding: 10px 14px; border-bottom: 1px solid var(--line); }
-    .sp-section h2 { margin: 0 0 6px; font-size: 12px; color: #5f6368; letter-spacing: 0.04em; }
+    .sp-section h2 { margin: 0 0 6px; font-size: 11px; color: #5f6368; letter-spacing: 0.06em; text-transform: uppercase; }
     .sp-list { list-style: none; margin: 0; padding: 0; }
-    .sp-list li { padding: 6px 0; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-    .pin-mini {
-      width: 10px; height: 10px; border-radius: 999px; flex: 0 0 auto;
-      box-shadow: 0 0 0 1px rgba(0,0,0,.15);
-    }
+    .sp-list li { padding: 7px 0; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .sp-list li:hover { background: #f6f6f6; }
+    .sp-list .row-main { flex: 1; min-width: 0; }
+    .sp-list .row-title { font-size: 13px; line-height: 1.3; }
+    .sp-list .row-sub { font-size: 11px; color: #5f6368; margin-top: 1px; }
+    .sp-list .stars { color: #fbbc05; font-size: 11px; }
+    .pin-mini { width: 10px; height: 10px; border-radius: 999px; flex: 0 0 auto; box-shadow: 0 0 0 1px rgba(0,0,0,.15); }
+    .pm-sweets { background: #ea66a4; }
+    .pm-conv { background: #1a73e8; }
     .pm-tourism { background: #ea4335; }
     .pm-civic { background: #1a73e8; }
     .pm-school { background: #34a853; }
     .pm-unknown { background: #b0b0b0; }
+    .pm-user { background: #fbbc05; }
 
-    #map { width: 100%; height: 100%; }
-    .leaflet-popup-content { font-size: 13px; line-height: 1.55; }
-    .leaflet-popup-content .ptitle { font-weight: 700; margin-bottom: 4px; }
-    .leaflet-popup-content .pmeta { font-size: 11px; color: #5f6368; }
-    .leaflet-popup-content img { max-width: 220px; height: auto; margin-top: 6px; border-radius: 6px; display: block; }
+    .map-area {
+      position: relative; width: 100%; height: 100%; overflow: hidden;
+      background: var(--map-bg);
+      user-select: none; cursor: grab;
+    }
+    .map-area.grabbing { cursor: grabbing; }
+    .map-stage {
+      position: absolute; top: 0; left: 0;
+      transform-origin: 0 0;
+      transition: transform 0.08s linear;
+      will-change: transform;
+    }
+    .map-stage.no-anim { transition: none; }
+    .map-svg { display: block; }
+    .pin {
+      position: absolute;
+      width: 18px; height: 18px;
+      transform: translate(-50%, -100%);
+      pointer-events: auto;
+    }
+    .pin .head {
+      width: 18px; height: 18px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      transform-origin: center;
+      background: #ea4335;
+      box-shadow: 0 1px 4px rgba(0,0,0,.35);
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
+    .pin .head::after {
+      content: "";
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #fff;
+      transform: translate(-50%, -50%);
+    }
+    .pin.unknown .head { background: #b0b0b0; opacity: 0.85; }
+    .pin.sweets .head { background: #ea66a4; }
+    .pin.conv .head { background: #1a73e8; }
+    .pin.tourism .head { background: #ea4335; }
+    .pin.civic .head { background: #1a73e8; }
+    .pin.school .head { background: #34a853; }
+    .pin.user .head { background: #fbbc05; }
+
+    .popup {
+      position: absolute; left: 0; top: 0;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.18);
+      padding: 12px 14px;
+      width: 260px;
+      transform: translate(-50%, calc(-100% - 14px));
+      z-index: 100;
+      font-size: 13px; line-height: 1.55;
+      pointer-events: auto;
+    }
+    .popup::after {
+      content: "";
+      position: absolute;
+      left: 50%; bottom: -7px;
+      transform: translateX(-50%) rotate(45deg);
+      width: 14px; height: 14px;
+      background: #fff;
+      box-shadow: 2px 2px 4px rgba(0,0,0,.06);
+    }
+    .popup .ptitle { font-weight: 700; margin-bottom: 4px; font-size: 14px; }
+    .popup .pmeta { font-size: 11px; color: #5f6368; margin-bottom: 6px; }
+    .popup .pbody { color: #202124; }
+    .popup .review {
+      margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e0e0e0;
+      font-size: 12px; color: #444;
+    }
+    .popup .review .reviewer { color: #5f6368; font-size: 11px; }
+    .popup img { display: block; max-width: 100%; height: auto; margin-top: 6px; border-radius: 6px; }
+    .popup .close {
+      position: absolute; right: 6px; top: 6px;
+      background: none; border: none; cursor: pointer; font-size: 14px; color: #5f6368;
+    }
+
+    .zoom-buttons {
+      position: absolute; right: 14px; bottom: 24px; z-index: 10;
+      display: flex; flex-direction: column; gap: 1px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.2); border-radius: 6px; overflow: hidden;
+    }
+    .zoom-buttons button {
+      width: 36px; height: 36px; background: #fff; border: none; cursor: pointer;
+      font-size: 18px; color: #444;
+    }
+    .zoom-buttons button + button { border-top: 1px solid #eee; }
+    .zoom-buttons button:hover { background: #f6f6f6; }
 
     @media (max-width: 900px) {
       .layout { grid-template-columns: 1fr; height: auto; }
-      aside.sidepanel { max-height: 40vh; }
-      #map { height: 60vh; }
+      aside.sidepanel { max-height: 36vh; }
+      .map-area { height: 64vh; }
     }
 
     .ns-denied-overlay {
       position: fixed; inset: 0; z-index: 999999;
       background: #fff;
       display: flex; align-items: center; justify-content: center;
-      font-family: system-ui, sans-serif;
-      padding: 24px;
+      font-family: system-ui, sans-serif; padding: 24px;
     }
-    .ns-denied-card {
-      max-width: 480px; width: 100%;
-      background: #fff;
-      border: 1px solid #e0e0e0; border-radius: 10px;
-      box-shadow: 0 1px 6px rgba(32,33,36,.18);
-      padding: 26px 22px; text-align: center;
-    }
+    .ns-denied-card { max-width: 480px; width: 100%; background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 1px 6px rgba(32,33,36,.18); padding: 26px 22px; text-align: center; }
     .ns-denied-card h1 { margin: 0 0 10px; font-size: 18px; color: #1a73e8; }
     .ns-denied-card p { margin: 6px 0; font-size: 13px; color: #5f6368; line-height: 1.7; }
     .ns-denied-card .small { font-size: 11px; color: #999; margin-top: 14px; }
@@ -100,7 +180,7 @@
     <header class="topbar">
       <div class="logo"><span class="g">G</span><span class="o1">o</span><span class="o2">u</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span></div>
       <form class="searchbar" id="searchForm" onsubmit="return false;">
-        <input id="searchInput" type="text" placeholder="場所・住所を検索（例: 霞ノ杜）" />
+        <input id="searchInput" type="text" placeholder="場所・店名で検索（例: 三日月町、パティスリー柊）" />
         <button id="searchBtn">検索</button>
         <button id="coordBtn" type="button" class="alt" title="緯度,経度で地点を立てる">座標で立てる</button>
       </form>
@@ -109,182 +189,485 @@
     <div class="layout">
       <aside class="sidepanel">
         <div class="sp-h">
-          <h1>霞ノ杜（かすみのもり）</h1>
-          <p>山あいの小さな町。人口およそ3,200人。</p>
+          <h1>みんなのスイーツ&コンビニMAP</h1>
+          <p>※住民有志による共有マップ。情報は店舗の自己申告ベース。</p>
         </div>
-
-        <div class="sp-section">
-          <h2>町の施設</h2>
-          <ul class="sp-list" id="civicList"></ul>
-        </div>
-        <div class="sp-section">
-          <h2>観光地（公開分）</h2>
-          <ul class="sp-list" id="tourismList"></ul>
+        <div class="sp-tab-row">
+          <div class="sp-tab active" data-tab="all">全部</div>
+          <div class="sp-tab" data-tab="sweets">スイーツ</div>
+          <div class="sp-tab" data-tab="conv">コンビニ</div>
+          <div class="sp-tab" data-tab="other">その他</div>
         </div>
         <div class="sp-section">
-          <h2>ユーザ投稿ピン</h2>
-          <ul class="sp-list" id="userList"></ul>
-          <p style="font-size:11px;color:#5f6368;margin:6px 0 0;">※ 投稿者アカウントが削除されたピンも残存しています。</p>
+          <h2>新着レビュー</h2>
+          <ul class="sp-list" id="reviewList"></ul>
+        </div>
+        <div class="sp-section">
+          <h2>店舗一覧</h2>
+          <ul class="sp-list" id="shopList"></ul>
+        </div>
+        <div class="sp-section">
+          <h2>地域</h2>
+          <ul class="sp-list">
+            <li><span class="pin-mini pm-civic"></span><div class="row-main"><div class="row-title">三日月町</div><div class="row-sub">中心市街地・住宅地</div></div></li>
+            <li><span class="pin-mini pm-civic"></span><div class="row-main"><div class="row-title">杉並ヶ岡</div><div class="row-sub">新興住宅地・商業地区</div></div></li>
+            <li><span class="pin-mini pm-civic"></span><div class="row-main"><div class="row-title">霞ノ杜</div><div class="row-sub">山あいの旧集落</div></div></li>
+          </ul>
+        </div>
+        <div class="sp-section" style="font-size:11px;color:#5f6368;">
+          投稿者アカウントが削除されたピンも残存しています。
         </div>
       </aside>
 
-      <div id="map"></div>
+      <div class="map-area" id="mapArea">
+        <div class="map-stage" id="mapStage" style="transform: translate(0px, 0px) scale(1);">
+          <!-- 架空マップ：1600 x 1200 -->
+          <svg class="map-svg" width="1600" height="1200" viewBox="0 0 1600 1200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="paper" width="40" height="40" patternUnits="userSpaceOnUse">
+                <rect width="40" height="40" fill="#f0ece4"/>
+                <circle cx="8" cy="8" r="0.6" fill="#d8d2c1"/>
+                <circle cx="28" cy="22" r="0.5" fill="#d8d2c1"/>
+              </pattern>
+              <pattern id="forest" width="14" height="14" patternUnits="userSpaceOnUse">
+                <rect width="14" height="14" fill="#c8d6b3"/>
+                <circle cx="4" cy="6" r="2.2" fill="#a8be8a"/>
+                <circle cx="10" cy="10" r="2.0" fill="#9eb47e"/>
+              </pattern>
+              <pattern id="urban" width="20" height="20" patternUnits="userSpaceOnUse">
+                <rect width="20" height="20" fill="#f6f1e6"/>
+                <rect x="2" y="2" width="6" height="6" fill="#e6dec9"/>
+                <rect x="11" y="9" width="6" height="5" fill="#e6dec9"/>
+              </pattern>
+            </defs>
+
+            <!-- 背景 -->
+            <rect width="1600" height="1200" fill="url(#paper)"/>
+
+            <!-- 山地（北側・霞ノ杜の背後） -->
+            <path d="M 0 0 L 1600 0 L 1600 320 Q 1300 280 1100 350 Q 900 410 700 360 Q 500 320 250 380 Q 100 410 0 360 Z" fill="url(#forest)" opacity="0.95"/>
+            <text x="180" y="120" font-family="serif" font-size="22" fill="#5b7148" opacity="0.6" letter-spacing="6">霞ノ杜 山系</text>
+            <text x="900" y="180" font-family="serif" font-size="18" fill="#5b7148" opacity="0.5" letter-spacing="4">杉峰</text>
+
+            <!-- 川（東西に蛇行） -->
+            <path d="M 0 760 Q 200 720 380 760 Q 540 800 720 760 Q 900 720 1100 770 Q 1280 810 1600 760" stroke="#7aa2c4" stroke-width="14" fill="none" opacity="0.9"/>
+            <text x="540" y="800" font-family="serif" font-size="14" fill="#456a85" opacity="0.7">— 杜川 —</text>
+
+            <!-- 三日月町（中央南） -->
+            <rect x="540" y="820" width="420" height="280" fill="url(#urban)" opacity="0.95"/>
+            <text x="750" y="970" text-anchor="middle" font-family="serif" font-size="28" fill="#5a4a30" letter-spacing="10">三日月町</text>
+            <text x="750" y="990" text-anchor="middle" font-family="serif" font-size="11" fill="#7a6a40">商店街・住宅街</text>
+            <!-- 三日月町の道路 -->
+            <g stroke="#bda984" stroke-width="6" fill="none">
+              <line x1="540" y1="900" x2="960" y2="900"/>
+              <line x1="540" y1="1000" x2="960" y2="1000"/>
+              <line x1="640" y1="820" x2="640" y2="1100"/>
+              <line x1="780" y1="820" x2="780" y2="1100"/>
+              <line x1="880" y1="820" x2="880" y2="1100"/>
+            </g>
+
+            <!-- 杉並ヶ岡（東部丘陵） -->
+            <ellipse cx="1280" cy="860" rx="240" ry="200" fill="url(#urban)" opacity="0.95"/>
+            <text x="1280" y="850" text-anchor="middle" font-family="serif" font-size="26" fill="#5a4a30" letter-spacing="8">杉並ヶ岡</text>
+            <text x="1280" y="872" text-anchor="middle" font-family="serif" font-size="11" fill="#7a6a40">新興住宅・カフェ通り</text>
+            <g stroke="#bda984" stroke-width="5" fill="none">
+              <path d="M 1080 860 Q 1280 800 1480 860"/>
+              <path d="M 1080 900 Q 1280 940 1480 900"/>
+              <line x1="1200" y1="700" x2="1200" y2="1020"/>
+              <line x1="1340" y1="700" x2="1340" y2="1020"/>
+            </g>
+
+            <!-- 霞ノ杜（西部山あい） -->
+            <ellipse cx="280" cy="520" rx="220" ry="180" fill="#e7dec3" opacity="0.95"/>
+            <text x="280" y="510" text-anchor="middle" font-family="serif" font-size="22" fill="#5a4a30" letter-spacing="10">霞 ノ 杜</text>
+            <text x="280" y="532" text-anchor="middle" font-family="serif" font-size="11" fill="#7a6a40">人口およそ3,200人</text>
+            <!-- 霞ノ杜の細い小路 -->
+            <g stroke="#bda984" stroke-width="3" fill="none" opacity="0.8">
+              <path d="M 130 540 Q 280 480 430 540"/>
+              <path d="M 200 470 Q 280 540 360 470"/>
+              <line x1="280" y1="370" x2="280" y2="660"/>
+            </g>
+
+            <!-- 旧街道（南北の幹線） -->
+            <path d="M 760 100 Q 740 400 780 760 Q 820 1000 800 1200" stroke="#a89878" stroke-width="9" fill="none"/>
+            <text x="800" y="430" font-family="serif" font-size="12" fill="#7a6a40" opacity="0.8" letter-spacing="3">旧街道</text>
+
+            <!-- 北街道（西東） -->
+            <path d="M 60 360 Q 400 320 800 340 Q 1200 360 1540 320" stroke="#a89878" stroke-width="7" fill="none" opacity="0.85"/>
+            <text x="1100" y="360" font-family="serif" font-size="12" fill="#7a6a40" opacity="0.8" letter-spacing="3">北街道</text>
+
+            <!-- 水辺（霞ノ杜の北西） -->
+            <ellipse cx="180" cy="380" rx="60" ry="22" fill="#9bbed5" opacity="0.8"/>
+            <text x="180" y="350" text-anchor="middle" font-family="serif" font-size="11" fill="#456a85" opacity="0.7">— 水辺 —</text>
+
+            <!-- 「鄙」感を出す葉 -->
+            <g fill="#a8be8a" opacity="0.6">
+              <circle cx="80" cy="500" r="14"/><circle cx="100" cy="510" r="12"/><circle cx="120" cy="500" r="14"/>
+              <circle cx="1490" cy="620" r="12"/><circle cx="1510" cy="640" r="14"/><circle cx="1530" cy="620" r="12"/>
+              <circle cx="60" cy="1100" r="14"/><circle cx="80" cy="1110" r="12"/>
+            </g>
+
+            <!-- スケールバー -->
+            <g transform="translate(1380, 1160)">
+              <rect x="0" y="-2" width="80" height="4" fill="#333"/>
+              <rect x="0" y="-2" width="40" height="4" fill="#fff"/>
+              <text x="40" y="-8" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#333">1 km</text>
+            </g>
+          </svg>
+          <div id="pinsLayer"></div>
+          <div id="popupLayer"></div>
+        </div>
+
+        <div class="zoom-buttons">
+          <button id="zoomIn">+</button>
+          <button id="zoomOut">−</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
     (function () {
-      var STATE_KEY = "gougle_map_coord_pin_v1";
+      // 全ピン定義（架空座標 x,y は SVG ピクセル空間）
+      // category: sweets / conv / tourism / civic / school / unknown
+      var PIN_DATA = [
+        // ===== スイーツ（4店 + 3店） =====
+        { id: "sweets-01", x: 1240, y: 940, category: "sweets", title: "パティスリー柊", area: "杉並ヶ岡", rating: 4.6, body: "杉並ヶ岡駅東、桜並木の終わり。生菓子はその日限定、夕方には売り切れることが多い。", reviewer: "kasumi_local", review: "焼き菓子の詰め合わせがやばい。地元民の手土産はだいたいここ。" },
+        { id: "sweets-02", x: 1340, y: 800, category: "sweets", title: "喫茶 ことり", area: "杉並ヶ岡", rating: 4.3, body: "古民家を改装した小さな喫茶。プリンと珈琲。", reviewer: "night_owl_42", review: "プリンが昔のかたい系。落ち着く椅子。" },
+        { id: "sweets-03", x: 700, y: 880, category: "sweets", title: "雪あめや", area: "三日月町", rating: 4.1, body: "三日月商店街の老舗和菓子店。みたらしと、季節限定の最中。", reviewer: "甘味らじお", review: "みたらしの香ばしさ◎。最近スレで話題のチョコ系新作はここでは無い。" },
+        { id: "sweets-04", x: 860, y: 970, category: "sweets", title: "木洩日庵", area: "三日月町", rating: 4.5, body: "ロールケーキ専門。週末は予約必須。", reviewer: "ご当地スイーツ部", review: "プレーンの生地の温度が完璧。" },
+        { id: "sweets-05", x: 1180, y: 760, category: "sweets", title: "カフェ夜灯", area: "杉並ヶ岡", rating: 4.0, body: "深夜営業のカフェ。タルトとシードル。", reviewer: "夜更かしさん", review: "夜中まで開いてるのが偉い。" },
+        { id: "sweets-06", x: 330, y: 530, category: "sweets", title: "月待ちプリン 霞ノ杜店", area: "霞ノ杜", rating: 3.9, body: "週末だけ開く小さなプリン屋。霞ノ杜大字杜ケ丘。", reviewer: "kasumi_local", review: "おばあちゃんが一人でやってる。土日のみ。容器が固いガラス瓶。" },
+        { id: "sweets-07", x: 760, y: 940, category: "sweets", title: "スイーツ工房 こもれび", area: "三日月町", rating: 4.4, body: "オリジナルジェラート。フレーバー20種。", reviewer: "甘味らじお", review: "塩キャラメル不動。" },
 
-      function makeIcon(color, opacity) {
-        opacity = opacity == null ? 1 : opacity;
-        var html = '<div style="width:16px;height:16px;border-radius:999px;background:' + color +
-          ';box-shadow:0 0 0 2px #fff,0 0 0 3px rgba(0,0,0,.25);opacity:' + opacity + '"></div>';
-        return L.divIcon({ html: html, iconSize: [16,16], className: "gougle-pin" });
-      }
+        // ===== コンビニ（6店） =====
+        { id: "conv-01", x: 620, y: 870, category: "conv", title: "ファイブイレブン 三日月町店", area: "三日月町", rating: 3.6, body: "24時間営業。スイーツ系新作は強め入荷の店舗らしい。", reviewer: "コンビ二スイーツ部", review: "問題のチョコ新作、ここは毎週水曜に大量入荷。" },
+        { id: "conv-02", x: 940, y: 940, category: "conv", title: "ファイブイレブン 三日月東店", area: "三日月町", rating: 3.4, body: "旧街道沿い。駐車場広め。" },
+        { id: "conv-03", x: 1380, y: 940, category: "conv", title: "ファイブイレブン 杉並ヶ岡北口店", area: "杉並ヶ岡", rating: 3.7, body: "杉並ヶ岡駅北口を出てすぐ。", reviewer: "甘味らじお", review: "新作スイーツの再入荷スピードが早い。" },
+        { id: "conv-04", x: 1140, y: 820, category: "conv", title: "ローライン 杉並ヶ岡西", area: "杉並ヶ岡", rating: 3.3, body: "比較的小型店。深夜は閉店。" },
+        { id: "conv-05", x: 820, y: 1060, category: "conv", title: "セイファイ 旧街道前店", area: "三日月町", rating: 3.5, body: "旧街道沿い。県内チェーン。" },
+        { id: "conv-06", x: 290, y: 560, category: "conv", title: "ファイブイレブン 霞ノ杜橋詰店", area: "霞ノ杜", rating: 3.2, body: "霞ノ杜エリア唯一のコンビニ。22時閉店。", reviewer: "kasumi_local", review: "新作はあまり来ない。山の方の住民の生活線。" },
 
-      function popupHtml(title, meta, body, img) {
-        return '<div class="ptitle">' + title + '</div>' +
-          (meta ? '<div class="pmeta">' + meta + '</div>' : "") +
-          (body ? '<div style="margin-top:4px;">' + body + '</div>' : "") +
-          (img ? '<img src="' + img + '" alt="" />' : "");
-      }
+        // ===== 霞ノ杜エリアの観光地（5件） =====
+        { id: "tourism-01", x: 340, y: 470, category: "tourism", title: "霞ノ杜神社", area: "霞ノ杜", rating: 4.4, body: "北東部、小高い丘陵。早朝は深い霧に包まれる。" },
+        { id: "tourism-02", x: 230, y: 600, category: "tourism", title: "杜の吊り橋", area: "霞ノ杜", rating: 4.2, body: "杜川の上流に架かる小さな木造橋。揺れる。" },
+        { id: "tourism-03", x: 380, y: 540, category: "tourism", title: "霞ノ杜資料館", area: "霞ノ杜", rating: 4.0, body: "町史・古地図・写真資料。火・水休館。" },
+        { id: "tourism-04", x: 280, y: 410, category: "tourism", title: "霧見展望休憩所", area: "霞ノ杜", rating: 4.3, body: "山道の中腹。霧の海が見える日がある。" },
+        { id: "tourism-05", x: 320, y: 590, category: "tourism", title: "杜の湯（足湯）", area: "霞ノ杜", rating: 4.1, body: "杜川沿いの小さな足湯。無料。" },
 
-      function start() {
-        var center = [35.42, 138.91];
-        var map = L.map("map").setView(center, 13);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        }).addTo(map);
+        // ===== 町の施設 =====
+        { id: "civic-01", x: 280, y: 540, category: "civic", title: "霞ノ杜町役場", area: "霞ノ杜", rating: 0, body: "月〜金 8:30-17:15。霞ノ杜町中心部。" },
+        { id: "school-01", x: 320, y: 560, category: "school", title: "霞ノ杜町立 霞ノ杜小学校", area: "霞ノ杜", rating: 0, body: "1953年開校。河川敷清掃などの地域活動を行っている。" },
 
-        // 役場・小学校
-        var civic = [
-          { id: "yakuba", name: "霞ノ杜町役場", lat: 35.4280, lng: 138.9050, color: "#1a73e8", kind: "civic", body: "町の窓口。月〜金 8:30-17:15" },
-          { id: "school", name: "霞ノ杜町立霞ノ杜小学校", lat: 35.4260, lng: 138.9080, color: "#34a853", kind: "school", body: "1953年開校。" },
-        ];
-        // 観光地5件
-        var tourism = [
-          { id: "spot1", name: "霞ノ杜神社", lat: 35.4250, lng: 138.9100, color: "#ea4335", kind: "tourism" },
-          { id: "spot2", name: "杜の吊り橋", lat: 35.4230, lng: 138.9135, color: "#ea4335", kind: "tourism" },
-          { id: "spot3", name: "霞ノ杜資料館", lat: 35.4275, lng: 138.9095, color: "#ea4335", kind: "tourism" },
-          { id: "spot4", name: "霧見展望休憩所", lat: 35.4310, lng: 138.9170, color: "#ea4335", kind: "tourism" },
-          { id: "spot5", name: "杜の湯（足湯）", lat: 35.4255, lng: 138.9050, color: "#ea4335", kind: "tourism" },
-        ];
-        // 無名ピン（薄グレー）
-        var unknownPin = {
-          id: "unknown",
-          name: "（名称未設定）",
-          lat: 35.4205, lng: 138.9085, color: "#b8b8b8", kind: "unknown",
-          meta: "投稿者: 削除済みアカウント",
-          body: "苔むした石の小道の入口。石に子供の絵（太陽と波）が彫られている。",
+        // ===== 無名ピン（謎・ストーリーの核） =====
+        { id: "unknown", x: 175, y: 385, category: "unknown", title: "（名称未設定）", area: "霞ノ杜（北西・水辺）",
+          rating: 0,
+          meta: "投稿者: 削除済みアカウント / 投稿日: 2024-09-21",
+          body: "苔むした石の小道の入口。石に子どもが描いたような絵（太陽と波）が彫られている。",
           imgInitial: "./img/stone-path.svg",
           imgAfterCoord: "./img/note-on-stone.svg",
-          dateAfterCoord: "2024/10/03"
-        };
-
-        function bindList(list, items) {
-          var el = document.getElementById(list);
-          el.innerHTML = "";
-          items.forEach(function (it) {
-            var li = document.createElement("li");
-            var dot = document.createElement("span");
-            dot.className = "pin-mini " + (it.kind === "tourism" ? "pm-tourism" : it.kind === "school" ? "pm-school" : it.kind === "civic" ? "pm-civic" : "pm-unknown");
-            li.appendChild(dot);
-            var label = document.createElement("span");
-            label.textContent = it.name;
-            li.appendChild(label);
-            li.style.cursor = "pointer";
-            li.addEventListener("click", function () {
-              map.setView([it.lat, it.lng], 16);
-              if (it._marker) it._marker.openPopup();
-            });
-            el.appendChild(li);
-          });
+          dateAfterCoord: "2024/10/03",
+          revealNote: "石の上に小さなノートが置かれている。表紙に「ぼくのきろく」とだけ書いてある。中を覗くと、絵と短い日記が並んでいる。"
         }
+      ];
 
-        function addStandardMarker(it) {
-          var marker = L.marker([it.lat, it.lng], { icon: makeIcon(it.color, 1) }).addTo(map);
-          marker.bindPopup(popupHtml(it.name, it.kind === "tourism" ? "観光地" : it.kind === "school" ? "公的施設（小学校）" : "公的施設", it.body || "", ""));
-          it._marker = marker;
-        }
+      // 既知の答え座標（name-to-coord と一致）
+      var ANSWER_LAT = 35.42, ANSWER_LNG = 138.91;
+      // 答え座標 → SVG 空間のマッピング先（無名ピンに重ねる）
+      var ANSWER_X = 175, ANSWER_Y = 385;
 
-        civic.forEach(addStandardMarker);
-        tourism.forEach(addStandardMarker);
+      var STATE_KEY = "gougle_map_coord_pin_v2";
 
-        // 無名ピン
-        var unknownMarker = L.marker([unknownPin.lat, unknownPin.lng], { icon: makeIcon("#b0b0b0", 0.75) }).addTo(map);
-        function refreshUnknownPopup() {
-          var hasCoord = !!localStorage.getItem(STATE_KEY);
-          var html = popupHtml(
-            unknownPin.name,
-            unknownPin.meta,
-            unknownPin.body + (hasCoord ? '<div style="margin-top:6px;font-size:11px;color:#5f6368;">撮影: ' + unknownPin.dateAfterCoord + '</div>' : ""),
-            hasCoord ? unknownPin.imgAfterCoord : unknownPin.imgInitial
-          );
-          unknownMarker.bindPopup(html);
-        }
-        refreshUnknownPopup();
-        unknownPin._marker = unknownMarker;
+      var mapArea = document.getElementById("mapArea");
+      var mapStage = document.getElementById("mapStage");
+      var pinsLayer = document.getElementById("pinsLayer");
+      var popupLayer = document.getElementById("popupLayer");
 
-        // 自前ピン（座標で立てる）
-        var coordMarker = null;
-        function renderCoordPin() {
-          var raw = localStorage.getItem(STATE_KEY);
-          if (!raw) return;
-          var parts = raw.split(",");
-          var lat = parseFloat(parts[0]);
-          var lng = parseFloat(parts[1]);
-          if (isNaN(lat) || isNaN(lng)) return;
-          if (coordMarker) { map.removeLayer(coordMarker); }
-          coordMarker = L.marker([lat, lng], { icon: makeIcon("#fbbc05", 1) }).addTo(map);
-          coordMarker.bindPopup(popupHtml("入力された地点", lat.toFixed(4) + ", " + lng.toFixed(4), "あなたが地図に立てたピン。", ""));
-        }
-        renderCoordPin();
+      // pan/zoom 状態
+      var pan = { x: 0, y: 0 }, scale = 0.85;
 
-        function placeCoord(lat, lng) {
-          if (isNaN(lat) || isNaN(lng)) {
-            window.alert("緯度,経度の形式で入力してください（例: 35.42, 138.91）");
-            return;
-          }
-          localStorage.setItem(STATE_KEY, lat + "," + lng);
-          renderCoordPin();
-          refreshUnknownPopup();
-          map.setView([lat, lng], 16);
-          if (coordMarker) coordMarker.openPopup();
-        }
-
-        // 検索（フェイク・霞ノ杜のみマッチ）
-        document.getElementById("searchBtn").addEventListener("click", function () {
-          var q = (document.getElementById("searchInput").value || "").trim();
-          if (!q) return;
-          if (/霞ノ杜|かすみのもり|kasuminomori/i.test(q)) {
-            map.setView(center, 13);
-          } else if (/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(q)) {
-            var p = q.split(",");
-            placeCoord(parseFloat(p[0]), parseFloat(p[1]));
-          } else {
-            window.alert("該当する場所が見つかりませんでした。");
-          }
-        });
-        // 座標で立てる
-        document.getElementById("coordBtn").addEventListener("click", function () {
-          var s = window.prompt("緯度, 経度を入力（例: 35.42, 138.91）");
-          if (!s) return;
-          var p = s.split(",");
-          placeCoord(parseFloat(p[0]), parseFloat(p[1]));
-        });
-
-        bindList("civicList", civic);
-        bindList("tourismList", tourism);
-        bindList("userList", [unknownPin]);
+      function applyTransform(noAnim) {
+        if (noAnim) mapStage.classList.add("no-anim"); else mapStage.classList.remove("no-anim");
+        mapStage.style.transform = "translate(" + pan.x + "px, " + pan.y + "px) scale(" + scale + ")";
       }
 
+      function setInitialView() {
+        // 三日月町＋杉並ヶ岡が画面に映るように、霞ノ杜は中央に来ないようにする
+        var rect = mapArea.getBoundingClientRect();
+        // 中心を (1000, 900) あたりに合わせる
+        var cx = 1000, cy = 900;
+        pan.x = rect.width / 2 - cx * scale;
+        pan.y = rect.height / 2 - cy * scale;
+        applyTransform(true);
+      }
+
+      window.addEventListener("resize", function () { applyTransform(true); });
+
+      // pan（ドラッグ）
+      var dragging = false, last = null;
+      mapArea.addEventListener("mousedown", function (e) {
+        if (e.target.closest(".popup") || e.target.closest(".pin")) return;
+        dragging = true; last = { x: e.clientX, y: e.clientY };
+        mapArea.classList.add("grabbing");
+      });
+      window.addEventListener("mousemove", function (e) {
+        if (!dragging) return;
+        pan.x += e.clientX - last.x;
+        pan.y += e.clientY - last.y;
+        last = { x: e.clientX, y: e.clientY };
+        applyTransform(true);
+      });
+      window.addEventListener("mouseup", function () {
+        dragging = false; mapArea.classList.remove("grabbing");
+      });
+      // touch
+      mapArea.addEventListener("touchstart", function (e) {
+        if (e.target.closest(".popup") || e.target.closest(".pin")) return;
+        if (e.touches.length !== 1) return;
+        dragging = true; last = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }, { passive: true });
+      mapArea.addEventListener("touchmove", function (e) {
+        if (!dragging || e.touches.length !== 1) return;
+        pan.x += e.touches[0].clientX - last.x;
+        pan.y += e.touches[0].clientY - last.y;
+        last = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        applyTransform(true);
+      }, { passive: true });
+      mapArea.addEventListener("touchend", function () { dragging = false; });
+
+      // ホイールズーム
+      mapArea.addEventListener("wheel", function (e) {
+        e.preventDefault();
+        var d = e.deltaY < 0 ? 1.12 : 1/1.12;
+        var rect = mapArea.getBoundingClientRect();
+        var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+        var nextScale = Math.max(0.4, Math.min(2.4, scale * d));
+        pan.x = mx - (mx - pan.x) * (nextScale / scale);
+        pan.y = my - (my - pan.y) * (nextScale / scale);
+        scale = nextScale;
+        applyTransform(true);
+      }, { passive: false });
+
+      document.getElementById("zoomIn").addEventListener("click", function () { zoomTo(scale * 1.25); });
+      document.getElementById("zoomOut").addEventListener("click", function () { zoomTo(scale / 1.25); });
+      function zoomTo(s) {
+        var rect = mapArea.getBoundingClientRect();
+        var cx = rect.width / 2, cy = rect.height / 2;
+        var next = Math.max(0.4, Math.min(2.4, s));
+        pan.x = cx - (cx - pan.x) * (next / scale);
+        pan.y = cy - (cy - pan.y) * (next / scale);
+        scale = next;
+        applyTransform();
+      }
+
+      // popup state
+      var openPopupId = null;
+      function closePopup() {
+        openPopupId = null;
+        popupLayer.innerHTML = "";
+      }
+      function openPopup(pin) {
+        openPopupId = pin.id;
+        popupLayer.innerHTML = "";
+        var el = document.createElement("div");
+        el.className = "popup";
+        el.style.left = pin.x + "px";
+        el.style.top = pin.y + "px";
+        var inner = "";
+        if (pin.category === "unknown") {
+          var hasCoord = !!localStorage.getItem(STATE_KEY);
+          inner += '<button class="close" aria-label="閉じる">×</button>';
+          inner += '<div class="ptitle">' + pin.title + '</div>';
+          inner += '<div class="pmeta">' + (pin.meta || "") + ' / ' + pin.area + '</div>';
+          inner += '<div class="pbody">' + pin.body + (hasCoord ? '<br><br>' + pin.revealNote + '<br><span class="reviewer">撮影: ' + pin.dateAfterCoord + '</span>' : '') + '</div>';
+          inner += '<img src="' + (hasCoord ? pin.imgAfterCoord : pin.imgInitial) + '" alt="">';
+          if (hasCoord) {
+            inner += '<div class="review" style="border-color:#cfc4a8;"><strong>※ ノートの最初のページ</strong><br>'
+              + '「学校では透明人間みたいだった。先生も気づかない。パパもママも仕事で話せない。でも水辺の丘に行くと、なんか空気が違う。絵を描くと、ここだけは本物な気がする。」<br>'
+              + '<span class="reviewer">— 9月の日記</span></div>';
+          }
+        } else {
+          var stars = pin.rating ? '<span class="stars">' + "★".repeat(Math.round(pin.rating)) + "☆".repeat(5 - Math.round(pin.rating)) + '</span> ' + pin.rating.toFixed(1) : "";
+          inner += '<button class="close" aria-label="閉じる">×</button>';
+          inner += '<div class="ptitle">' + pin.title + '</div>';
+          inner += '<div class="pmeta">' + pin.area + (stars ? ' / ' + stars : '') + '</div>';
+          inner += '<div class="pbody">' + (pin.body || "") + '</div>';
+          if (pin.review) {
+            inner += '<div class="review">「' + pin.review + '」<div class="reviewer">— ' + (pin.reviewer || "name_neko") + '</div></div>';
+          }
+        }
+        el.innerHTML = inner;
+        popupLayer.appendChild(el);
+        el.addEventListener("click", function (e) { e.stopPropagation(); });
+        el.addEventListener("mousedown", function (e) { e.stopPropagation(); });
+        el.querySelector(".close").addEventListener("click", function (e) { e.stopPropagation(); closePopup(); });
+      }
+
+      // ピン描画
+      function renderPins() {
+        pinsLayer.innerHTML = "";
+        PIN_DATA.forEach(function (p) {
+          var el = document.createElement("div");
+          el.className = "pin " + p.category;
+          el.style.left = p.x + "px";
+          el.style.top = p.y + "px";
+          el.innerHTML = '<div class="head" title="' + p.title + '"></div>';
+          el.addEventListener("click", function (e) {
+            e.stopPropagation();
+            openPopup(p);
+          });
+          pinsLayer.appendChild(el);
+        });
+        // ユーザの座標ピン
+        var raw = localStorage.getItem(STATE_KEY);
+        if (raw) {
+          var parts = raw.split(",");
+          var ux = parseFloat(parts[0]);
+          var uy = parseFloat(parts[1]);
+          if (!isNaN(ux) && !isNaN(uy)) {
+            var el = document.createElement("div");
+            el.className = "pin user";
+            el.style.left = ux + "px";
+            el.style.top = uy + "px";
+            el.innerHTML = '<div class="head" title="あなたが立てたピン"></div>';
+            el.addEventListener("click", function (e) {
+              e.stopPropagation();
+              openPopup({ id: "user-pin", x: ux, y: uy, category: "user", title: "入力した地点", area: "ユーザ投稿", rating: 0, body: "あなたが地図に立てたピン。" });
+            });
+            pinsLayer.appendChild(el);
+          }
+        }
+      }
+
+      mapArea.addEventListener("click", function () { closePopup(); });
+
+      // 緯度経度 → SVG 空間。正解座標(35.42,138.91)なら無名ピンの場所に。
+      // 多少の誤差を吸収するため、|Δlat|<0.01 かつ |Δlng|<0.01 なら正解扱い。
+      function latLngToXY(lat, lng) {
+        if (Math.abs(lat - ANSWER_LAT) < 0.012 && Math.abs(lng - ANSWER_LNG) < 0.012) {
+          return { x: ANSWER_X, y: ANSWER_Y, isAnswer: true };
+        }
+        // それ以外は、緯度を 800±400、経度を 800±600 にざっくり投影（地図外で見失わない範囲）。
+        var x = 800 + (lng - 138.9) * 4000;
+        var y = 800 - (lat - 35.42) * 4000;
+        x = Math.max(60, Math.min(1540, x));
+        y = Math.max(60, Math.min(1140, y));
+        return { x: x, y: y, isAnswer: false };
+      }
+
+      function placeUserPinAtLatLng(lat, lng) {
+        if (isNaN(lat) || isNaN(lng)) {
+          window.alert("緯度,経度の形式で入力してください（例: 35.42, 138.91）");
+          return;
+        }
+        var p = latLngToXY(lat, lng);
+        localStorage.setItem(STATE_KEY, p.x + "," + p.y);
+        renderPins();
+        // 中心を合わせる
+        var rect = mapArea.getBoundingClientRect();
+        pan.x = rect.width / 2 - p.x * scale;
+        pan.y = rect.height / 2 - p.y * scale;
+        applyTransform();
+        // 正解座標なら無名ピンを自動で開く
+        if (p.isAnswer) {
+          var unknown = PIN_DATA.find(function (d) { return d.id === "unknown"; });
+          if (unknown) {
+            setTimeout(function () { openPopup(unknown); }, 220);
+          }
+        }
+      }
+
+      // サイドリスト
+      function renderSidebar(filter) {
+        var shopList = document.getElementById("shopList");
+        var reviewList = document.getElementById("reviewList");
+        shopList.innerHTML = "";
+        reviewList.innerHTML = "";
+        var shops = PIN_DATA.filter(function (p) {
+          if (filter === "all") return p.category !== "civic" && p.category !== "school";
+          if (filter === "sweets") return p.category === "sweets";
+          if (filter === "conv") return p.category === "conv";
+          if (filter === "other") return p.category === "tourism" || p.category === "unknown";
+          return true;
+        });
+        shops.forEach(function (p) {
+          var li = document.createElement("li");
+          var dotCls = p.category === "sweets" ? "pm-sweets" : p.category === "conv" ? "pm-conv" : p.category === "tourism" ? "pm-tourism" : p.category === "unknown" ? "pm-unknown" : "pm-civic";
+          li.innerHTML = '<span class="pin-mini ' + dotCls + '"></span>' +
+            '<div class="row-main"><div class="row-title">' + p.title + '</div><div class="row-sub">' + p.area + (p.rating ? ' ・ ★ ' + p.rating.toFixed(1) : '') + '</div></div>';
+          li.addEventListener("click", function () {
+            var rect = mapArea.getBoundingClientRect();
+            pan.x = rect.width / 2 - p.x * scale;
+            pan.y = rect.height / 2 - p.y * scale;
+            applyTransform();
+            setTimeout(function () { openPopup(p); }, 180);
+          });
+          shopList.appendChild(li);
+        });
+        // レビュー（review 持ちだけ抜粋）
+        var reviewed = PIN_DATA.filter(function (p) { return p.review; }).slice(0, 4);
+        reviewed.forEach(function (p) {
+          var li = document.createElement("li");
+          li.innerHTML = '<span class="pin-mini ' + (p.category === "sweets" ? "pm-sweets" : "pm-conv") + '"></span>' +
+            '<div class="row-main"><div class="row-title">' + p.title + '</div><div class="row-sub">「' + p.review.substring(0, 26) + (p.review.length > 26 ? '…' : '') + '」</div></div>';
+          li.addEventListener("click", function () {
+            var rect = mapArea.getBoundingClientRect();
+            pan.x = rect.width / 2 - p.x * scale;
+            pan.y = rect.height / 2 - p.y * scale;
+            applyTransform();
+            setTimeout(function () { openPopup(p); }, 180);
+          });
+          reviewList.appendChild(li);
+        });
+      }
+
+      document.querySelectorAll(".sp-tab").forEach(function (t) {
+        t.addEventListener("click", function () {
+          document.querySelectorAll(".sp-tab").forEach(function (x) { x.classList.remove("active"); });
+          t.classList.add("active");
+          renderSidebar(t.dataset.tab);
+        });
+      });
+
+      // 検索
+      document.getElementById("searchBtn").addEventListener("click", function () {
+        var q = (document.getElementById("searchInput").value || "").trim();
+        if (!q) return;
+        // 緯度,経度形式？
+        if (/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(q)) {
+          var p = q.split(",");
+          placeUserPinAtLatLng(parseFloat(p[0]), parseFloat(p[1]));
+          return;
+        }
+        // 名前で検索
+        var hit = PIN_DATA.find(function (d) { return d.title.indexOf(q) >= 0 || d.area.indexOf(q) >= 0; });
+        if (hit) {
+          var rect = mapArea.getBoundingClientRect();
+          pan.x = rect.width / 2 - hit.x * scale;
+          pan.y = rect.height / 2 - hit.y * scale;
+          applyTransform();
+          setTimeout(function () { openPopup(hit); }, 180);
+        } else {
+          window.alert("該当する場所・店舗が見つかりませんでした。");
+        }
+      });
+      document.getElementById("coordBtn").addEventListener("click", function () {
+        var s = window.prompt("緯度, 経度を入力してください（例: 35.42, 138.91）");
+        if (!s) return;
+        var p = s.split(",");
+        placeUserPinAtLatLng(parseFloat(p[0]), parseFloat(p[1]));
+      });
+
+      // 起動
+      function boot() {
+        renderPins();
+        renderSidebar("all");
+        setInitialView();
+      }
       var t = setInterval(function () {
         if (document.documentElement.classList.contains("token-gate-ok")) {
           clearInterval(t);
-          start();
+          boot();
         }
       }, 80);
     })();
