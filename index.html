@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gougle Map</title>
   <!--
-    下層: OpenFreeMap（OSM ベクトル・MapLibre Style Spec）。symbol レイヤーを無効化し地名・POI 記号・道路上の文字のみ消す。
-    物語用の地名ラベルは HTML マーカーのみ（架空ポリゴンは表示しない）。
+    下層: OpenFreeMap（OSM ベクトル）。symbol 無効化で実地形のみ。
+    ?from=sweets-thread | ?entry=sweets-thread … スイーツスレ専用: 特集パネル非表示・ピンなし・日本全体。
     初期表示: ?entry=urban-legend-board | ?from=board ほか ?focus= ?q= ?lat=&lng=&z=
   -->
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" crossorigin="" />
@@ -39,33 +39,106 @@
       height: 100%;
     }
 
+    /* Google Maps 風: 左レール + メイン */
+    .gm-shell {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .gm-rail {
+      width: 64px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid #e8eaed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
+      gap: 2px;
+      z-index: 200;
+      box-shadow: 1px 0 0 rgba(0, 0, 0, 0.04);
+    }
+    .gm-rail-btn {
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: #5f6368;
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .gm-rail-btn:hover { background: #f1f3f4; color: #202124; }
+    .gm-stage {
+      flex: 1;
+      position: relative;
+      min-width: 0;
+    }
+
     .topbar {
       position: absolute;
-      left: 12px;
+      left: 16px;
       top: 12px;
       z-index: 120;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       gap: 10px;
-      width: min(720px, calc(100vw - 24px));
+      width: min(720px, calc(100vw - 88px));
       pointer-events: none;
     }
     .logo { font-weight: 700; letter-spacing: -0.02em; font-size: 17px; white-space: nowrap; }
     .logo .g { color: #4285f4 } .logo .o1 { color: #ea4335 } .logo .o2 { color: #fbbc05 }
     .logo .g2 { color: #34a853 } .logo .l { color: #4285f4 } .logo .e { color: #ea4335 }
     .searchbar {
-      width: min(488px, calc(100vw - 24px));
-      height: 48px;
-      padding: 0 8px;
+      width: min(520px, calc(100vw - 100px));
+      min-height: 48px;
+      padding: 0 6px 0 4px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
       pointer-events: auto;
       background: #fff;
       border-radius: 24px;
-      box-shadow: var(--shadow);
+      box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+      border: 1px solid #f1f3f4;
     }
+    .searchbar .gm-menu-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: #5f6368;
+      font-size: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .searchbar .gm-menu-btn:hover { background: #f1f3f4; }
+    .searchbar .gm-search-divider {
+      width: 1px;
+      height: 28px;
+      background: #e8eaed;
+      flex-shrink: 0;
+    }
+    .searchbar .gm-dir-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: #1a73e8;
+      color: #fff;
+      flex-shrink: 0;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      margin-left: 2px;
+      box-shadow: 0 1px 2px rgba(26, 115, 232, 0.45);
+    }
+    .searchbar .gm-dir-btn:hover { background: #1765cc; }
     .searchbar input {
       flex: 1;
       min-width: 0;
@@ -99,24 +172,29 @@
       font-weight: 600;
       border-left: 1px solid #edf0f2;
     }
-    .map-chips { display: flex; align-items: center; gap: 8px; pointer-events: auto; flex-wrap: wrap; }
+    .map-chips { display: flex; align-items: center; gap: 8px; pointer-events: auto; flex-wrap: wrap; padding-left: 2px; }
     .chip {
       border: 1px solid #dadce0;
       background: #fff;
-      border-radius: 18px;
+      border-radius: 20px;
       color: #3c4043;
-      padding: 7px 12px;
+      padding: 8px 14px 8px 10px;
       font-size: 13px;
-      box-shadow: 0 1px 2px rgba(60, 64, 67, 0.2);
+      font-weight: 500;
+      box-shadow: 0 1px 2px rgba(60, 64, 67, 0.18);
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
+    .chip .chip-ic { font-size: 15px; line-height: 1; opacity: 0.9; }
     .chip.active, .chip:hover { border-color: #d2e3fc; background: #e8f0fe; color: #174ea6; }
 
-    .layout { position: relative; width: 100%; height: 100vh; overflow: hidden; }
+    .layout { position: relative; width: 100%; height: 100%; overflow: hidden; }
 
     aside.sidepanel {
       position: absolute;
-      left: 12px;
+      left: 16px;
       top: 112px;
       z-index: 110;
       width: 352px;
@@ -127,9 +205,70 @@
       border-radius: 14px;
       box-shadow: 0 2px 8px rgba(60, 64, 67, 0.22);
       pointer-events: auto;
+      transition: transform 0.22s ease, opacity 0.2s ease;
     }
-    .sp-h { padding: 14px 16px 12px; border-bottom: 1px solid var(--line); }
-    .sp-h h1 { margin: 0; font-size: 18px; font-weight: 500; }
+    .sp-h { padding: 12px 14px 12px; border-bottom: 1px solid var(--line); position: relative; }
+    .sp-h-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .sp-h h1 { margin: 0; font-size: 17px; font-weight: 500; flex: 1; line-height: 1.35; padding-right: 4px; }
+    .sp-h-close {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: #5f6368;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      margin: -6px -4px 0 0;
+    }
+    .sp-h-close:hover { background: #f1f3f4; color: #202124; }
+    aside.sidepanel.sidepanel--dismissed {
+      transform: translateX(calc(-100% - 24px));
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.22s ease, opacity 0.2s ease;
+    }
+    .gm-reopen-side {
+      position: absolute;
+      left: 76px;
+      bottom: 100px;
+      z-index: 115;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #174ea6;
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      display: none;
+    }
+    .gm-reopen-side.is-visible { display: block; }
+    .gm-layer-thumb {
+      position: absolute;
+      left: 76px;
+      bottom: 24px;
+      z-index: 115;
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 6px rgba(32, 33, 36, 0.35);
+      background: linear-gradient(145deg, #c5d4e8 0%, #8faa8a 45%, #6b8cae 100%);
+      cursor: pointer;
+      font-size: 9px;
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0 0 5px;
+      pointer-events: auto;
+    }
     .sp-h p { margin: 5px 0 0; font-size: 12px; color: var(--muted); line-height: 1.55; }
     .sp-tab-row { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
     .sp-tab {
@@ -173,7 +312,7 @@
       flex: 0 0 auto;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
     }
-    .pm-sweets { background: #ea66a4; }
+    .pm-sweets { background: #1a73e8; }
     .pm-conv { background: #1a73e8; }
     .pm-tourism { background: #ea4335; }
     .pm-civic { background: #1a73e8; }
@@ -195,42 +334,42 @@
       font-size: 18px !important;
     }
 
-    /* カスタムピン（MapLibre Marker 用） */
-    .gm-pin {
-      width: 30px;
-      height: 38px;
-      cursor: pointer;
+    /* Google 風 POI 円 / 選択時は赤ティアドロップ */
+    .gm-marker-root { cursor: pointer; }
+    .gm-poi {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+      display: grid;
+      place-items: center;
+      transition: transform 0.15s ease, width 0.15s, height 0.15s, border-radius 0.15s;
     }
-    .gm-pin .head {
-      width: 22px;
-      height: 22px;
+    .gm-poi-glyph { font-size: 15px; line-height: 1; }
+    .gm-poi--sweets { background: #1a73e8; color: #fff; }
+    .gm-poi--conv { background: #1a73e8; color: #fff; }
+    .gm-poi--tourism { background: #34a853; color: #fff; }
+    .gm-poi--civic { background: #5f6368; color: #fff; }
+    .gm-poi--school { background: #34a853; color: #fff; }
+    .gm-poi--unknown { background: #9e9e9e; color: #fff; }
+    .gm-poi--user { background: #fbbc05; color: #fff; }
+    .gm-poi.is-selected {
+      width: 28px;
+      height: 28px;
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
-      transform-origin: center;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-      border: 2px solid #fff;
-      position: absolute;
-      left: 4px;
-      top: 4px;
+      background: #ea4335 !important;
+      border-color: #fff;
     }
-    .gm-pin .head::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 6px;
-      height: 6px;
+    .gm-poi.is-selected .gm-poi-glyph {
+      transform: rotate(45deg);
+      font-size: 0;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: #fff;
-      transform: translate(-50%, -50%);
     }
-    .gm-pin.sweets .head { background: #ea66a4; }
-    .gm-pin.conv .head { background: #1a73e8; }
-    .gm-pin.tourism .head { background: #ea4335; }
-    .gm-pin.civic .head { background: #1a73e8; }
-    .gm-pin.school .head { background: #34a853; }
-    .gm-pin.unknown .head { background: #9e9e9e; opacity: 0.92; }
-    .gm-pin.user .head { background: #fbbc05; }
 
     .fiction-label-wrap { pointer-events: none; text-align: center; }
     .fiction-label-wrap .nm {
@@ -248,17 +387,27 @@
       text-shadow: 0 0 4px #fff;
     }
 
+    .gm-map-popup .maplibregl-popup-close-button {
+      display: block;
+      width: 36px;
+      height: 36px;
+      font-size: 20px;
+      color: #5f6368;
+      padding: 0;
+      line-height: 36px;
+    }
     .gm-map-popup .maplibregl-popup-content {
-      border-radius: 10px;
-      padding: 12px 14px;
+      border-radius: 12px;
+      padding: 14px 16px;
       font-size: 13px;
       line-height: 1.55;
-      max-width: 300px;
+      max-width: 320px;
+      box-shadow: 0 2px 12px rgba(32, 33, 36, 0.25);
     }
     .gm-map-popup .maplibregl-popup-tip { border-top-color: #fff; }
-    .gm-map-popup .ptitle { font-weight: 700; margin-bottom: 4px; font-size: 14px; }
-    .gm-map-popup .pmeta { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-    .gm-map-popup .pbody { color: #202124; }
+    .gm-map-popup .ptitle { font-weight: 600; margin: 0 40px 6px 0; font-size: 16px; color: #202124; }
+    .gm-map-popup .pmeta { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .gm-map-popup .pbody { color: #3c4043; font-size: 13px; }
     .gm-map-popup .review {
       margin-top: 6px;
       padding-top: 6px;
@@ -274,23 +423,164 @@
       margin-top: 6px;
       border-radius: 6px;
     }
-    .gm-map-popup .close-x {
-      float: right;
-      background: none;
-      border: none;
+    .gm-map-popup .close-x { display: none; }
+
+    .gm-place-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: min(408px, calc(100vw - 72px));
+      max-width: 100%;
+      background: #fff;
+      z-index: 130;
+      box-shadow: 2px 0 12px rgba(32, 33, 36, 0.18);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-102%);
+      transition: transform 0.22s ease;
+      pointer-events: none;
+    }
+    .gm-place-panel.is-open {
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+    .gm-place-panel-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 10px 8px;
+      border-bottom: 1px solid #e8eaed;
+      flex-shrink: 0;
+    }
+    .gm-place-panel-header .back-pill {
+      flex: 1;
+      min-width: 0;
+      height: 40px;
+      border-radius: 20px;
+      border: 1px solid #e8eaed;
+      background: #f8f9fa;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 0 14px;
+      text-align: left;
       cursor: pointer;
-      font-size: 16px;
-      color: var(--muted);
-      line-height: 1;
-      padding: 0 0 4px 8px;
+      color: #202124;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .gm-place-panel-close {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: #5f6368;
+      font-size: 22px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .gm-place-panel-close:hover { background: #f1f3f4; }
+    .gm-place-scroll { overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
+    .gm-place-hero {
+      height: 160px;
+      background: linear-gradient(160deg, #e8eef5 0%, #bdc9d8 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #80868b;
+      font-size: 13px;
+    }
+    .gm-place-hero img { width: 100%; height: 100%; object-fit: cover; }
+    .gm-place-titleblock { padding: 16px 18px 10px; }
+    .gm-place-title { margin: 0; font-size: 22px; font-weight: 400; color: #202124; letter-spacing: -0.02em; line-height: 1.25; }
+    .gm-place-sub { margin: 8px 0 0; font-size: 13px; color: #70757a; }
+    .gm-place-stars { color: #fbbc05; font-size: 14px; margin-right: 6px; }
+    .gm-place-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid #e8eaed;
+      padding: 0 12px;
+    }
+    .gm-place-tab {
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #70757a;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+    }
+    .gm-place-tab.is-active { color: #1a73e8; border-bottom-color: #1a73e8; }
+    .gm-place-actions {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 16px 10px;
+      gap: 6px;
+    }
+    .gm-place-act {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 4px 2px;
+      font-size: 11px;
+      color: #1a73e8;
+      font-weight: 500;
+    }
+    .gm-place-act-ic {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #e8f0fe;
+      color: #1a73e8;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+    }
+    .gm-place-act:hover .gm-place-act-ic { background: #d2e3fc; }
+    .gm-place-rows { padding: 4px 0 20px; }
+    .gm-place-row {
+      display: flex;
+      gap: 14px;
+      padding: 12px 18px;
+      font-size: 13px;
+      color: #202124;
+      line-height: 1.45;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    .gm-place-row-ic { width: 22px; flex-shrink: 0; color: #5f6368; text-align: center; }
+    .gm-place-suggest {
+      margin: 12px 16px;
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #dadce0;
+      border-radius: 24px;
+      background: #fff;
+      color: #1a73e8;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .gm-place-suggest:hover { background: #f8f9fa; }
+
+    html.gm-sweets-thread aside.sidepanel,
+    html.gm-sweets-thread .gm-reopen-side {
+      display: none !important;
     }
     .gm-map-popup .stars { color: #fbbc05; }
 
     @media (max-width: 900px) {
-      .topbar { left: 8px; top: 8px; width: calc(100vw - 16px); }
-      .searchbar { width: 100%; }
-      .map-chips { overflow-x: auto; flex-wrap: nowrap; max-width: 100%; padding-bottom: 2px; }
-      .chip { white-space: nowrap; }
+      .gm-rail { width: 0; padding: 0; border: none; overflow: hidden; }
+      .topbar { left: 12px; width: calc(100vw - 24px); }
       aside.sidepanel {
         left: 8px;
         right: 8px;
@@ -299,6 +589,7 @@
         width: auto;
         max-height: 38vh;
       }
+      .gm-place-panel { width: 100%; }
     }
 
     .ns-denied-overlay {
@@ -345,69 +636,116 @@
 </head>
 <body>
   <div id="site-root">
-    <div class="layout">
-      <div class="map-shell"><div id="map" role="application" aria-label="地図"></div></div>
+    <div class="gm-shell">
+      <nav class="gm-rail" aria-label="Gougle Map メニュー">
+        <button type="button" class="gm-rail-btn" title="メニュー" aria-label="メニュー">☰</button>
+        <button type="button" class="gm-rail-btn" title="保存済み" aria-label="保存済み">🔖</button>
+        <button type="button" class="gm-rail-btn" title="最近" aria-label="最近">🕐</button>
+      </nav>
+      <div class="gm-stage">
+        <div class="layout">
+          <div class="map-shell"><div id="map" role="application" aria-label="地図"></div></div>
 
-      <header class="topbar">
-        <form class="searchbar" id="searchForm" onsubmit="return false;">
-          <div class="logo" aria-label="Gougle Map"><span class="g">G</span><span class="o1">o</span><span class="o2">u</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span></div>
-          <input id="searchInput" type="text" placeholder="場所・店名で検索（例: 霞ノ杜、パティスリー柊）" autocomplete="off" />
-          <button id="searchBtn" type="button" title="検索" aria-label="検索">⌕</button>
-          <button id="coordBtn" type="button" class="coord" title="緯度,経度で地点を立てる">座標</button>
-        </form>
-        <div class="map-chips" aria-label="カテゴリ">
-          <button class="chip active" type="button" data-tab="all">周辺</button>
-          <button class="chip" type="button" data-tab="sweets">スイーツ</button>
-          <button class="chip" type="button" data-tab="conv">コンビニ</button>
-          <button class="chip" type="button" data-tab="other">観光・その他</button>
-        </div>
-      </header>
+          <header class="topbar">
+            <form class="searchbar" id="searchForm" onsubmit="return false;">
+              <button type="button" class="gm-menu-btn" id="gmMenuBtn" title="メニュー" aria-label="メニュー">☰</button>
+              <span class="gm-search-divider" aria-hidden="true"></span>
+              <div class="logo" aria-label="Gougle Map"><span class="g">G</span><span class="o1">o</span><span class="o2">u</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span></div>
+              <input id="searchInput" type="text" placeholder="Gougle マップを検索" autocomplete="off" />
+              <button id="searchBtn" type="button" title="検索" aria-label="検索">⌕</button>
+              <button id="coordBtn" type="button" class="coord" title="緯度,経度で地点を立てる">座標</button>
+              <button type="button" class="gm-dir-btn" title="ルート" aria-label="ルート">◇</button>
+            </form>
+            <div class="map-chips" aria-label="カテゴリ">
+              <button class="chip active" type="button" data-tab="all"><span class="chip-ic" aria-hidden="true">🗺️</span>周辺</button>
+              <button class="chip" type="button" data-tab="sweets"><span class="chip-ic" aria-hidden="true">🧁</span>スイーツ</button>
+              <button class="chip" type="button" data-tab="conv"><span class="chip-ic" aria-hidden="true">🏪</span>コンビニ</button>
+              <button class="chip" type="button" data-tab="other"><span class="chip-ic" aria-hidden="true">📷</span>観光・その他</button>
+            </div>
+          </header>
 
-      <aside class="sidepanel">
-        <div class="sp-h">
-          <h1>みんなのスイーツ&コンビニMAP</h1>
-          <p>
-            <strong>下層</strong>は実在の OpenStreetMap データ由来のベクトル地図です。地名や店舗記号などの <strong>文字・記号だけ</strong>を消してあり、地形・道路・水域などの線画はそのままです。作品内の地名はピン近くのラベルのみ表示されます。
-          </p>
-        </div>
-        <div class="sp-tab-row">
-          <div class="sp-tab active" data-tab="all">全部</div>
-          <div class="sp-tab" data-tab="sweets">スイーツ</div>
-          <div class="sp-tab" data-tab="conv">コンビニ</div>
-          <div class="sp-tab" data-tab="other">その他</div>
-        </div>
-        <div class="sp-section">
-          <h2>新着レビュー</h2>
-          <ul class="sp-list" id="reviewList"></ul>
-        </div>
-        <div class="sp-section">
-          <h2>店舗一覧</h2>
-          <ul class="sp-list" id="shopList"></ul>
-        </div>
-        <div class="sp-section">
-          <h2>地域（タップで地図へ）</h2>
-          <ul class="sp-list" id="regionList"></ul>
-        </div>
-        <div class="sp-section" style="font-size: 11px; color: #5f6368;">
-          掲示板から: <code style="font-size: 10px; word-break: break-all;">?entry=urban-legend-board</code> ／ 検索: <code style="font-size: 10px;">?q=霞ノ杜</code>
-        </div>
-      </aside>
+          <aside class="sidepanel" id="sidepanel">
+            <div class="sp-h">
+              <div class="sp-h-row">
+                <h1>みんなのスイーツ&コンビニMAP</h1>
+                <button type="button" class="sp-h-close" id="sidepanelCloseBtn" aria-label="特集パネルを閉じる">×</button>
+              </div>
+              <p>
+                <strong>下層</strong>は実在の OSM ベクトル地図です（地名・店記号は非表示）。<strong>霞ノ杜町</strong>は長野県付近の座標を物語上の舞台として使用しています。
+              </p>
+            </div>
+            <div class="sp-tab-row">
+              <div class="sp-tab active" data-tab="all">全部</div>
+              <div class="sp-tab" data-tab="sweets">スイーツ</div>
+              <div class="sp-tab" data-tab="conv">コンビニ</div>
+              <div class="sp-tab" data-tab="other">その他</div>
+            </div>
+            <div class="sp-section">
+              <h2>新着レビュー</h2>
+              <ul class="sp-list" id="reviewList"></ul>
+            </div>
+            <div class="sp-section">
+              <h2>店舗一覧</h2>
+              <ul class="sp-list" id="shopList"></ul>
+            </div>
+            <div class="sp-section">
+              <h2>地域（タップで地図へ）</h2>
+              <ul class="sp-list" id="regionList"></ul>
+            </div>
+            <div class="sp-section" style="font-size: 11px; color: #5f6368;">
+              掲示板: <code style="font-size: 10px; word-break: break-all;">?entry=urban-legend-board</code>
+              ／ スイーツスレ（地図のみ）: <code style="font-size: 10px;">?from=sweets-thread</code>
+            </div>
+          </aside>
 
+          <div id="gmPlacePanel" class="gm-place-panel" aria-hidden="true"></div>
+          <button type="button" class="gm-reopen-side" id="sidepanelReopenBtn" aria-label="特集パネルを表示">スイーツMAP</button>
+          <div class="gm-layer-thumb" id="gmLayerThumb" role="button" tabindex="0" title="レイヤ">レイヤ</div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin=""></script>
   <script>
     (function () {
-      var ANSWER_LAT = 35.42;
-      var ANSWER_LNG = 138.91;
+      function detectSweetsThreadMode() {
+        try {
+          var u = new URL(window.location.href);
+          var f = (u.searchParams.get("from") || "").toLowerCase();
+          var e = (u.searchParams.get("entry") || "").toLowerCase();
+          var s = f + "," + e;
+          return /sweets-thread|sweets_sure|sweets-sure|sweetsthread|sweetsure|sweets_sl/.test(s);
+        } catch (err) {
+          return false;
+        }
+      }
+
+      var SWEETS_THREAD_MODE = detectSweetsThreadMode();
+      if (SWEETS_THREAD_MODE) document.documentElement.classList.add("gm-sweets-thread");
+
+      var KASUMI_LAT = 36.052096704400995;
+      var KASUMI_LNG = 138.11843672052697;
+
+      var ANSWER_LAT = KASUMI_LAT;
+      var ANSWER_LNG = KASUMI_LNG;
       var STATE_KEY = "gougle_map_coord_pin_v3";
 
-      /** 初期カメラ: 山梨〜静岡周辺が見える広さ。ピン・自作ラベルは同じ座標系。 */
-      var FICTION_OVERVIEW = { lat: 35.45, lng: 138.82, zoom: 9.15 };
+      /** 通常時: 霞ノ杜町（長野付近）周辺。スイーツスレ: 日本全体。 */
+      var FICTION_OVERVIEW = { lat: KASUMI_LAT, lng: KASUMI_LNG, zoom: 10.4 };
+      var JAPAN_OVERVIEW = { lat: 37.2, lng: 137.9, zoom: 5.35 };
 
       /** OpenFreeMap Liberty（OSM ベクトル・MapLibre Style Spec）。 */
       var BASEMAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
+
+      var activeMapPopup = null;
+
+      function closeMapPopup() {
+        if (activeMapPopup) {
+          activeMapPopup.remove();
+          activeMapPopup = null;
+        }
+      }
 
       /** 地名・道路上の文字・POI アイコン等（type: symbol）を消す。fill / line の地形は残す。 */
       function suppressBasemapSymbols() {
@@ -427,37 +765,37 @@
       var REGION = {
         mikazuki: { name: "三日月町", sub: "中心市街地・住宅地", lat: 35.4078, lng: 139.0142, flyZoom: 14 },
         suginami: { name: "杉並ヶ岡", sub: "新興住宅地・商業地区", lat: 35.4255, lng: 138.9775, flyZoom: 14 },
-        kasumi: { name: "霞ノ杜", sub: "山あいの旧集落", lat: 35.4175, lng: 138.9038, flyZoom: 14 },
+        kasumi: { name: "霞ノ杜町", sub: "長野県（物語上の山あいの町）", lat: KASUMI_LAT, lng: KASUMI_LNG, flyZoom: 14 },
       };
 
       var PIN_DATA = [
-        { id: "sweets-01", lat: 35.4268, lng: 138.9792, category: "sweets", title: "パティスリー柊", area: "杉並ヶ岡", rating: 4.6, body: "杉並ヶ岡駅東、桜並木の終わり。生菓子はその日限定、夕方には売り切れることが多い。", reviewer: "kasumi_local", review: "焼き菓子の詰め合わせがやばい。地元民の手土産はだいたいここ。" },
-        { id: "sweets-02", lat: 35.4325, lng: 138.971, category: "sweets", title: "喫茶 ことり", area: "杉並ヶ岡", rating: 4.3, body: "古民家を改装した小さな喫茶。プリンと珈琲。", reviewer: "night_owl_42", review: "プリンが昔のかたい系。落ち着く椅子。" },
-        { id: "sweets-03", lat: 35.4042, lng: 139.0095, category: "sweets", title: "雪あめや", area: "三日月町", rating: 4.1, body: "三日月商店街の老舗和菓子店。みたらしと、季節限定の最中。", reviewer: "甘味らじお", review: "みたらしの香ばしさ◎。最近スレで話題のチョコ系新作はここでは無い。" },
-        { id: "sweets-04", lat: 35.4105, lng: 139.006, category: "sweets", title: "木洩日庵", area: "三日月町", rating: 4.5, body: "ロールケーキ専門。週末は予約必須。", reviewer: "ご当地スイーツ部", review: "プレーンの生地の温度が完璧。" },
-        { id: "sweets-05", lat: 35.4308, lng: 138.9735, category: "sweets", title: "カフェ夜灯", area: "杉並ヶ岡", rating: 4, body: "深夜営業のカフェ。タルトとシードル。", reviewer: "夜更かしさん", review: "夜中まで開いてるのが偉い。" },
-        { id: "sweets-06", lat: 35.4192, lng: 138.9065, category: "sweets", title: "月待ちプリン 霞ノ杜店", area: "霞ノ杜", rating: 3.9, body: "週末だけ開く小さなプリン屋。霞ノ杜大字杜ケ丘。", reviewer: "kasumi_local", review: "おばあちゃんが一人でやってる。土日のみ。容器が固いガラス瓶。" },
-        { id: "sweets-07", lat: 35.406, lng: 139.003, category: "sweets", title: "スイーツ工房 こもれび", area: "三日月町", rating: 4.4, body: "オリジナルジェラート。フレーバー20種。", reviewer: "甘味らじお", review: "塩キャラメル不動。" },
+        { id: "sweets-01", lat: 43.062, lng: 141.3544, category: "sweets", title: "パティスリー 北の窓", area: "北海道・札幌", rating: 4.6, body: "札幌駅北口から徒歩圏。ショコラと季節のタルトが定評。", reviewer: "kasumi_local", review: "道産子スイーツ部の定番寄り道。" },
+        { id: "sweets-02", lat: 38.2685, lng: 140.869, category: "sweets", title: "喫茶 杜若", area: "宮城・仙台", rating: 4.3, body: "勾当台公園寄りの小さな喫茶。ずんだプリン。", reviewer: "night_owl_42", review: "ずんだの香りが上品。" },
+        { id: "sweets-03", lat: 35.6938, lng: 139.7035, category: "sweets", title: "雪あめや 新宿南口店", area: "東京・新宿", rating: 4.1, body: "和菓子と抹茶スイーツ。駅から徒歩5分。", reviewer: "甘味らじお", review: "みたらし団子の焼き目◎。" },
+        { id: "sweets-04", lat: 35.1712, lng: 136.8818, category: "sweets", title: "木洩日庵 栄本店", area: "愛知・名古屋", rating: 4.5, body: "ロールケーキ専門。平日も並ぶ。", reviewer: "ご当地スイーツ部", review: "生地がしっとり。" },
+        { id: "sweets-05", lat: 34.7028, lng: 135.4962, category: "sweets", title: "カフェ夜灯 梅田", area: "大阪・梅田", rating: 4, body: "深夜まで営業のカフェ。タルトと紅茶。", reviewer: "夜更かしさん", review: "夜景側の席が落ち着く。" },
+        { id: "sweets-06", lat: 34.3855, lng: 132.4555, category: "sweets", title: "月待ちプリン 本通店", area: "広島・紙屋町", rating: 3.9, body: "瓶プリンとレモンケーキ。", reviewer: "kasumi_local", review: "瓶がかわいい。" },
+        { id: "sweets-07", lat: 33.5905, lng: 130.4018, category: "sweets", title: "スイーツ工房 こもれび 天神", area: "福岡・天神", rating: 4.4, body: "ジェラートと焼き菓子。", reviewer: "甘味らじお", review: "九州フルーツの酸味が効いてる。" },
         { id: "conv-01", lat: 35.4055, lng: 139.0108, category: "conv", title: "ファイブイレブン 三日月町店", area: "三日月町", rating: 3.6, body: "24時間営業。スイーツ系新作は強め入荷の店舗らしい。", reviewer: "コンビ二スイーツ部", review: "問題のチョコ新作、ここは毎週水曜に大量入荷。" },
         { id: "conv-02", lat: 35.412, lng: 139.0072, category: "conv", title: "ファイブイレブン 三日月東店", area: "三日月町", rating: 3.4, body: "旧街道沿い。駐車場広め。" },
         { id: "conv-03", lat: 35.4288, lng: 138.9835, category: "conv", title: "ファイブイレブン 杉並ヶ岡北口店", area: "杉並ヶ岡", rating: 3.7, body: "杉並ヶ岡駅北口を出てすぐ。", reviewer: "甘味らじお", review: "新作スイーツの再入荷スピードが早い。" },
         { id: "conv-04", lat: 35.4215, lng: 138.9695, category: "conv", title: "ローライン 杉並ヶ岡西", area: "杉並ヶ岡", rating: 3.3, body: "比較的小型店。深夜は閉店。" },
         { id: "conv-05", lat: 35.4088, lng: 138.9995, category: "conv", title: "セイファイ 旧街道前店", area: "三日月町", rating: 3.5, body: "旧街道沿い。県内チェーン。" },
-        { id: "conv-06", lat: 35.4158, lng: 138.9118, category: "conv", title: "ファイブイレブン 霞ノ杜橋詰店", area: "霞ノ杜", rating: 3.2, body: "霞ノ杜エリア唯一のコンビニ。22時閉店。", reviewer: "kasumi_local", review: "新作はあまり来ない。山の方の住民の生活線。" },
-        { id: "tourism-01", lat: 35.421, lng: 138.9095, category: "tourism", title: "霞ノ杜神社", area: "霞ノ杜", rating: 4.4, body: "北東部、小高い丘陵。早朝は深い霧に包まれる。" },
-        { id: "tourism-02", lat: 35.4135, lng: 138.8978, category: "tourism", title: "杜の吊り橋", area: "霞ノ杜", rating: 4.2, body: "杜川の上流に架かる小さな木造橋。揺れる。" },
-        { id: "tourism-03", lat: 35.4168, lng: 138.9075, category: "tourism", title: "霞ノ杜資料館", area: "霞ノ杜", rating: 4, body: "町史・古地図・写真資料。火・水休館。" },
-        { id: "tourism-04", lat: 35.4235, lng: 138.8945, category: "tourism", title: "霧見展望休憩所", area: "霞ノ杜", rating: 4.3, body: "山道の中腹。霧の海が見える日がある。" },
-        { id: "tourism-05", lat: 35.4148, lng: 138.9018, category: "tourism", title: "杜の湯（足湯）", area: "霞ノ杜", rating: 4.1, body: "杜川沿いの小さな足湯。無料。" },
-        { id: "civic-01", lat: 35.4172, lng: 138.9055, category: "civic", title: "霞ノ杜町役場", area: "霞ノ杜", rating: 0, body: "月〜金 8:30-17:15。霞ノ杜町中心部。" },
-        { id: "school-01", lat: 35.419, lng: 138.9088, category: "school", title: "霞ノ杜町立 霞ノ杜小学校", area: "霞ノ杜", rating: 0, body: "1953年開校。河川敷清掃などの地域活動を行っている。" },
+        { id: "conv-06", lat: 36.0514, lng: 138.1198, category: "conv", title: "ファイブイレブン 霞ノ杜町役場前店", area: "霞ノ杜町", rating: 3.2, body: "町内の生活路線。新作は控えめ。", reviewer: "kasumi_local", review: "山間部ではここが拠点。" },
+        { id: "tourism-01", lat: 36.0532, lng: 138.1172, category: "tourism", title: "霞ノ杜神社", area: "霞ノ杜町", rating: 4.4, body: "丘陵の鎮守。早朝は霧がかかる。" },
+        { id: "tourism-02", lat: 36.0505, lng: 138.1155, category: "tourism", title: "杜の吊り橋", area: "霞ノ杜町", rating: 4.2, body: "川上の木造橋。揺れる。" },
+        { id: "tourism-03", lat: 36.0518, lng: 138.1205, category: "tourism", title: "霞ノ杜資料館", area: "霞ノ杜町", rating: 4, body: "町史・古地図。火・水休館。" },
+        { id: "tourism-04", lat: 36.054, lng: 138.1142, category: "tourism", title: "霧見展望休憩所", area: "霞ノ杜町", rating: 4.3, body: "山道の中腹の小休憩所。" },
+        { id: "tourism-05", lat: 36.0508, lng: 138.1215, category: "tourism", title: "杜の湯（足湯）", area: "霞ノ杜町", rating: 4.1, body: "川沿いの足湯。無料。" },
+        { id: "civic-01", lat: 36.0524, lng: 138.1189, category: "civic", title: "霞ノ杜町役場", area: "霞ノ杜町", rating: 0, body: "月〜金 8:30-17:15。町の窓口。" },
+        { id: "school-01", lat: 36.0535, lng: 138.1178, category: "school", title: "霞ノ杜町立 霞ノ杜小学校", area: "霞ノ杜町", rating: 0, body: "地域と連携した環境学習。" },
         {
           id: "unknown",
-          lat: 35.42,
-          lng: 138.91,
+          lat: 36.0509,
+          lng: 138.1164,
           category: "unknown",
           title: "（名称未設定）",
-          area: "霞ノ杜（北西・水辺）",
+          area: "霞ノ杜町（北西・水辺）",
           rating: 0,
           meta: "投稿者: 削除済みアカウント / 投稿日: 2024-09-21",
           body: "苔むした石の小道の入口。石に子どもが描いたような絵（太陽と波）が彫られている。",
@@ -473,12 +811,179 @@
       var userMarker = null;
       var labelMarkers = [];
       var markerIndex = {};
+      var selectedPinId = null;
+
+      function glyphFor(cat) {
+        if (cat === "sweets") return "🧁";
+        if (cat === "conv") return "🏪";
+        if (cat === "tourism") return "⛩";
+        if (cat === "civic") return "🏛";
+        if (cat === "school") return "🏫";
+        if (cat === "user") return "📍";
+        return "?";
+      }
 
       function pinEl(cat) {
         var d = document.createElement("div");
-        d.className = "gm-pin " + cat;
-        d.innerHTML = '<div class="head"></div>';
+        d.className = "gm-marker-root";
+        d.innerHTML =
+          '<div class="gm-poi gm-poi--' +
+          cat +
+          '" role="button" tabindex="0"><span class="gm-poi-glyph" aria-hidden="true">' +
+          glyphFor(cat) +
+          "</span></div>";
         return d;
+      }
+
+      function clearPinSelectionVisual() {
+        document.querySelectorAll(".gm-poi.is-selected").forEach(function (el) {
+          el.classList.remove("is-selected");
+        });
+        selectedPinId = null;
+      }
+
+      function setPinSelected(pinId) {
+        clearPinSelectionVisual();
+        selectedPinId = pinId;
+        var mk = markerIndex[pinId];
+        if (!mk) return;
+        var root = mk.getElement();
+        var poi = root && root.querySelector(".gm-poi");
+        if (poi) poi.classList.add("is-selected");
+      }
+
+      function escHtml(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function closePlaceDetail() {
+        var panel = document.getElementById("gmPlacePanel");
+        if (panel) {
+          panel.classList.remove("is-open");
+          panel.setAttribute("aria-hidden", "true");
+          panel.innerHTML = "";
+        }
+        clearPinSelectionVisual();
+      }
+
+      function buildPlacePanelHtml(pin) {
+        var hasCoord = !!localStorage.getItem(STATE_KEY);
+        var stars =
+          pin.rating > 0
+            ? '<span class="gm-place-stars">' +
+              "★".repeat(Math.round(pin.rating)) +
+              "☆".repeat(5 - Math.round(pin.rating)) +
+              "</span> " +
+              pin.rating.toFixed(1) +
+              "（サンプル）"
+            : "";
+        var catLabel =
+          pin.category === "sweets"
+            ? "スイーツ"
+            : pin.category === "conv"
+              ? "コンビニエンスストア"
+              : pin.category === "tourism"
+                ? "観光スポット"
+                : pin.category === "civic"
+                  ? "公共施設"
+                  : pin.category === "school"
+                    ? "学校"
+                    : "スポット";
+        var hero =
+          pin.category === "unknown"
+            ? '<div class="gm-place-hero"><img src="' +
+              escHtml(hasCoord ? pin.imgAfterCoord : pin.imgInitial) +
+              '" alt=""></div>'
+            : '<div class="gm-place-hero">写真なし</div>';
+        var bodyHtml = escHtml(pin.body || "").replace(/\n/g, "<br>");
+        var reviewBlock = "";
+        if (pin.review) {
+          reviewBlock =
+            '<div class="gm-place-row"><span class="gm-place-row-ic">💬</span><div>「' +
+            escHtml(pin.review) +
+            '」<div style="color:#70757a;font-size:12px;margin-top:4px;">— ' +
+            escHtml(pin.reviewer || "") +
+            "</div></div>";
+        }
+        if (pin.category === "unknown" && hasCoord && pin.revealNote) {
+          reviewBlock +=
+            '<div class="gm-place-row"><span class="gm-place-row-ic">📓</span><div><strong>ノート</strong><br>' +
+            escHtml(pin.revealNote) +
+            '<div style="color:#70757a;font-size:12px;margin-top:4px;">撮影: ' +
+            escHtml(pin.dateAfterCoord || "") +
+            "</div></div>";
+        }
+        if (pin.category === "unknown" && hasCoord) {
+          reviewBlock +=
+            '<div class="gm-place-row"><span class="gm-place-row-ic">✎</span><div><strong>ノートの最初のページ</strong><br>「学校では透明人間みたいだった。先生も気づかない。パパもママも仕事で話せない。でも水辺の丘に行くと、なんか空気が違う。絵を描くと、ここだけは本物な気がする。」<br><span style="color:#70757a;font-size:12px;">— 9月の日記</span></div></div>';
+        }
+        return (
+          '<div class="gm-place-panel-header">' +
+          '<button type="button" class="back-pill" id="gmPlaceBackSearch">' +
+          escHtml(pin.title) +
+          "</button>" +
+          '<button type="button" class="gm-place-panel-close" id="gmPlacePanelClose" aria-label="閉じる">×</button></div>' +
+          '<div class="gm-place-scroll">' +
+          hero +
+          '<div class="gm-place-titleblock"><h2 class="gm-place-title">' +
+          escHtml(pin.title) +
+          '</h2><p class="gm-place-sub">' +
+          (stars ? stars + " · " : "") +
+          escHtml(catLabel) +
+          "</p></div>" +
+          '<div class="gm-place-tabs"><button type="button" class="gm-place-tab is-active">概要</button><button type="button" class="gm-place-tab">クチコミ</button><button type="button" class="gm-place-tab">基本情報</button></div>' +
+          '<div class="gm-place-actions">' +
+          '<button type="button" class="gm-place-act"><span class="gm-place-act-ic">◇</span>ルート</button>' +
+          '<button type="button" class="gm-place-act"><span class="gm-place-act-ic">🔖</span>保存</button>' +
+          '<button type="button" class="gm-place-act"><span class="gm-place-act-ic">⌕</span>付近</button>' +
+          '<button type="button" class="gm-place-act"><span class="gm-place-act-ic">📱</span>送信</button>' +
+          '<button type="button" class="gm-place-act"><span class="gm-place-act-ic">↗</span>共有</button></div>' +
+          '<div class="gm-place-rows">' +
+          '<div class="gm-place-row"><span class="gm-place-row-ic">📍</span><div>' +
+          escHtml(pin.area || "") +
+          "<br><span style=\"color:#70757a;font-size:12px;\">緯度 " +
+          pin.lat.toFixed(5) +
+          " · 経度 " +
+          pin.lng.toFixed(5) +
+          "</span></div></div>" +
+          (pin.meta ? '<div class="gm-place-row"><span class="gm-place-row-ic">ⓘ</span><div>' + escHtml(pin.meta) + "</div></div>" : "") +
+          '<div class="gm-place-row"><span class="gm-place-row-ic">📄</span><div>' +
+          bodyHtml +
+          "</div></div>" +
+          reviewBlock +
+          "</div>" +
+          '<div class="gm-place-suggest" tabindex="0">情報の修正を提案</div></div>'
+        );
+      }
+
+      function wirePlacePanel(pin) {
+        var panel = document.getElementById("gmPlacePanel");
+        var c1 = panel.querySelector("#gmPlacePanelClose");
+        var c2 = panel.querySelector("#gmPlaceBackSearch");
+        function shut() {
+          closePlaceDetail();
+        }
+        if (c1) c1.addEventListener("click", shut);
+        if (c2)
+          c2.addEventListener("click", function () {
+            document.getElementById("searchInput").value = pin.title;
+            shut();
+          });
+      }
+
+      function openPlaceDetail(pin) {
+        closeMapPopup();
+        closePlaceDetail();
+        setPinSelected(pin.id);
+        var panel = document.getElementById("gmPlacePanel");
+        panel.innerHTML = buildPlacePanelHtml(pin);
+        panel.classList.add("is-open");
+        panel.setAttribute("aria-hidden", "false");
+        wirePlacePanel(pin);
       }
 
       function labelEl(r) {
@@ -488,65 +993,39 @@
         return d;
       }
 
-      function popupHtml(pin) {
-        var hasCoord = !!localStorage.getItem(STATE_KEY);
-        var closeBtn = '<button type="button" class="close-x" aria-label="閉じる">×</button>';
-        if (pin.category === "unknown") {
-          var inner =
-            closeBtn +
-            '<div class="ptitle">' +
-            pin.title +
-            "</div>" +
-            '<div class="pmeta">' +
-            (pin.meta || "") +
-            " / " +
-            pin.area +
-            "</div>" +
-            '<div class="pbody">' +
-            pin.body +
-            (hasCoord ? "<br><br>" + pin.revealNote + '<br><span class="reviewer">撮影: ' + pin.dateAfterCoord + "</span>" : "") +
-            "</div>" +
-            '<img src="' +
-            (hasCoord ? pin.imgAfterCoord : pin.imgInitial) +
-            '" alt="">';
-          if (hasCoord) {
-            inner +=
-              '<div class="review" style="border-color:#cfc4a8;"><strong>※ ノートの最初のページ</strong><br>' +
-              "「学校では透明人間みたいだった。先生も気づかない。パパもママも仕事で話せない。でも水辺の丘に行くと、なんか空気が違う。絵を描くと、ここだけは本物な気がする。」<br>" +
-              '<span class="reviewer">— 9月の日記</span></div>';
-          }
-          return inner;
-        }
-        var stars = pin.rating
-          ? '<span class="stars">' + "★".repeat(Math.round(pin.rating)) + "☆".repeat(5 - Math.round(pin.rating)) + "</span> " + pin.rating.toFixed(1)
-          : "";
-        var inner =
-          closeBtn + '<div class="ptitle">' + pin.title + "</div>" + '<div class="pmeta">' + pin.area + (stars ? " / " + stars : "") + "</div>" + '<div class="pbody">' + (pin.body || "") + "</div>";
-        if (pin.review) {
-          inner += '<div class="review">「' + pin.review + '」<div class="reviewer">— ' + (pin.reviewer || "name_neko") + "</div></div>";
-        }
-        return inner;
-      }
-
       function wirePopupClose(popup) {
         popup.on("open", function () {
           var root = popup.getElement();
           if (!root) return;
-          var btn = root.querySelector(".close-x");
+          var btn = root.querySelector(".maplibregl-popup-close-button");
           if (btn) {
-            btn.addEventListener("click", function (e) {
-              e.preventDefault();
-              popup.remove();
-            });
+            btn.addEventListener(
+              "click",
+              function () {
+                closeMapPopup();
+              },
+              { once: true }
+            );
           }
         });
       }
 
-      function openPinPopup(pin) {
-        var popup = new maplibregl.Popup({ offset: 28, maxWidth: "320px", className: "gm-map-popup" })
-          .setLngLat([pin.lng, pin.lat])
-          .setHTML(popupHtml(pin))
+      function openUserMapPopup(lng, lat, html) {
+        closeMapPopup();
+        var popup = new maplibregl.Popup({
+          offset: 28,
+          maxWidth: "320px",
+          className: "gm-map-popup",
+          closeButton: true,
+          closeOnClick: true,
+        })
+          .setLngLat([lng, lat])
+          .setHTML(html)
           .addTo(map);
+        activeMapPopup = popup;
+        popup.on("close", function () {
+          activeMapPopup = null;
+        });
         wirePopupClose(popup);
       }
 
@@ -570,17 +1049,33 @@
       }
 
       function latLngToResult(lat, lng) {
-        if (Math.abs(lat - ANSWER_LAT) < 0.012 && Math.abs(lng - ANSWER_LNG) < 0.012) {
+        if (Math.abs(lat - ANSWER_LAT) < 0.008 && Math.abs(lng - ANSWER_LNG) < 0.008) {
           return { lat: ANSWER_LAT, lng: ANSWER_LNG, isAnswer: true };
         }
-        var clampLat = Math.max(35.35, Math.min(35.48, lat));
-        var clampLng = Math.max(138.86, Math.min(139.06, lng));
-        return { lat: clampLat, lng: clampLng, isAnswer: false };
+        if (lat >= 36.0 && lat <= 36.14 && lng >= 138.05 && lng <= 138.22) {
+          return {
+            lat: Math.max(36.02, Math.min(36.09, lat)),
+            lng: Math.max(138.08, Math.min(138.16, lng)),
+            isAnswer: false,
+          };
+        }
+        if (lat >= 35.35 && lat <= 35.48 && lng >= 138.86 && lng <= 139.06) {
+          return {
+            lat: Math.max(35.35, Math.min(35.48, lat)),
+            lng: Math.max(138.86, Math.min(139.06, lng)),
+            isAnswer: false,
+          };
+        }
+        return { lat: lat, lng: lng, isAnswer: false };
       }
 
       function placeUserPinAtLatLng(lat, lng) {
+        if (SWEETS_THREAD_MODE) {
+          window.alert("スイーツスレ表示では座標ピンは利用できません。");
+          return;
+        }
         if (isNaN(lat) || isNaN(lng)) {
-          window.alert("緯度,経度の形式で入力してください（例: 35.42, 138.91）");
+          window.alert("緯度,経度の形式で入力してください（例: 36.052, 138.118）");
           return;
         }
         var p = latLngToResult(lat, lng);
@@ -592,19 +1087,21 @@
             var unk = PIN_DATA.find(function (d) {
               return d.id === "unknown";
             });
-            if (unk) openPinPopup(unk);
+            if (unk) openPlaceDetail(unk);
           }, 900);
         }
       }
 
       function renderMarkers() {
         clearPinMarkers();
+        closePlaceDetail();
+        if (SWEETS_THREAD_MODE) return;
         PIN_DATA.forEach(function (p) {
           var el = pinEl(p.category);
-          var mk = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat([p.lng, p.lat]).addTo(map);
+          var mk = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([p.lng, p.lat]).addTo(map);
           el.addEventListener("click", function (e) {
             e.stopPropagation();
-            openPinPopup(p);
+            openPlaceDetail(p);
           });
           pinMarkers.push(mk);
           markerIndex[p.id] = mk;
@@ -620,26 +1117,25 @@
           return;
         }
         var uel = pinEl("user");
-        userMarker = new maplibregl.Marker({ element: uel, anchor: "bottom" }).setLngLat([ulng, ulat]).addTo(map);
+        userMarker = new maplibregl.Marker({ element: uel, anchor: "center" }).setLngLat([ulng, ulat]).addTo(map);
         uel.addEventListener("click", function (e) {
           e.stopPropagation();
-          var popup = new maplibregl.Popup({ offset: 28, className: "gm-map-popup" })
-            .setLngLat([ulng, ulat])
-            .setHTML(
-              '<button type="button" class="close-x" aria-label="閉じる">×</button><div class="ptitle">入力した地点</div><div class="pmeta">ユーザ投稿</div><div class="pbody">あなたが地図に立てたピン。</div>'
-            )
-            .addTo(map);
-          wirePopupClose(popup);
+          openUserMapPopup(
+            ulng,
+            ulat,
+            '<div class="ptitle">入力した地点</div><div class="pmeta">ユーザ投稿</div><div class="pbody">あなたが地図に立てたピン。</div>'
+          );
         });
       }
 
       var FICTION_EXTRA_LABELS = [
-        { name: "水辺の丘", sub: "杜川上流", lat: 35.4275, lng: 138.903 },
-        { name: "杜川", sub: "— 作品内河川 —", lat: 35.438, lng: 138.985 },
+        { name: "水辺の丘", sub: "杜川上流", lat: 36.0541, lng: 138.1148 },
+        { name: "杜川", sub: "— 作品内河川 —", lat: 36.0512, lng: 138.122 },
       ];
 
       function refreshFictionLabels() {
         clearLabels();
+        if (SWEETS_THREAD_MODE) return;
         if (!map || !map.isStyleLoaded()) return;
         var z = map.getZoom();
         if (z < 12) return;
@@ -660,9 +1156,9 @@
 
       function flyToPin(pin, openPop) {
         map.flyTo({ center: [pin.lng, pin.lat], zoom: 16, essential: true });
-        if (openPop) {
+        if (openPop && !SWEETS_THREAD_MODE) {
           setTimeout(function () {
-            openPinPopup(pin);
+            openPlaceDetail(pin);
           }, 650);
         }
       }
@@ -812,6 +1308,10 @@
           runSearchQuery(q);
           return;
         }
+        if (SWEETS_THREAD_MODE) {
+          map.jumpTo({ center: [JAPAN_OVERVIEW.lng, JAPAN_OVERVIEW.lat], zoom: JAPAN_OVERVIEW.zoom });
+          return;
+        }
         var focus = (u.searchParams.get("focus") || u.searchParams.get("f") || "").toLowerCase();
         if (focus === "kasumi" || focus === "kanomori") {
           var K = REGION.kasumi;
@@ -832,10 +1332,10 @@
           var unk = PIN_DATA.find(function (d) {
             return d.id === "unknown";
           });
-          if (unk) {
+          if (unk && !SWEETS_THREAD_MODE) {
             map.flyTo({ center: [unk.lng, unk.lat], zoom: 17, essential: true });
             setTimeout(function () {
-              openPinPopup(unk);
+              openPlaceDetail(unk);
             }, 900);
           }
           return;
@@ -852,7 +1352,8 @@
           map.flyTo({ center: [R.lng, R.lat], zoom: R.flyZoom, essential: true });
           return;
         }
-        map.jumpTo({ center: [FICTION_OVERVIEW.lng, FICTION_OVERVIEW.lat], zoom: FICTION_OVERVIEW.zoom });
+        var ov = SWEETS_THREAD_MODE ? JAPAN_OVERVIEW : FICTION_OVERVIEW;
+        map.jumpTo({ center: [ov.lng, ov.lat], zoom: ov.zoom });
       }
 
       function bindUi() {
@@ -866,24 +1367,51 @@
           e.preventDefault();
           runSearchFromInput();
         });
+        var menuBtn = document.getElementById("gmMenuBtn");
+        if (menuBtn) {
+          menuBtn.addEventListener("click", function () {
+            var inp = document.getElementById("searchInput");
+            if (inp) inp.focus();
+          });
+        }
         document.getElementById("coordBtn").addEventListener("click", function () {
-          var s = window.prompt("緯度, 経度を入力してください（例: 35.42, 138.91）");
+          if (SWEETS_THREAD_MODE) {
+            window.alert("スイーツスレ表示では座標ピンは利用できません。");
+            return;
+          }
+          var s = window.prompt("緯度, 経度を入力してください（例: 36.052, 138.118）");
           if (!s) return;
           var p = s.split(",");
           placeUserPinAtLatLng(parseFloat(p[0]), parseFloat(p[1]));
         });
+        var sp = document.getElementById("sidepanel");
+        var spClose = document.getElementById("sidepanelCloseBtn");
+        var spReopen = document.getElementById("sidepanelReopenBtn");
+        if (spClose && sp) {
+          spClose.addEventListener("click", function () {
+            sp.classList.add("sidepanel--dismissed");
+            if (spReopen && !SWEETS_THREAD_MODE) spReopen.classList.add("is-visible");
+          });
+        }
+        if (spReopen && sp) {
+          spReopen.addEventListener("click", function () {
+            sp.classList.remove("sidepanel--dismissed");
+            spReopen.classList.remove("is-visible");
+          });
+        }
       }
 
       function initMap() {
+        var ov = SWEETS_THREAD_MODE ? JAPAN_OVERVIEW : FICTION_OVERVIEW;
         map = new maplibregl.Map({
           container: "map",
           style: BASEMAP_STYLE_URL,
-          center: [FICTION_OVERVIEW.lng, FICTION_OVERVIEW.lat],
-          zoom: FICTION_OVERVIEW.zoom,
+          center: [ov.lng, ov.lat],
+          zoom: ov.zoom,
           attributionControl: true,
           maxBounds: [
-            [134.8, 33.2],
-            [143.2, 39.2],
+            [122, 20],
+            [154, 48],
           ],
         });
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
@@ -894,12 +1422,26 @@
 
         map.on("load", function () {
           suppressBasemapSymbols();
+          var placePanel = document.getElementById("gmPlacePanel");
+          if (placePanel) {
+            placePanel.addEventListener(
+              "mousedown",
+              function (ev) {
+                ev.stopPropagation();
+              },
+              true
+            );
+          }
           renderMarkers();
           renderSidebar("all");
           fillRegionList();
           bindUi();
           parseUrlAndApply();
           refreshFictionLabels();
+          map.on("click", function () {
+            closePlaceDetail();
+            closeMapPopup();
+          });
           setTimeout(function () {
             map.resize();
           }, 80);
