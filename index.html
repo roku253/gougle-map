@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gougle Map</title>
   <!--
-    下層: OpenStreetMap（実在の地形・地名が表示されます）。
-    物語エリア: 半透明マスクで実表示を薄くし、その上に架空の地形・道路レイヤと自作ラベルで上書きします。
+    下層: OpenFreeMap（OSM ベクトル・MapLibre Style Spec）。symbol レイヤーを無効化し地名・POI 記号・道路上の文字のみ消す。
+    物語用の地名ラベルは HTML マーカーのみ（架空ポリゴンは表示しない）。
     初期表示: ?entry=urban-legend-board | ?from=board ほか ?focus= ?q= ?lat=&lng=&z=
   -->
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" crossorigin="" />
@@ -367,7 +367,7 @@
         <div class="sp-h">
           <h1>みんなのスイーツ&コンビニMAP</h1>
           <p>
-            <strong>下層</strong>は OpenStreetMap（実在の地名・地形）。<strong>中央付近</strong>だけマスクで薄くしたうえで、作品内の架空の市街地・河川・道路を重ねています。ズームアウトすると周辺の実地図とつながって見えます。
+            <strong>下層</strong>は実在の OpenStreetMap データ由来のベクトル地図です。地名や店舗記号などの <strong>文字・記号だけ</strong>を消してあり、地形・道路・水域などの線画はそのままです。作品内の地名はピン近くのラベルのみ表示されます。
           </p>
         </div>
         <div class="sp-tab-row">
@@ -403,434 +403,25 @@
       var ANSWER_LNG = 138.91;
       var STATE_KEY = "gougle_map_coord_pin_v3";
 
-      /** 初期カメラ: 実地図の文脈が見える広さ（山梨付近）。物語オーバーレイは同じ座標系。 */
+      /** 初期カメラ: 山梨〜静岡周辺が見える広さ。ピン・自作ラベルは同じ座標系。 */
       var FICTION_OVERVIEW = { lat: 35.45, lng: 138.82, zoom: 9.15 };
 
-      function fictionGeoJSON() {
-        var ring = function (pts) {
-          var a = pts.slice();
-          if (a[0][0] !== a[a.length - 1][0] || a[0][1] !== a[a.length - 1][1]) a.push(a[0]);
-          return a;
-        };
-        var F = function (kind, geom) {
-          return { type: "Feature", properties: { kind: kind }, geometry: geom };
-        };
-        var L = function (kind, coords) {
-          return F(kind, { type: "LineString", coordinates: coords });
-        };
-        var P = function (kind, ringCoords) {
-          return F(kind, { type: "Polygon", coordinates: [ring(ringCoords)] });
-        };
-        var features = [];
-        features.push(
-          P("forest", [
-            [138.848, 35.432],
-            [138.9, 35.452],
-            [138.965, 35.445],
-            [138.99, 35.405],
-            [138.945, 35.378],
-            [138.88, 35.392],
-            [138.848, 35.432],
-          ])
-        );
-        features.push(
-          P("field", [
-            [138.872, 35.472],
-            [138.925, 35.488],
-            [138.96, 35.465],
-            [138.915, 35.452],
-            [138.872, 35.472],
-          ])
-        );
-        features.push(
-          P("field", [
-            [139.015, 35.465],
-            [139.055, 35.478],
-            [139.06, 35.452],
-            [139.02, 35.442],
-            [139.015, 35.465],
-          ])
-        );
-        features.push(
-          P("park", [
-            [139.008, 35.404],
-            [139.026, 35.404],
-            [139.026, 35.418],
-            [139.008, 35.418],
-            [139.008, 35.404],
-          ])
-        );
-        features.push(
-          P("park", [
-            [138.968, 35.418],
-            [138.992, 35.418],
-            [138.99, 35.436],
-            [138.965, 35.432],
-            [138.968, 35.418],
-          ])
-        );
-        features.push(
-          P("urban", [
-            [139.002, 35.398],
-            [139.032, 35.398],
-            [139.032, 35.424],
-            [139.002, 35.424],
-            [139.002, 35.398],
-          ])
-        );
-        features.push(
-          P("urban", [
-            [138.956, 35.41],
-            [139.002, 35.41],
-            [139.002, 35.442],
-            [138.956, 35.442],
-            [138.956, 35.41],
-          ])
-        );
-        features.push(
-          P("urban", [
-            [138.89, 35.396],
-            [138.936, 35.396],
-            [138.938, 35.432],
-            [138.888, 35.434],
-            [138.882, 35.412],
-            [138.89, 35.396],
-          ])
-        );
-        features.push(
-          P("water", [
-            [138.898, 35.422],
-            [138.918, 35.418],
-            [138.922, 35.432],
-            [138.902, 35.436],
-            [138.894, 35.428],
-            [138.898, 35.422],
-          ])
-        );
-        features.push(
-          L("river_line", [
-            [138.888, 35.408],
-            [138.925, 35.418],
-            [138.965, 35.422],
-            [139.005, 35.428],
-            [139.038, 35.438],
-            [139.055, 35.452],
-          ])
-        );
-        features.push(
-          L("rail", [
-            [138.878, 35.488],
-            [138.94, 35.472],
-            [139.02, 35.458],
-            [139.055, 35.448],
-          ])
-        );
-        features.push(
-          L("rail", [
-            [138.995, 35.405],
-            [139.008, 35.452],
-            [139.012, 35.485],
-          ])
-        );
-        features.push(
-          L("road_p", [
-            [138.908, 35.365],
-            [138.928, 35.495],
-          ])
-        );
-        features.push(
-          L("road_p", [
-            [138.855, 35.448],
-            [139.075, 35.418],
-          ])
-        );
-        features.push(
-          L("road_l", [
-            [139.006, 35.402],
-            [139.006, 35.422],
-          ])
-        );
-        features.push(
-          L("road_l", [
-            [139.018, 35.402],
-            [139.018, 35.422],
-          ])
-        );
-        features.push(
-          L("road_l", [
-            [139.01, 35.406],
-            [139.028, 35.406],
-          ])
-        );
-        features.push(
-          L("road_l", [
-            [139.01, 35.414],
-            [139.028, 35.414],
-          ])
-        );
-        features.push(
-          L("road_l", [
-            [138.965, 35.414],
-            [138.995, 35.414],
-          ])
-        );
-        features.push(
-          L("road_l", [
-            [138.965, 35.422],
-            [138.995, 35.422],
-          ])
-        );
-        features.push(
-          L("road_l", [
-            [138.965, 35.43],
-            [138.995, 35.43],
-          ])
-        );
-        features.push(
-          L("road_l", [
-            [138.9, 35.404],
-            [138.9, 35.428],
-          ])
-        );
-        features.push(
-          L("road_l", [
-            [138.912, 35.404],
-            [138.912, 35.428],
-          ])
-        );
-        features.push(
-          L("road_l", [
-            [138.924, 35.404],
-            [138.924, 35.428],
-          ])
-        );
-        features.push(
-          L("contour", [
-            [138.87, 35.44],
-            [138.95, 35.425],
-            [139.04, 35.432],
-          ])
-        );
-        features.push(
-          L("contour", [
-            [138.88, 35.455],
-            [138.98, 35.442],
-            [139.06, 35.448],
-          ])
-        );
-        features.push(
-          L("contour", [
-            [138.9, 35.468],
-            [139.02, 35.458],
-          ])
-        );
-        return { type: "FeatureCollection", features: features };
-      }
+      /** OpenFreeMap Liberty（OSM ベクトル・MapLibre Style Spec）。 */
+      var BASEMAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
 
-      /** 実タイル上の実地名を薄く隠し、架空レイヤへ自然につなぐ段階マスク（外ほど透明） */
-      function fictionMaskGeoJSON() {
-        var ring = function (pts) {
-          var a = pts.slice();
-          if (a[0][0] !== a[a.length - 1][0] || a[0][1] !== a[a.length - 1][1]) a.push(a[0]);
-          return a;
-        };
-        var M = function (kind, pts) {
-          return {
-            type: "Feature",
-            properties: { kind: kind },
-            geometry: { type: "Polygon", coordinates: [ring(pts)] },
-          };
-        };
-        return {
-          type: "FeatureCollection",
-          features: [
-            M("mask_wash", [
-              [138.62, 35.28],
-              [139.42, 35.28],
-              [139.46, 35.6],
-              [138.58, 35.6],
-              [138.62, 35.28],
-            ]),
-            M("mask_mist", [
-              [138.74, 35.34],
-              [139.28, 35.34],
-              [139.32, 35.54],
-              [138.7, 35.54],
-              [138.74, 35.34],
-            ]),
-            M("mask_veil", [
-              [138.82, 35.365],
-              [139.16, 35.365],
-              [139.18, 35.515],
-              [138.8, 35.515],
-              [138.82, 35.365],
-            ]),
-            M("mask_core", [
-              [138.862, 35.382],
-              [139.07, 35.378],
-              [139.085, 35.418],
-              [139.068, 35.472],
-              [139.012, 35.498],
-              [138.942, 35.502],
-              [138.878, 35.48],
-              [138.842, 35.432],
-              [138.848, 35.392],
-              [138.862, 35.382],
-            ]),
-          ],
-        };
-      }
-
-      function buildHybridStyle() {
-        var maskColor = "#ebe8e0";
-        return {
-          version: 8,
-          name: "kasumi-hybrid",
-          center: [FICTION_OVERVIEW.lng, FICTION_OVERVIEW.lat],
-          zoom: FICTION_OVERVIEW.zoom,
-          sources: {
-            osm: {
-              type: "raster",
-              tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-              tileSize: 256,
-              attribution:
-                '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
-            },
-            masks: {
-              type: "geojson",
-              data: fictionMaskGeoJSON(),
-              attribution: "物語エリア上書き（架空データ）",
-            },
-            fiction: {
-              type: "geojson",
-              data: fictionGeoJSON(),
-            },
-          },
-          layers: [
-            {
-              id: "osm-basemap",
-              type: "raster",
-              source: "osm",
-              minzoom: 0,
-              maxzoom: 19,
-            },
-            {
-              id: "mask-wash",
-              type: "fill",
-              source: "masks",
-              filter: ["==", ["get", "kind"], "mask_wash"],
-              paint: { "fill-color": maskColor, "fill-opacity": 0.07 },
-            },
-            {
-              id: "mask-mist",
-              type: "fill",
-              source: "masks",
-              filter: ["==", ["get", "kind"], "mask_mist"],
-              paint: { "fill-color": maskColor, "fill-opacity": 0.14 },
-            },
-            {
-              id: "mask-veil",
-              type: "fill",
-              source: "masks",
-              filter: ["==", ["get", "kind"], "mask_veil"],
-              paint: { "fill-color": maskColor, "fill-opacity": 0.28 },
-            },
-            {
-              id: "mask-core",
-              type: "fill",
-              source: "masks",
-              filter: ["==", ["get", "kind"], "mask_core"],
-              paint: { "fill-color": maskColor, "fill-opacity": 0.62 },
-            },
-            {
-              id: "fill-field",
-              type: "fill",
-              source: "fiction",
-              filter: ["==", ["get", "kind"], "field"],
-              paint: { "fill-color": "#e2e8c4", "fill-opacity": 0.88 },
-            },
-            {
-              id: "fill-forest",
-              type: "fill",
-              source: "fiction",
-              filter: ["==", ["get", "kind"], "forest"],
-              paint: { "fill-color": "#9eb882", "fill-opacity": 0.9 },
-            },
-            {
-              id: "fill-park",
-              type: "fill",
-              source: "fiction",
-              filter: ["==", ["get", "kind"], "park"],
-              paint: { "fill-color": "#b8d4a8", "fill-opacity": 0.9 },
-            },
-            {
-              id: "fill-urban",
-              type: "fill",
-              source: "fiction",
-              filter: ["==", ["get", "kind"], "urban"],
-              paint: { "fill-color": "#ebe6da", "fill-outline-color": "#cfc7b8", "fill-opacity": 0.94 },
-            },
-            {
-              id: "fill-water",
-              type: "fill",
-              source: "fiction",
-              filter: ["==", ["get", "kind"], "water"],
-              paint: { "fill-color": "#6a9ec4", "fill-opacity": 0.85 },
-            },
-            {
-              id: "line-river",
-              type: "line",
-              source: "fiction",
-              filter: ["==", ["get", "kind"], "river_line"],
-              layout: { "line-cap": "round", "line-join": "round" },
-              paint: {
-                "line-color": "#4d7fa5",
-                "line-width": ["interpolate", ["linear"], ["zoom"], 9, 2, 12, 4, 16, 9],
-                "line-opacity": 0.9,
-              },
-            },
-            {
-              id: "line-contour",
-              type: "line",
-              source: "fiction",
-              filter: ["==", ["get", "kind"], "contour"],
-              layout: { "line-cap": "round", "line-join": "round" },
-              paint: { "line-color": "#7a9170", "line-width": 0.9, "line-opacity": 0.28 },
-            },
-            {
-              id: "line-rail",
-              type: "line",
-              source: "fiction",
-              filter: ["==", ["get", "kind"], "rail"],
-              layout: { "line-cap": "round", "line-join": "round" },
-              paint: { "line-color": "#5a5f64", "line-width": 2.2, "line-dasharray": [1.2, 1.8] },
-            },
-            {
-              id: "line-road-local",
-              type: "line",
-              source: "fiction",
-              filter: ["==", ["get", "kind"], "road_l"],
-              layout: { "line-cap": "round", "line-join": "round" },
-              paint: {
-                "line-color": "#ffffff",
-                "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1, 14, 2.2, 17, 3.5],
-                "line-opacity": 0.9,
-              },
-            },
-            {
-              id: "line-road-primary",
-              type: "line",
-              source: "fiction",
-              filter: ["==", ["get", "kind"], "road_p"],
-              layout: { "line-cap": "round", "line-join": "round" },
-              paint: {
-                "line-color": "#f2d27a",
-                "line-width": ["interpolate", ["linear"], ["zoom"], 9, 2.5, 13, 5, 17, 9],
-                "line-opacity": 1,
-              },
-            },
-          ],
-        };
+      /** 地名・道路上の文字・POI アイコン等（type: symbol）を消す。fill / line の地形は残す。 */
+      function suppressBasemapSymbols() {
+        if (!map || typeof map.getStyle !== "function") return;
+        var st = map.getStyle();
+        if (!st || !st.layers) return;
+        st.layers.forEach(function (layer) {
+          if (layer.type !== "symbol") return;
+          try {
+            map.setLayoutProperty(layer.id, "visibility", "none");
+          } catch (e) {
+            /* 未初期化レイヤー等 */
+          }
+        });
       }
 
       var REGION = {
@@ -1286,7 +877,7 @@
       function initMap() {
         map = new maplibregl.Map({
           container: "map",
-          style: buildHybridStyle(),
+          style: BASEMAP_STYLE_URL,
           center: [FICTION_OVERVIEW.lng, FICTION_OVERVIEW.lat],
           zoom: FICTION_OVERVIEW.zoom,
           attributionControl: true,
@@ -1297,7 +888,12 @@
         });
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
 
+        map.on("style.load", function () {
+          suppressBasemapSymbols();
+        });
+
         map.on("load", function () {
+          suppressBasemapSymbols();
           renderMarkers();
           renderSidebar("all");
           fillRegionList();
