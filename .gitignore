@@ -1,1 +1,6 @@
 .DS_Store
+data/osm-raw.geojson
+data/osm-derived.geojson
+data/*.mbtiles
+data/*.pmtiles
+tools/rename-rules.json

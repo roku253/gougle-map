@@ -1,0 +1,10 @@
+{
+  "name": "gougle-map",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "fetch:osm": "node tools/fetch-overpass.mjs",
+    "process:osm": "node tools/process-osm-for-fiction.mjs",
+    "osm:pipeline": "node tools/fetch-overpass.mjs && node tools/process-osm-for-fiction.mjs"
+  }
+}

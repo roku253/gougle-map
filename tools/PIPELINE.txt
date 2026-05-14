@@ -1,0 +1,45 @@
+================================================================================
+OSM ベクタ → 読んで加工 → 再配信（PMTiles 等）までの流れ
+================================================================================
+
+1) このリポジトリで OSM を取得（Overpass → GeoJSON）
+
+   cd gougle-map
+   npm run fetch:osm
+
+   出力: data/osm-raw.geojson
+
+   重いデータが欲しい場合:
+   node tools/fetch-overpass.mjs --full
+
+
+2) 物語コア内の name を差し替え
+
+   tools/rename-rules.json を編集（無い場合は初回 process で example がコピーされる）
+
+   npm run process:osm
+
+   出力: data/osm-derived.geojson
+
+
+3) ベクタタイル化（ローカルに Tippecanoe / PMTiles ツールが必要）
+
+   # 例: mbtiles 作成
+   tippecanoe -o data/kasumi.mbtiles -L osm:data/osm-derived.geojson \
+     --force --drop-densest-as-needed --extend-zooms-if-still-dropping
+
+   # PMTiles に変換（配信用）
+   pmtiles convert data/kasumi.mbtiles data/kasumi.pmtiles
+
+
+4) 静的サイトから配信
+
+   - data/kasumi.pmtiles を GitHub Release やオブジェクトストレージに置く
+   - index.html の MapLibre に pmtiles プロトコルで source 追加（別途実装）
+
+
+注意
+----
+- Overpass は負荷に弱いので連打しない。取得失敗時は時間を空けて再試行。
+- osm-raw は容量が大きくなり得るため .gitignore 推奨。
+- ODbL に従い、派生データの帰属・同一許諾条件を表示すること。
