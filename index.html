@@ -194,31 +194,6 @@
       font-size: 18px !important;
     }
 
-    .layers-card {
-      position: absolute;
-      left: 16px;
-      bottom: 22px;
-      z-index: 100;
-      width: 76px;
-      height: 76px;
-      border: 2px solid #fff;
-      border-radius: 10px;
-      cursor: pointer;
-      background:
-        linear-gradient(135deg, rgba(120, 181, 115, 0.9) 0 45%, rgba(165, 202, 233, 0.9) 45% 60%, rgba(245, 245, 245, 0.95) 60%),
-        #fff;
-      box-shadow: 0 1px 6px rgba(60, 64, 67, 0.35);
-      color: #fff;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
-      font-size: 11px;
-      font-weight: 600;
-      display: flex;
-      align-items: flex-end;
-      padding: 7px;
-      pointer-events: auto;
-    }
-    .layers-card.sat { filter: saturate(1.15); }
-
     /* カスタムピン（MapLibre Marker 用） */
     .gm-pin {
       width: 30px;
@@ -323,7 +298,6 @@
         width: auto;
         max-height: 38vh;
       }
-      .layers-card { display: none; }
     }
 
     .ns-denied-overlay {
@@ -391,7 +365,7 @@
       <aside class="sidepanel">
         <div class="sp-h">
           <h1>みんなのスイーツ&コンビニMAP</h1>
-          <p>地名・店名はフィクション。地図は <strong>OpenFreeMap（ベクター）</strong>／航空写真は Esri。ズーム・ドラッグは地図面で操作。</p>
+          <p>地名・地形・道路はすべて<strong>作品内の架空データ</strong>です。実在の国や自治体とは無関係です。</p>
         </div>
         <div class="sp-tab-row">
           <div class="sp-tab active" data-tab="all">全部</div>
@@ -416,7 +390,6 @@
         </div>
       </aside>
 
-      <div class="layers-card" id="layerToggle" title="地図表示を切り替え">地図</div>
     </div>
   </div>
 
@@ -427,29 +400,358 @@
       var ANSWER_LNG = 138.91;
       var STATE_KEY = "gougle_map_coord_pin_v3";
 
-      var STYLE_STREET = "https://tiles.openfreemap.org/styles/liberty";
-      var STYLE_SAT = {
-        version: 8,
-        sources: {
-          esri: {
-            type: "raster",
-            tiles: [
-              "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-            ],
-            tileSize: 256,
-            attribution: "Imagery © Esri — 日本上の表示は実景。地名は検索ピンがフィクション。",
+      /** 架空列島全体が入る初期カメラ（実在の日本列島とは無関係） */
+      var FICTION_OVERVIEW = { lat: 35.418, lng: 138.978, zoom: 8.85 };
+
+      function fictionGeoJSON() {
+        var ring = function (pts) {
+          var a = pts.slice();
+          if (a[0][0] !== a[a.length - 1][0] || a[0][1] !== a[a.length - 1][1]) a.push(a[0]);
+          return a;
+        };
+        var F = function (kind, geom) {
+          return { type: "Feature", properties: { kind: kind }, geometry: geom };
+        };
+        var L = function (kind, coords) {
+          return F(kind, { type: "LineString", coordinates: coords });
+        };
+        var P = function (kind, ringCoords) {
+          return F(kind, { type: "Polygon", coordinates: [ring(ringCoords)] });
+        };
+        var features = [];
+        features.push(
+          P("coast", [
+            [138.862, 35.382],
+            [139.07, 35.378],
+            [139.085, 35.418],
+            [139.068, 35.472],
+            [139.012, 35.498],
+            [138.942, 35.502],
+            [138.878, 35.48],
+            [138.842, 35.432],
+            [138.848, 35.392],
+            [138.862, 35.382],
+          ])
+        );
+        features.push(
+          P("forest", [
+            [138.848, 35.432],
+            [138.9, 35.452],
+            [138.965, 35.445],
+            [138.99, 35.405],
+            [138.945, 35.378],
+            [138.88, 35.392],
+            [138.848, 35.432],
+          ])
+        );
+        features.push(
+          P("field", [
+            [138.872, 35.472],
+            [138.925, 35.488],
+            [138.96, 35.465],
+            [138.915, 35.452],
+            [138.872, 35.472],
+          ])
+        );
+        features.push(
+          P("field", [
+            [139.015, 35.465],
+            [139.055, 35.478],
+            [139.06, 35.452],
+            [139.02, 35.442],
+            [139.015, 35.465],
+          ])
+        );
+        features.push(
+          P("park", [
+            [139.008, 35.404],
+            [139.026, 35.404],
+            [139.026, 35.418],
+            [139.008, 35.418],
+            [139.008, 35.404],
+          ])
+        );
+        features.push(
+          P("park", [
+            [138.968, 35.418],
+            [138.992, 35.418],
+            [138.99, 35.436],
+            [138.965, 35.432],
+            [138.968, 35.418],
+          ])
+        );
+        features.push(
+          P("urban", [
+            [139.002, 35.398],
+            [139.032, 35.398],
+            [139.032, 35.424],
+            [139.002, 35.424],
+            [139.002, 35.398],
+          ])
+        );
+        features.push(
+          P("urban", [
+            [138.956, 35.41],
+            [139.002, 35.41],
+            [139.002, 35.442],
+            [138.956, 35.442],
+            [138.956, 35.41],
+          ])
+        );
+        features.push(
+          P("urban", [
+            [138.89, 35.396],
+            [138.936, 35.396],
+            [138.938, 35.432],
+            [138.888, 35.434],
+            [138.882, 35.412],
+            [138.89, 35.396],
+          ])
+        );
+        features.push(
+          P("water", [
+            [138.898, 35.422],
+            [138.918, 35.418],
+            [138.922, 35.432],
+            [138.902, 35.436],
+            [138.894, 35.428],
+            [138.898, 35.422],
+          ])
+        );
+        features.push(
+          L("river_line", [
+            [138.888, 35.408],
+            [138.925, 35.418],
+            [138.965, 35.422],
+            [139.005, 35.428],
+            [139.038, 35.438],
+            [139.055, 35.452],
+          ])
+        );
+        features.push(
+          L("rail", [
+            [138.878, 35.488],
+            [138.94, 35.472],
+            [139.02, 35.458],
+            [139.055, 35.448],
+          ])
+        );
+        features.push(
+          L("rail", [
+            [138.995, 35.405],
+            [139.008, 35.452],
+            [139.012, 35.485],
+          ])
+        );
+        features.push(
+          L("road_p", [
+            [138.908, 35.365],
+            [138.928, 35.495],
+          ])
+        );
+        features.push(
+          L("road_p", [
+            [138.855, 35.448],
+            [139.075, 35.418],
+          ])
+        );
+        features.push(
+          L("road_l", [
+            [139.006, 35.402],
+            [139.006, 35.422],
+          ])
+        );
+        features.push(
+          L("road_l", [
+            [139.018, 35.402],
+            [139.018, 35.422],
+          ])
+        );
+        features.push(
+          L("road_l", [
+            [139.01, 35.406],
+            [139.028, 35.406],
+          ])
+        );
+        features.push(
+          L("road_l", [
+            [139.01, 35.414],
+            [139.028, 35.414],
+          ])
+        );
+        features.push(
+          L("road_l", [
+            [138.965, 35.414],
+            [138.995, 35.414],
+          ])
+        );
+        features.push(
+          L("road_l", [
+            [138.965, 35.422],
+            [138.995, 35.422],
+          ])
+        );
+        features.push(
+          L("road_l", [
+            [138.965, 35.43],
+            [138.995, 35.43],
+          ])
+        );
+        features.push(
+          L("road_l", [
+            [138.9, 35.404],
+            [138.9, 35.428],
+          ])
+        );
+        features.push(
+          L("road_l", [
+            [138.912, 35.404],
+            [138.912, 35.428],
+          ])
+        );
+        features.push(
+          L("road_l", [
+            [138.924, 35.404],
+            [138.924, 35.428],
+          ])
+        );
+        features.push(
+          L("contour", [
+            [138.87, 35.44],
+            [138.95, 35.425],
+            [139.04, 35.432],
+          ])
+        );
+        features.push(
+          L("contour", [
+            [138.88, 35.455],
+            [138.98, 35.442],
+            [139.06, 35.448],
+          ])
+        );
+        features.push(
+          L("contour", [
+            [138.9, 35.468],
+            [139.02, 35.458],
+          ])
+        );
+        return { type: "FeatureCollection", features: features };
+      }
+
+      function buildFictionStyle() {
+        return {
+          version: 8,
+          name: "kasumi-fiction",
+          center: [FICTION_OVERVIEW.lng, FICTION_OVERVIEW.lat],
+          zoom: FICTION_OVERVIEW.zoom,
+          sources: {
+            fiction: { type: "geojson", data: fictionGeoJSON(), attribution: "架空地図（作品内）" },
           },
-        },
-        layers: [{ id: "esri", type: "raster", source: "esri", minzoom: 0, maxzoom: 22 }],
-      };
+          layers: [
+            { id: "bg", type: "background", paint: { "background-color": "#7a9ab8" } },
+            {
+              id: "fill-coast",
+              type: "fill",
+              source: "fiction",
+              filter: ["==", ["get", "kind"], "coast"],
+              paint: { "fill-color": "#d4e2c8", "fill-outline-color": "#9aaa8e", "fill-opacity": 1 },
+            },
+            {
+              id: "fill-field",
+              type: "fill",
+              source: "fiction",
+              filter: ["==", ["get", "kind"], "field"],
+              paint: { "fill-color": "#e2e8c4", "fill-opacity": 0.9 },
+            },
+            {
+              id: "fill-forest",
+              type: "fill",
+              source: "fiction",
+              filter: ["==", ["get", "kind"], "forest"],
+              paint: { "fill-color": "#9eb882", "fill-opacity": 0.95 },
+            },
+            {
+              id: "fill-park",
+              type: "fill",
+              source: "fiction",
+              filter: ["==", ["get", "kind"], "park"],
+              paint: { "fill-color": "#b8d4a8", "fill-opacity": 0.95 },
+            },
+            {
+              id: "fill-urban",
+              type: "fill",
+              source: "fiction",
+              filter: ["==", ["get", "kind"], "urban"],
+              paint: { "fill-color": "#ebe6da", "fill-outline-color": "#cfc7b8", "fill-opacity": 1 },
+            },
+            {
+              id: "fill-water",
+              type: "fill",
+              source: "fiction",
+              filter: ["==", ["get", "kind"], "water"],
+              paint: { "fill-color": "#6a9ec4", "fill-opacity": 0.88 },
+            },
+            {
+              id: "line-river",
+              type: "line",
+              source: "fiction",
+              filter: ["==", ["get", "kind"], "river_line"],
+              layout: { "line-cap": "round", "line-join": "round" },
+              paint: {
+                "line-color": "#4d7fa5",
+                "line-width": ["interpolate", ["linear"], ["zoom"], 9, 2, 12, 4, 16, 9],
+                "line-opacity": 0.92,
+              },
+            },
+            {
+              id: "line-contour",
+              type: "line",
+              source: "fiction",
+              filter: ["==", ["get", "kind"], "contour"],
+              layout: { "line-cap": "round", "line-join": "round" },
+              paint: { "line-color": "#7a9170", "line-width": 0.9, "line-opacity": 0.32 },
+            },
+            {
+              id: "line-rail",
+              type: "line",
+              source: "fiction",
+              filter: ["==", ["get", "kind"], "rail"],
+              layout: { "line-cap": "round", "line-join": "round" },
+              paint: { "line-color": "#5a5f64", "line-width": 2.2, "line-dasharray": [1.2, 1.8] },
+            },
+            {
+              id: "line-road-local",
+              type: "line",
+              source: "fiction",
+              filter: ["==", ["get", "kind"], "road_l"],
+              layout: { "line-cap": "round", "line-join": "round" },
+              paint: {
+                "line-color": "#ffffff",
+                "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1, 14, 2.2, 17, 3.5],
+                "line-opacity": 0.92,
+              },
+            },
+            {
+              id: "line-road-primary",
+              type: "line",
+              source: "fiction",
+              filter: ["==", ["get", "kind"], "road_p"],
+              layout: { "line-cap": "round", "line-join": "round" },
+              paint: {
+                "line-color": "#f2d27a",
+                "line-width": ["interpolate", ["linear"], ["zoom"], 9, 2.5, 13, 5, 17, 9],
+                "line-opacity": 1,
+              },
+            },
+          ],
+        };
+      }
 
       var REGION = {
         mikazuki: { name: "三日月町", sub: "中心市街地・住宅地", lat: 35.4078, lng: 139.0142, flyZoom: 14 },
         suginami: { name: "杉並ヶ岡", sub: "新興住宅地・商業地区", lat: 35.4255, lng: 138.9775, flyZoom: 14 },
         kasumi: { name: "霞ノ杜", sub: "山あいの旧集落", lat: 35.4175, lng: 138.9038, flyZoom: 14 },
       };
-
-      var JAPAN_VIEW = { lat: 36.2, lng: 137.95, zoom: 5.35 };
 
       var PIN_DATA = [
         { id: "sweets-01", lat: 35.4268, lng: 138.9792, category: "sweets", title: "パティスリー柊", area: "杉並ヶ岡", rating: 4.6, body: "杉並ヶ岡駅東、桜並木の終わり。生菓子はその日限定、夕方には売り切れることが多い。", reviewer: "kasumi_local", review: "焼き菓子の詰め合わせがやばい。地元民の手土産はだいたいここ。" },
@@ -490,7 +792,6 @@
       ];
 
       var map;
-      var useSatellite = false;
       var pinMarkers = [];
       var userMarker = null;
       var labelMarkers = [];
@@ -564,7 +865,7 @@
         });
       }
 
-      function openPinPopup(pin, anchor) {
+      function openPinPopup(pin) {
         var popup = new maplibregl.Popup({ offset: 28, maxWidth: "320px", className: "gm-map-popup" })
           .setLngLat([pin.lng, pin.lat])
           .setHTML(popupHtml(pin))
@@ -655,16 +956,29 @@
         });
       }
 
+      var FICTION_EXTRA_LABELS = [
+        { name: "水辺の丘", sub: "杜川上流", lat: 35.4275, lng: 138.903 },
+        { name: "杜川", sub: "— 作品内河川 —", lat: 35.438, lng: 138.985 },
+      ];
+
       function refreshFictionLabels() {
         clearLabels();
         if (!map || !map.isStyleLoaded()) return;
-        if (map.getZoom() < 12) return;
+        var z = map.getZoom();
+        if (z < 12) return;
         Object.keys(REGION).forEach(function (k) {
           var r = REGION[k];
           var el = labelEl(r);
           var mk = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([r.lng, r.lat]).addTo(map);
           labelMarkers.push(mk);
         });
+        if (z >= 13) {
+          FICTION_EXTRA_LABELS.forEach(function (r) {
+            var el = labelEl(r);
+            var mk = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([r.lng, r.lat]).addTo(map);
+            labelMarkers.push(mk);
+          });
+        }
       }
 
       function flyToPin(pin, openPop) {
@@ -861,7 +1175,7 @@
           map.flyTo({ center: [R.lng, R.lat], zoom: R.flyZoom, essential: true });
           return;
         }
-        map.jumpTo({ center: [JAPAN_VIEW.lng, JAPAN_VIEW.lat], zoom: JAPAN_VIEW.zoom });
+        map.jumpTo({ center: [FICTION_OVERVIEW.lng, FICTION_OVERVIEW.lat], zoom: FICTION_OVERVIEW.zoom });
       }
 
       function bindUi() {
@@ -881,26 +1195,19 @@
           var p = s.split(",");
           placeUserPinAtLatLng(parseFloat(p[0]), parseFloat(p[1]));
         });
-        document.getElementById("layerToggle").addEventListener("click", function () {
-          useSatellite = !useSatellite;
-          var card = document.getElementById("layerToggle");
-          card.textContent = useSatellite ? "航空" : "地図";
-          card.classList.toggle("sat", useSatellite);
-          map.setStyle(useSatellite ? STYLE_SAT : STYLE_STREET);
-          map.once("style.load", function () {
-            renderMarkers();
-            refreshFictionLabels();
-          });
-        });
       }
 
       function initMap() {
         map = new maplibregl.Map({
           container: "map",
-          style: STYLE_STREET,
-          center: [JAPAN_VIEW.lng, JAPAN_VIEW.lat],
-          zoom: JAPAN_VIEW.zoom,
+          style: buildFictionStyle(),
+          center: [FICTION_OVERVIEW.lng, FICTION_OVERVIEW.lat],
+          zoom: FICTION_OVERVIEW.zoom,
           attributionControl: true,
+          maxBounds: [
+            [138.78, 35.32],
+            [139.14, 35.54],
+          ],
         });
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
 
