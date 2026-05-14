@@ -269,6 +269,53 @@
       padding: 0 0 5px;
       pointer-events: auto;
     }
+    .gm-layer-thumb.is-active {
+      outline: 2px solid #1a73e8;
+      outline-offset: 1px;
+    }
+    .gm-layer-sheet {
+      position: absolute;
+      left: 76px;
+      bottom: 92px;
+      z-index: 116;
+      width: min(260px, calc(100vw - 100px));
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #dadce0;
+      box-shadow: 0 2px 10px rgba(32, 33, 36, 0.28);
+      padding: 10px 12px 12px;
+      font-size: 12px;
+      color: #3c4043;
+      line-height: 1.45;
+      display: none;
+      pointer-events: auto;
+    }
+    .gm-layer-sheet.is-open {
+      display: block;
+    }
+    .gm-layer-sheet-h {
+      font-weight: 600;
+      font-size: 13px;
+      color: #202124;
+      margin: 0 0 6px;
+    }
+    .gm-layer-sheet-close {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: #5f6368;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .gm-layer-sheet-close:hover {
+      background: #f1f3f4;
+    }
     .sp-h p { margin: 5px 0 0; font-size: 12px; color: var(--muted); line-height: 1.55; }
     .sp-tab-row { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
     .sp-tab {
@@ -656,7 +703,7 @@
                 <h1>みんなのスイーツ&コンビニMAP</h1>
                 <button type="button" class="sp-h-close" id="sidepanelCloseBtn" aria-label="特集パネルを閉じる">×</button>
               </div>
-              <p>
+              <p id="sidepanelIntro">
                 <strong>下層</strong>は実在の OSM ベクトル地図です（地名・店記号は非表示）。<strong>霞ノ杜町</strong>は長野県付近の座標を物語上の舞台として使用しています。
               </p>
             </div>
@@ -686,7 +733,12 @@
 
           <div id="gmPlacePanel" class="gm-place-panel" aria-hidden="true"></div>
           <button type="button" class="gm-reopen-side" id="sidepanelReopenBtn" aria-label="特集パネルを表示">スイーツMAP</button>
-          <div class="gm-layer-thumb" id="gmLayerThumb" role="button" tabindex="0" title="レイヤ">レイヤ</div>
+          <div class="gm-layer-thumb" id="gmLayerThumb" role="button" tabindex="0" title="レイヤ" aria-expanded="false" aria-controls="gmLayerSheet">レイヤ</div>
+          <div id="gmLayerSheet" class="gm-layer-sheet" role="region" aria-label="レイヤ">
+            <button type="button" class="gm-layer-sheet-close" id="gmLayerSheetClose" aria-label="閉じる">×</button>
+            <div class="gm-layer-sheet-h">地図の表示</div>
+            <div>現在の下層は <strong>OpenFreeMap Liberty</strong>（OSM ベクトル）です。</div>
+          </div>
         </div>
       </div>
     </div>
@@ -799,6 +851,148 @@
       var labelMarkers = [];
       var markerIndex = {};
       var selectedPinId = null;
+      /** 周辺・観光など: これ未満のズームでは POI ピンを隠す（スイーツタブ中の category:sweets のみ常時表示） */
+      var POI_PINS_MIN_ZOOM = 12;
+      var activeListFilter = "all";
+      var markerVisRaf = null;
+      var chromePadRaf = null;
+
+      var INTRO_HTML_ALL =
+        "<strong>下層</strong>は実在の OSM ベクトル地図です（地名・店記号は非表示）。<strong>霞ノ杜町</strong>は長野県付近の座標を物語上の舞台として使用しています。";
+      var INTRO_HTML_SWEETS =
+        "<strong>スイーツ</strong>タブでは、全国のスイーツ店のピンは<strong>ズームアウトしていても</strong>地図に表示されます。霞ノ杜エリアの店はこの一覧からは外しています。<strong>検索</strong>や周辺・観光タブで見つけてください。";
+
+      function isKasumiMapPin(p) {
+        if (!p) return false;
+        if (/霞ノ杜/.test(String(p.title || "")) || /霞ノ杜/.test(String(p.area || ""))) return true;
+        if (typeof p.lat === "number" && typeof p.lng === "number") {
+          return Math.abs(p.lat - KASUMI_LAT) < 0.04 && Math.abs(p.lng - KASUMI_LNG) < 0.04;
+        }
+        return false;
+      }
+
+      function setLayerSheetOpen(open) {
+        var layerSheet = document.getElementById("gmLayerSheet");
+        var layerThumb = document.getElementById("gmLayerThumb");
+        if (!layerSheet || !layerThumb) return;
+        layerSheet.classList.toggle("is-open", !!open);
+        layerThumb.classList.toggle("is-active", !!open);
+        layerThumb.setAttribute("aria-expanded", open ? "true" : "false");
+        scheduleApplyMapChromePadding();
+      }
+
+      function computeMapPadding() {
+        var mapDiv = document.getElementById("map");
+        if (!mapDiv) return { top: 0, right: 0, bottom: 0, left: 0 };
+        var mr = mapDiv.getBoundingClientRect();
+        var pad = { top: 8, right: 52, bottom: 28, left: 8 };
+        var narrow = typeof window.matchMedia === "function" && window.matchMedia("(max-width: 900px)").matches;
+        var place = document.getElementById("gmPlacePanel");
+        var sp = document.getElementById("sidepanel");
+        var sheet = document.getElementById("gmLayerSheet");
+
+        if (place && place.classList.contains("is-open")) {
+          var pr = place.getBoundingClientRect();
+          var overlapL = Math.max(0, pr.right - mr.left);
+          pad.left = Math.max(pad.left, overlapL + 12);
+        } else if (sp && !sp.classList.contains("sidepanel--dismissed")) {
+          var sr = sp.getBoundingClientRect();
+          if (sr.width > 4 && sr.height > 4) {
+            if (narrow) {
+              var overlapB = Math.max(0, mr.bottom - sr.top);
+              pad.bottom = Math.max(pad.bottom, overlapB + 12);
+            } else {
+              var overlapL2 = Math.max(0, sr.right - mr.left);
+              pad.left = Math.max(pad.left, overlapL2 + 12);
+            }
+          }
+        }
+
+        if (sheet && sheet.classList.contains("is-open")) {
+          var lr = sheet.getBoundingClientRect();
+          pad.left = Math.max(pad.left, Math.max(0, lr.right - mr.left) + 10);
+          pad.bottom = Math.max(pad.bottom, Math.max(0, mr.bottom - lr.top) + 10);
+        }
+
+        return pad;
+      }
+
+      function applyMapChromePadding() {
+        if (!map || SWEETS_THREAD_MODE) return;
+        var p = computeMapPadding();
+        try {
+          if (typeof map.setPadding === "function") {
+            map.setPadding(p);
+          } else {
+            map.easeTo({
+              padding: p,
+              center: map.getCenter(),
+              zoom: map.getZoom(),
+              bearing: map.getBearing(),
+              pitch: map.getPitch(),
+              duration: 0,
+              essential: true,
+            });
+          }
+        } catch (err) {
+          /* 古い MapLibre 等 */
+        }
+      }
+
+      function flyMapWithChrome(extra) {
+        if (!map) return;
+        var o = Object.assign({ essential: true }, extra);
+        if (!SWEETS_THREAD_MODE) o.padding = computeMapPadding();
+        map.flyTo(o);
+      }
+
+      function scheduleApplyMapChromePadding() {
+        if (!map || SWEETS_THREAD_MODE) return;
+        if (chromePadRaf) cancelAnimationFrame(chromePadRaf);
+        chromePadRaf = requestAnimationFrame(function () {
+          chromePadRaf = null;
+          requestAnimationFrame(function () {
+            applyMapChromePadding();
+          });
+        });
+      }
+
+      function updateSidepanelIntro(tab) {
+        var el = document.getElementById("sidepanelIntro");
+        if (!el) return;
+        el.innerHTML = tab === "sweets" ? INTRO_HTML_SWEETS : INTRO_HTML_ALL;
+      }
+
+      function scheduleUpdateMarkerVisibility() {
+        if (!map || SWEETS_THREAD_MODE) return;
+        if (markerVisRaf) return;
+        markerVisRaf = requestAnimationFrame(function () {
+          markerVisRaf = null;
+          updateMarkerVisibility();
+        });
+      }
+
+      function updateMarkerVisibility() {
+        if (!map || SWEETS_THREAD_MODE) return;
+        var z = map.getZoom();
+        var tab = activeListFilter || "all";
+        pinMarkers.forEach(function (mk) {
+          var root = mk.getElement();
+          if (!root) return;
+          var cat = root.getAttribute("data-pin-category") || "";
+          var show = z >= POI_PINS_MIN_ZOOM;
+          if (tab === "sweets" && cat === "sweets") show = true;
+          root.style.display = show ? "" : "none";
+          root.style.pointerEvents = show ? "" : "none";
+        });
+        if (userMarker) {
+          var ur = userMarker.getElement();
+          if (ur) {
+            ur.style.display = "";
+            ur.style.pointerEvents = "";
+          }
+        }
+      }
 
       var POI_KIND_LABELS = [
         "",
@@ -1007,6 +1201,7 @@
           panel.innerHTML = "";
         }
         clearPinSelectionVisual();
+        scheduleApplyMapChromePadding();
       }
 
       function buildPlacePanelHtml(pin) {
@@ -1112,6 +1307,8 @@
         panel.classList.add("is-open");
         panel.setAttribute("aria-hidden", "false");
         wirePlacePanel(pin);
+        scheduleApplyMapChromePadding();
+        setTimeout(scheduleApplyMapChromePadding, 280);
       }
 
       function labelEl(r) {
@@ -1209,7 +1406,7 @@
         var p = latLngToResult(lat, lng);
         localStorage.setItem(STATE_KEY, p.lat + "," + p.lng);
         renderMarkers();
-        map.flyTo({ center: [p.lng, p.lat], zoom: 16, essential: true });
+        flyMapWithChrome({ center: [p.lng, p.lat], zoom: 16 });
         if (p.isAnswer) {
           setTimeout(function () {
             var unk = PIN_DATA.find(function (d) {
@@ -1226,6 +1423,8 @@
         if (SWEETS_THREAD_MODE) return;
         PIN_DATA.forEach(function (p) {
           var el = pinEl(p);
+          el.setAttribute("data-pin-category", p.category);
+          el.setAttribute("data-pin-id", p.id);
           var mk = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat([p.lng, p.lat]).addTo(map);
           el.addEventListener("click", function (e) {
             e.stopPropagation();
@@ -1234,6 +1433,7 @@
           pinMarkers.push(mk);
           markerIndex[p.id] = mk;
         });
+        updateMarkerVisibility();
         var raw = localStorage.getItem(STATE_KEY);
         if (!raw) return;
         var parts = raw.split(",");
@@ -1254,6 +1454,7 @@
             '<div class="ptitle">入力した地点</div><div class="pmeta">ユーザ投稿</div><div class="pbody">あなたが地図に立てたピン。</div>'
           );
         });
+        updateMarkerVisibility();
       }
 
       var FICTION_EXTRA_LABELS = [
@@ -1283,7 +1484,7 @@
       }
 
       function flyToPin(pin, openPop) {
-        map.flyTo({ center: [pin.lng, pin.lat], zoom: 16, essential: true });
+        flyMapWithChrome({ center: [pin.lng, pin.lat], zoom: 16 });
         if (openPop && !SWEETS_THREAD_MODE) {
           setTimeout(function () {
             openPlaceDetail(pin);
@@ -1318,7 +1519,7 @@
         else if (/杉並/i.test(q)) rk = "suginami";
         if (rk && REGION[rk]) {
           var R = REGION[rk];
-          map.flyTo({ center: [R.lng, R.lat], zoom: R.flyZoom, essential: true });
+          flyMapWithChrome({ center: [R.lng, R.lat], zoom: R.flyZoom });
           return;
         }
         window.alert("該当する場所・店舗が見つかりませんでした。");
@@ -1331,7 +1532,7 @@
         reviewList.innerHTML = "";
         var shops = PIN_DATA.filter(function (p) {
           if (filter === "all") return p.category !== "civic" && p.category !== "school";
-          if (filter === "sweets") return p.category === "sweets";
+          if (filter === "sweets") return p.category === "sweets" && !isKasumiMapPin(p);
           if (filter === "conv") return p.category === "conv";
           if (filter === "other") return p.category === "tourism" || p.category === "unknown";
           return true;
@@ -1356,8 +1557,13 @@
         });
         var reviewed = PIN_DATA.filter(function (p) {
           return p.review;
-        }).slice(0, 4);
-        reviewed.forEach(function (p) {
+        });
+        if (filter === "sweets") {
+          reviewed = reviewed.filter(function (p) {
+            return !isKasumiMapPin(p);
+          });
+        }
+        reviewed.slice(0, 4).forEach(function (p) {
           var li = document.createElement("li");
           li.innerHTML =
             '<span class="pin-mini pm-poi-' +
@@ -1377,20 +1583,30 @@
       }
 
       function setFilter(tab) {
+        activeListFilter = tab || "all";
         document.querySelectorAll(".sp-tab, .chip").forEach(function (x) {
-          x.classList.toggle("active", x.dataset.tab === tab);
+          x.classList.toggle("active", x.dataset.tab === activeListFilter);
         });
-        renderSidebar(tab);
+        updateSidepanelIntro(activeListFilter);
+        renderSidebar(activeListFilter);
+        fillRegionListForFilter(activeListFilter);
+        updateMarkerVisibility();
       }
 
-      function fillRegionList() {
+      function fillRegionListForFilter(filter) {
         var ul = document.getElementById("regionList");
         ul.innerHTML = "";
-        [
+        var rows = [
           { key: "mikazuki", dot: "pm-poi-9" },
           { key: "suginami", dot: "pm-poi-9" },
           { key: "kasumi", dot: "pm-poi-6" },
-        ].forEach(function (o) {
+        ];
+        if (filter === "sweets") {
+          rows = rows.filter(function (o) {
+            return o.key !== "kasumi";
+          });
+        }
+        rows.forEach(function (o) {
           var r = REGION[o.key];
           var li = document.createElement("li");
           li.innerHTML =
@@ -1400,7 +1616,7 @@
             r.sub +
             "</div></div>";
           li.addEventListener("click", function () {
-            map.flyTo({ center: [r.lng, r.lat], zoom: r.flyZoom, essential: true });
+            flyMapWithChrome({ center: [r.lng, r.lat], zoom: r.flyZoom });
           });
           ul.appendChild(li);
         });
@@ -1413,64 +1629,68 @@
         } catch (e) {
           return;
         }
-        var lat = u.searchParams.get("lat");
-        var lng = u.searchParams.get("lng");
-        var z = parseFloat(u.searchParams.get("z") || "14");
-        if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
-          map.jumpTo({ center: [parseFloat(lng), parseFloat(lat)], zoom: isNaN(z) ? 14 : z });
-          return;
-        }
-        var q = (u.searchParams.get("q") || "").trim();
-        if (q) {
-          runSearchQuery(q);
-          return;
-        }
-        if (SWEETS_THREAD_MODE) {
-          map.jumpTo({ center: [JAPAN_OVERVIEW.lng, JAPAN_OVERVIEW.lat], zoom: JAPAN_OVERVIEW.zoom });
-          return;
-        }
-        var focus = (u.searchParams.get("focus") || u.searchParams.get("f") || "").toLowerCase();
-        if (focus === "kasumi" || focus === "kanomori") {
-          var K = REGION.kasumi;
-          map.flyTo({ center: [K.lng, K.lat], zoom: K.flyZoom, essential: true });
-          return;
-        }
-        if (focus === "mikazuki" || focus === "mikatsuki" || focus === "tsukimachi") {
-          var M = REGION.mikazuki;
-          map.flyTo({ center: [M.lng, M.lat], zoom: M.flyZoom, essential: true });
-          return;
-        }
-        if (focus === "suginami" || focus === "suginamigaoka") {
-          var S = REGION.suginami;
-          map.flyTo({ center: [S.lng, S.lat], zoom: S.flyZoom, essential: true });
-          return;
-        }
-        if (focus === "unknown" || focus === "mizube" || focus === "mizube-no-oka") {
-          var unk = PIN_DATA.find(function (d) {
-            return d.id === "unknown";
-          });
-          if (unk && !SWEETS_THREAD_MODE) {
-            map.flyTo({ center: [unk.lng, unk.lat], zoom: 17, essential: true });
-            setTimeout(function () {
-              openPlaceDetail(unk);
-            }, 900);
+        try {
+          var lat = u.searchParams.get("lat");
+          var lng = u.searchParams.get("lng");
+          var z = parseFloat(u.searchParams.get("z") || "14");
+          if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
+            map.jumpTo({ center: [parseFloat(lng), parseFloat(lat)], zoom: isNaN(z) ? 14 : z });
+            return;
           }
-          return;
+          var q = (u.searchParams.get("q") || "").trim();
+          if (q) {
+            runSearchQuery(q);
+            return;
+          }
+          if (SWEETS_THREAD_MODE) {
+            map.jumpTo({ center: [JAPAN_OVERVIEW.lng, JAPAN_OVERVIEW.lat], zoom: JAPAN_OVERVIEW.zoom });
+            return;
+          }
+          var focus = (u.searchParams.get("focus") || u.searchParams.get("f") || "").toLowerCase();
+          if (focus === "kasumi" || focus === "kanomori") {
+            var K = REGION.kasumi;
+            flyMapWithChrome({ center: [K.lng, K.lat], zoom: K.flyZoom });
+            return;
+          }
+          if (focus === "mikazuki" || focus === "mikatsuki" || focus === "tsukimachi") {
+            var M = REGION.mikazuki;
+            flyMapWithChrome({ center: [M.lng, M.lat], zoom: M.flyZoom });
+            return;
+          }
+          if (focus === "suginami" || focus === "suginamigaoka") {
+            var S = REGION.suginami;
+            flyMapWithChrome({ center: [S.lng, S.lat], zoom: S.flyZoom });
+            return;
+          }
+          if (focus === "unknown" || focus === "mizube" || focus === "mizube-no-oka") {
+            var unk = PIN_DATA.find(function (d) {
+              return d.id === "unknown";
+            });
+            if (unk && !SWEETS_THREAD_MODE) {
+              flyMapWithChrome({ center: [unk.lng, unk.lat], zoom: 17 });
+              setTimeout(function () {
+                openPlaceDetail(unk);
+              }, 900);
+            }
+            return;
+          }
+          var entry = (u.searchParams.get("from") || u.searchParams.get("entry") || "").toLowerCase();
+          if (entry === "urban-legend-board" || entry === "board" || entry === "bbs") {
+            var B = REGION.mikazuki;
+            flyMapWithChrome({ center: [B.lng, B.lat], zoom: 13.5 });
+            return;
+          }
+          var h = (window.location.hash || "").replace(/^#/, "").toLowerCase();
+          if (h === "kasumi" || h === "mikazuki" || h === "suginami") {
+            var R = REGION[h === "kasumi" ? "kasumi" : h === "mikazuki" ? "mikazuki" : "suginami"];
+            flyMapWithChrome({ center: [R.lng, R.lat], zoom: R.flyZoom });
+            return;
+          }
+          var ov = SWEETS_THREAD_MODE ? JAPAN_OVERVIEW : FICTION_OVERVIEW;
+          map.jumpTo({ center: [ov.lng, ov.lat], zoom: ov.zoom });
+        } finally {
+          if (map) scheduleApplyMapChromePadding();
         }
-        var entry = (u.searchParams.get("from") || u.searchParams.get("entry") || "").toLowerCase();
-        if (entry === "urban-legend-board" || entry === "board" || entry === "bbs") {
-          var B = REGION.mikazuki;
-          map.flyTo({ center: [B.lng, B.lat], zoom: 13.5, essential: true });
-          return;
-        }
-        var h = (window.location.hash || "").replace(/^#/, "").toLowerCase();
-        if (h === "kasumi" || h === "mikazuki" || h === "suginami") {
-          var R = REGION[h === "kasumi" ? "kasumi" : h === "mikazuki" ? "mikazuki" : "suginami"];
-          map.flyTo({ center: [R.lng, R.lat], zoom: R.flyZoom, essential: true });
-          return;
-        }
-        var ov = SWEETS_THREAD_MODE ? JAPAN_OVERVIEW : FICTION_OVERVIEW;
-        map.jumpTo({ center: [ov.lng, ov.lat], zoom: ov.zoom });
       }
 
       function bindUi() {
@@ -1508,12 +1728,40 @@
           spClose.addEventListener("click", function () {
             sp.classList.add("sidepanel--dismissed");
             if (spReopen && !SWEETS_THREAD_MODE) spReopen.classList.add("is-visible");
+            scheduleApplyMapChromePadding();
           });
         }
         if (spReopen && sp) {
           spReopen.addEventListener("click", function () {
             sp.classList.remove("sidepanel--dismissed");
             spReopen.classList.remove("is-visible");
+            scheduleApplyMapChromePadding();
+          });
+        }
+        var layerThumb = document.getElementById("gmLayerThumb");
+        var layerSheet = document.getElementById("gmLayerSheet");
+        var layerSheetClose = document.getElementById("gmLayerSheetClose");
+        if (layerThumb && layerSheet) {
+          layerThumb.addEventListener("click", function (e) {
+            e.stopPropagation();
+            setLayerSheetOpen(!layerSheet.classList.contains("is-open"));
+          });
+          layerThumb.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setLayerSheetOpen(!layerSheet.classList.contains("is-open"));
+            }
+          });
+        }
+        if (layerSheetClose) {
+          layerSheetClose.addEventListener("click", function (e) {
+            e.stopPropagation();
+            setLayerSheetOpen(false);
+          });
+        }
+        if (layerSheet) {
+          layerSheet.addEventListener("click", function (e) {
+            e.stopPropagation();
           });
         }
       }
@@ -1551,21 +1799,28 @@
           }
           renderMarkers();
           renderSidebar("all");
-          fillRegionList();
+          updateSidepanelIntro(activeListFilter);
+          fillRegionListForFilter(activeListFilter);
           bindUi();
           parseUrlAndApply();
           refreshFictionLabels();
           map.on("click", function () {
             closePlaceDetail();
             closeMapPopup();
+            setLayerSheetOpen(false);
           });
           setTimeout(function () {
             map.resize();
+            scheduleApplyMapChromePadding();
           }, 80);
         });
 
-        map.on("zoomend", refreshFictionLabels);
+        map.on("zoomend", function () {
+          refreshFictionLabels();
+          updateMarkerVisibility();
+        });
         map.on("moveend", refreshFictionLabels);
+        map.on("zoom", scheduleUpdateMarkerVisibility);
       }
 
       function boot() {
@@ -1573,7 +1828,10 @@
       }
 
       window.addEventListener("resize", function () {
-        if (map) map.resize();
+        if (map) {
+          map.resize();
+          scheduleApplyMapChromePadding();
+        }
       });
 
       var gatePoll = setInterval(function () {
@@ -1581,7 +1839,10 @@
           clearInterval(gatePoll);
           boot();
           setTimeout(function () {
-            if (map) map.resize();
+            if (map) {
+              map.resize();
+              scheduleApplyMapChromePadding();
+            }
           }, 200);
         }
       }, 80);
