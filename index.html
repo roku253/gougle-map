@@ -16,38 +16,73 @@
   -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <style>
-    :root { --topbar:#fff; --line:#e0e0e0; --primary:#1a73e8; --map-bg:#e5e3df; }
+    :root {
+      --topbar:#fff;
+      --line:#dadce0;
+      --primary:#1a73e8;
+      --map-bg:#e8f0e7;
+      --muted:#5f6368;
+      --shadow:0 1px 6px rgba(32,33,36,.28);
+    }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: "Google Sans", Roboto, "Yu Gothic", Meiryo, sans-serif; background: #f5f5f5; color: #202124; overflow: hidden; }
+    body { margin: 0; font-family: "Google Sans","Yu Gothic",Meiryo,sans-serif; background: #e8f0e7; color: #202124; overflow: hidden; }
     #site-root { visibility: hidden; }
     html.token-gate-ok #site-root { visibility: visible; }
 
-    .topbar { background: var(--topbar); border-bottom: 1px solid var(--line); padding: 8px 14px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-    .logo { font-weight: 700; letter-spacing: -0.02em; font-size: 20px; }
+    .topbar {
+      position: absolute; left: 12px; top: 12px; z-index: 40;
+      background: transparent; display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+      width: min(720px, calc(100vw - 24px)); pointer-events: none;
+    }
+    .logo { font-weight: 700; letter-spacing: -0.02em; font-size: 17px; white-space: nowrap; }
     .logo .g { color: #4285f4 } .logo .o1 { color: #ea4335 } .logo .o2 { color: #fbbc05 }
     .logo .g2 { color: #34a853 } .logo .l { color: #4285f4 } .logo .e { color: #ea4335 }
-    .searchbar { flex: 1; max-width: 560px; display: flex; gap: 6px; }
-    .searchbar input { flex: 1; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; outline: none; }
-    .searchbar input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,.15); }
-    .searchbar button { padding: 8px 14px; border: none; border-radius: 8px; background: var(--primary); color: #fff; font-weight: 600; cursor: pointer; font-size: 13px; }
-    .searchbar button.alt { background: #fff; color: #202124; border: 1px solid var(--line); }
+    .searchbar {
+      width: min(488px, calc(100vw - 24px)); height: 48px; padding: 0 8px;
+      display: flex; align-items: center; gap: 8px; pointer-events: auto;
+      background: #fff; border-radius: 24px; box-shadow: var(--shadow);
+    }
+    .searchbar input { flex: 1; min-width: 0; padding: 0; border: 0; font-size: 15px; outline: none; color: #202124; }
+    .searchbar input::placeholder { color: #70757a; }
+    .searchbar button {
+      width: 36px; height: 36px; flex: 0 0 auto; display: grid; place-items: center;
+      border: none; border-radius: 50%; background: transparent; color: #3c4043;
+      cursor: pointer; font-size: 17px;
+    }
+    .searchbar button:hover { background: #f1f3f4; }
+    .searchbar .coord {
+      width: auto; border-radius: 18px; padding: 0 12px; color: var(--primary);
+      font-size: 12px; font-weight: 600; border-left: 1px solid #edf0f2;
+    }
+    .map-chips { display: flex; align-items: center; gap: 8px; pointer-events: auto; flex-wrap: wrap; }
+    .chip {
+      border: 1px solid #dadce0; background: #fff; border-radius: 18px; color: #3c4043;
+      padding: 7px 12px; font-size: 13px; box-shadow: 0 1px 2px rgba(60,64,67,.2);
+      cursor: pointer;
+    }
+    .chip.active, .chip:hover { border-color: #d2e3fc; background: #e8f0fe; color: #174ea6; }
 
-    .layout { display: grid; grid-template-columns: 320px 1fr; gap: 0; height: calc(100vh - 53px); }
-    aside.sidepanel { background: #fff; border-right: 1px solid var(--line); overflow-y: auto; }
-    .sp-h { padding: 12px 14px; border-bottom: 1px solid var(--line); }
-    .sp-h h1 { margin: 0; font-size: 16px; }
-    .sp-h p { margin: 4px 0 0; font-size: 12px; color: #5f6368; }
+    .layout { position: relative; height: 100vh; overflow: hidden; }
+    aside.sidepanel {
+      position: absolute; left: 12px; top: 112px; z-index: 30; width: 352px;
+      max-height: calc(100vh - 132px); overflow-y: auto;
+      background: #fff; border: 1px solid rgba(218,220,224,.85); border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(60,64,67,.22);
+    }
+    .sp-h { padding: 14px 16px 12px; border-bottom: 1px solid var(--line); }
+    .sp-h h1 { margin: 0; font-size: 18px; font-weight: 500; }
+    .sp-h p { margin: 5px 0 0; font-size: 12px; color: var(--muted); line-height: 1.55; }
     .sp-tab-row { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
-    .sp-tab { flex: 1; padding: 8px 4px; font-size: 12px; text-align: center; cursor: pointer; color: #5f6368; border-bottom: 2px solid transparent; }
+    .sp-tab { flex: 1; padding: 10px 4px; font-size: 12px; text-align: center; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; }
     .sp-tab.active { color: #1a73e8; border-bottom-color: #1a73e8; font-weight: 600; }
     .sp-section { padding: 10px 14px; border-bottom: 1px solid var(--line); }
-    .sp-section h2 { margin: 0 0 6px; font-size: 11px; color: #5f6368; letter-spacing: 0.06em; text-transform: uppercase; }
+    .sp-section h2 { margin: 0 0 6px; font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
     .sp-list { list-style: none; margin: 0; padding: 0; }
-    .sp-list li { padding: 7px 0; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    .sp-list li:hover { background: #f6f6f6; }
+    .sp-list li { margin: 0 -6px; padding: 8px 6px; border-radius: 8px; font-size: 13px; display: flex; align-items: center; gap: 9px; cursor: pointer; }
+    .sp-list li:hover { background: #f1f3f4; }
     .sp-list .row-main { flex: 1; min-width: 0; }
     .sp-list .row-title { font-size: 13px; line-height: 1.3; }
-    .sp-list .row-sub { font-size: 11px; color: #5f6368; margin-top: 1px; }
+    .sp-list .row-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
     .sp-list .stars { color: #fbbc05; font-size: 11px; }
     .pin-mini { width: 10px; height: 10px; border-radius: 999px; flex: 0 0 auto; box-shadow: 0 0 0 1px rgba(0,0,0,.15); }
     .pm-sweets { background: #ea66a4; }
@@ -64,70 +99,25 @@
       height: 100%;
       overflow: hidden;
       background: var(--map-bg);
+      user-select: none; cursor: grab;
     }
-    #map {
-      width: 100%;
-      height: 100%;
-      z-index: 1;
+    .map-area.grabbing { cursor: grabbing; }
+    .map-stage {
+      position: absolute; top: 0; left: 0;
+      transform-origin: 0 0;
+      transition: transform 0.08s linear;
+      will-change: transform;
     }
-
-    /* Leaflet を Google 寄りのズーム UI に近づける */
-    .leaflet-control-zoom {
-      border: none !important;
-      box-shadow: 0 1px 6px rgba(60,64,67,.28) !important;
-      border-radius: 8px !important;
-      overflow: hidden;
+    .map-stage.no-anim { transition: none; }
+    .map-svg { display: block; background: var(--map-bg); }
+    .pin {
+      position: absolute;
+      width: 18px; height: 18px;
+      transform: translate(-50%, -100%);
+      pointer-events: auto;
     }
-    .leaflet-control-zoom a {
-      width: 40px !important;
-      height: 40px !important;
-      line-height: 40px !important;
-      font-size: 22px !important;
-      color: #3c4043 !important;
-      border: none !important;
-      background: #fff !important;
-    }
-    .leaflet-control-zoom a:hover { background: #f8f9fa !important; }
-    .leaflet-control-zoom-in { border-radius: 8px 8px 0 0 !important; }
-    .leaflet-control-zoom-out { border-radius: 0 0 8px 8px !important; }
-    .leaflet-bar a.leaflet-disabled { color: #bdc1c6 !important; }
-
-    .leaflet-control-attribution {
-      font-size: 10px;
-      background: rgba(255,255,255,.85) !important;
-      padding: 2px 6px !important;
-      border-radius: 4px;
-      max-width: 55%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* 架空エリア名ラベル（高ズームのみ表示） */
-    .fiction-label-wrap {
-      pointer-events: none;
-      text-align: center;
-    }
-    .fiction-label-wrap .nm {
-      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
-      font-size: 15px;
-      font-weight: 700;
-      color: #3e2723;
-      text-shadow: 0 0 3px #fff, 0 0 6px #fff, 0 0 10px rgba(255,255,255,.9);
-      letter-spacing: 0.12em;
-    }
-    .fiction-label-wrap .sub {
-      font-size: 10px;
-      color: #5d4037;
-      margin-top: 2px;
-      text-shadow: 0 0 4px #fff;
-      letter-spacing: 0.04em;
-    }
-
-    /* カスタムピン */
-    .gm-pin { position: relative; width: 30px; height: 38px; margin-left: -15px; margin-top: -38px; }
-    .gm-pin .head {
-      width: 22px; height: 22px;
+    .pin .head {
+      width: 18px; height: 18px;
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
       transform-origin: center;
@@ -145,45 +135,109 @@
       background: #fff;
       transform: translate(-50%, -50%);
     }
-    .gm-pin.sweets .head { background: #ea66a4; }
-    .gm-pin.conv .head { background: #1a73e8; }
-    .gm-pin.tourism .head { background: #ea4335; }
-    .gm-pin.civic .head { background: #1a73e8; }
-    .gm-pin.school .head { background: #34a853; }
-    .gm-pin.unknown .head { background: #9e9e9e; opacity: 0.92; }
-    .gm-pin.user .head { background: #fbbc05; }
+    .pin.unknown .head { background: #b0b0b0; opacity: 0.85; }
+    .pin.sweets .head { background: #ea66a4; }
+    .pin.conv .head { background: #1a73e8; }
+    .pin.tourism .head { background: #ea4335; }
+    .pin.civic .head { background: #1a73e8; }
+    .pin.school .head { background: #34a853; }
+    .pin.user .head { background: #fbbc05; }
 
-    .gm-popup .leaflet-popup-content-wrapper {
-      border-radius: 8px;
-      box-shadow: 0 2px 12px rgba(0,0,0,.18);
-      padding: 0;
+    .popup {
+      position: absolute; left: 0; top: 0;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(60,64,67,.28);
+      padding: 12px 14px;
+      width: 280px;
+      transform: translate(-50%, calc(-100% - 14px));
+      z-index: 100;
+      font-size: 13px; line-height: 1.55;
+      pointer-events: auto;
     }
-    .gm-popup .leaflet-popup-content {
-      margin: 12px 14px;
-      font-size: 13px;
-      line-height: 1.55;
-      min-width: 220px;
-      max-width: 280px;
+    .popup::after {
+      content: "";
+      position: absolute;
+      left: 50%; bottom: -7px;
+      transform: translateX(-50%) rotate(45deg);
+      width: 14px; height: 14px;
+      background: #fff;
+      box-shadow: 2px 2px 4px rgba(0,0,0,.06);
     }
-    .gm-popup .ptitle { font-weight: 700; margin-bottom: 4px; font-size: 14px; }
-    .gm-popup .pmeta { font-size: 11px; color: #5f6368; margin-bottom: 6px; }
-    .gm-popup .pbody { color: #202124; }
-    .gm-popup .review {
+    .popup .ptitle { font-weight: 700; margin-bottom: 4px; font-size: 14px; }
+    .popup .pmeta { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .popup .pbody { color: #202124; }
+    .popup .review {
       margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e0e0e0;
       font-size: 12px; color: #444;
     }
-    .gm-popup .review .reviewer { color: #5f6368; font-size: 11px; }
-    .gm-popup img { display: block; max-width: 100%; height: auto; margin-top: 6px; border-radius: 6px; }
-    .gm-popup .close-x {
-      float: right;
-      background: none; border: none; cursor: pointer; font-size: 16px; color: #5f6368;
-      line-height: 1; padding: 0 0 4px 8px;
+    .popup .review .reviewer { color: var(--muted); font-size: 11px; }
+    .popup img { display: block; max-width: 100%; height: auto; margin-top: 6px; border-radius: 6px; }
+    .popup .close {
+      position: absolute; right: 6px; top: 6px;
+      background: none; border: none; cursor: pointer; font-size: 14px; color: var(--muted);
+    }
+
+    .zoom-buttons {
+      position: absolute; right: 18px; bottom: 92px; z-index: 20;
+      display: flex; flex-direction: column; gap: 1px;
+      box-shadow: 0 1px 6px rgba(60,64,67,.3); border-radius: 8px; overflow: hidden;
+    }
+    .zoom-buttons button {
+      width: 40px; height: 40px; background: #fff; border: none; cursor: pointer;
+      font-size: 19px; color: #3c4043;
+    }
+    .zoom-buttons button + button { border-top: 1px solid #eee; }
+    .zoom-buttons button:hover { background: #f1f3f4; }
+
+    .map-utility {
+      position: absolute; right: 18px; top: 86px; z-index: 20;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .control-button, .pegman {
+      width: 40px; height: 40px; border: 0; border-radius: 8px; background: #fff;
+      box-shadow: 0 1px 6px rgba(60,64,67,.3); color: #3c4043; cursor: pointer;
+      display: grid; place-items: center; font-size: 18px;
+    }
+    .control-button:hover, .pegman:hover { background: #f1f3f4; }
+    .pegman { color: #fbbc04; font-size: 20px; }
+    .layers-card {
+      position: absolute; left: 16px; bottom: 22px; z-index: 20;
+      width: 76px; height: 76px; border: 2px solid #fff; border-radius: 10px;
+      background:
+        linear-gradient(135deg, rgba(120,181,115,.9) 0 45%, rgba(165,202,233,.9) 45% 60%, rgba(245,245,245,.95) 60%),
+        #fff;
+      box-shadow: 0 1px 6px rgba(60,64,67,.35); overflow: hidden;
+      color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.55); font-size: 12px; font-weight: 600;
+      display: flex; align-items: flex-end; padding: 7px;
+    }
+    .gm-attribution {
+      position: absolute; right: 12px; bottom: 8px; z-index: 20;
+      display: flex; gap: 8px; align-items: center;
+      color: #3c4043; font-size: 10px; background: rgba(255,255,255,.86); padding: 3px 7px; border-radius: 3px;
+    }
+    .map-scale {
+      position: absolute; right: 18px; bottom: 55px; z-index: 20;
+      width: 92px; height: 18px; color: #202124; font-size: 10px; text-align: center;
+      border-bottom: 3px solid #202124; border-left: 2px solid #202124; border-right: 2px solid #202124;
+      text-shadow: 0 1px 0 #fff;
+    }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
 
     @media (max-width: 900px) {
-      .layout { grid-template-columns: 1fr; height: auto; min-height: calc(100vh - 53px); }
-      aside.sidepanel { max-height: 36vh; border-right: none; border-bottom: 1px solid var(--line); }
-      .map-area { height: 52vh; min-height: 280px; }
+      .topbar { left: 8px; top: 8px; width: calc(100vw - 16px); }
+      .searchbar { width: 100%; }
+      .map-chips { overflow-x: auto; flex-wrap: nowrap; max-width: 100%; padding-bottom: 2px; }
+      .chip { white-space: nowrap; }
+      aside.sidepanel {
+        left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; max-height: 38vh;
+      }
+      .map-utility { top: 116px; right: 10px; }
+      .zoom-buttons { right: 10px; bottom: 112px; }
+      .layers-card { display: none; }
     }
 
     .ns-denied-overlay {
@@ -217,12 +271,18 @@
 <body>
   <div id="site-root">
     <header class="topbar">
-      <div class="logo"><span class="g">G</span><span class="o1">o</span><span class="o2">u</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span></div>
       <form class="searchbar" id="searchForm" onsubmit="return false;">
-        <input id="searchInput" type="text" placeholder="場所・店名で検索（例: 霞ノ杜、パティスリー柊）" />
-        <button id="searchBtn" type="button">検索</button>
-        <button id="coordBtn" type="button" class="alt" title="緯度,経度で地点を立てる">座標で立てる</button>
+        <div class="logo" aria-label="Gougle Map"><span class="g">G</span><span class="o1">o</span><span class="o2">u</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span></div>
+        <input id="searchInput" type="text" placeholder="場所・店名で検索（例: 三日月町、パティスリー柊）" />
+        <button id="searchBtn" title="検索" aria-label="検索">⌕</button>
+        <button id="coordBtn" type="button" class="coord" title="緯度,経度で地点を立てる">座標</button>
       </form>
+      <div class="map-chips" aria-label="カテゴリ">
+        <button class="chip active" type="button" data-tab="all">周辺</button>
+        <button class="chip" type="button" data-tab="sweets">スイーツ</button>
+        <button class="chip" type="button" data-tab="conv">コンビニ</button>
+        <button class="chip" type="button" data-tab="other">観光・その他</button>
+      </div>
     </header>
 
     <div class="layout">
@@ -255,7 +315,247 @@
       </aside>
 
       <div class="map-area" id="mapArea">
-        <div id="map"></div>
+        <div class="map-stage" id="mapStage" style="transform: translate(0px, 0px) scale(1);">
+          <!-- 架空だが実在感を優先したベースマップ：1600 x 1200 -->
+          <svg class="map-svg" width="1600" height="1200" viewBox="0 0 1600 1200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <style>
+                .water { fill:none; stroke:#9cc9e7; stroke-linecap:round; stroke-linejoin:round; }
+                .water-edge { fill:none; stroke:#d4ebf8; stroke-linecap:round; stroke-linejoin:round; }
+                .park { fill:#cfe8c6; stroke:#b6d8aa; stroke-width:1; }
+                .forest { fill:#b9d3a4; }
+                .field { fill:#e2e8c9; stroke:#cbd7aa; stroke-width:1; }
+                .block { fill:#f4f1e9; stroke:#e1ddd2; stroke-width:1; }
+                .building { fill:#ddd8ce; stroke:#c8c2b6; stroke-width:1; }
+                .building-dark { fill:#cbc5ba; stroke:#b8b0a4; stroke-width:1; }
+                .poi-building { fill:#d7e5f8; stroke:#abc7ef; stroke-width:1.2; }
+                .road-case { fill:none; stroke:#d1c8b7; stroke-linecap:round; stroke-linejoin:round; }
+                .road { fill:none; stroke:#ffffff; stroke-linecap:round; stroke-linejoin:round; }
+                .primary-case { fill:none; stroke:#ddb96b; stroke-linecap:round; stroke-linejoin:round; }
+                .primary { fill:none; stroke:#fdd777; stroke-linecap:round; stroke-linejoin:round; }
+                .arterial-case { fill:none; stroke:#c2b49c; stroke-linecap:round; stroke-linejoin:round; }
+                .arterial { fill:none; stroke:#fff4c2; stroke-linecap:round; stroke-linejoin:round; }
+                .rail { fill:none; stroke:#70757a; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
+                .rail-dash { fill:none; stroke:#fff; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:12 13; }
+                .minor-label { font-family:Arial,"Yu Gothic",sans-serif; font-size:11px; fill:#7a756b; paint-order:stroke; stroke:#fff; stroke-width:3; stroke-linejoin:round; }
+                .place-label { font-family:Arial,"Yu Gothic",sans-serif; font-size:18px; font-weight:600; fill:#4f5f45; paint-order:stroke; stroke:#f8fbf6; stroke-width:4; stroke-linejoin:round; }
+                .station-label { font-family:Arial,"Yu Gothic",sans-serif; font-size:13px; font-weight:600; fill:#3c4043; paint-order:stroke; stroke:#fff; stroke-width:3; stroke-linejoin:round; }
+                .route-shield { fill:#fff; stroke:#7f8b96; stroke-width:1.4; }
+                .contour { fill:none; stroke:#94b083; stroke-width:1; opacity:.55; }
+              </style>
+              <pattern id="orchard" width="26" height="26" patternUnits="userSpaceOnUse">
+                <rect width="26" height="26" fill="#dce8c1"/>
+                <circle cx="7" cy="7" r="2" fill="#bdd59c"/>
+                <circle cx="19" cy="18" r="2" fill="#bdd59c"/>
+              </pattern>
+              <pattern id="paddy" width="44" height="44" patternUnits="userSpaceOnUse">
+                <rect width="44" height="44" fill="#e5eac8"/>
+                <path d="M0 14H44M0 29H44M14 0V44M29 0V44" stroke="#c8d6a4" stroke-width="1"/>
+              </pattern>
+            </defs>
+
+            <!-- land cover -->
+            <rect width="1600" height="1200" fill="#e8f0e7"/>
+            <path class="forest" d="M0,0H1600V230C1450,245 1326,197 1200,238C1072,279 982,367 833,334C695,303 598,236 442,306C283,377 174,350 0,415Z"/>
+            <path class="forest" opacity=".78" d="M0,417C116,369 226,383 336,430C454,481 538,475 638,430C720,392 812,394 900,430C781,532 661,602 490,593C316,584 171,522 0,568Z"/>
+            <g>
+              <path class="contour" d="M40 104 C220 70 340 116 520 84 S880 40 1060 98 S1360 76 1554 120"/>
+              <path class="contour" d="M28 176 C240 128 390 178 570 144 S880 96 1068 170 S1340 154 1560 194"/>
+              <path class="contour" d="M36 250 C210 224 312 252 478 226 S790 190 962 244 S1248 268 1538 250"/>
+              <path class="contour" d="M12 332 C166 308 280 340 414 318 S676 284 830 316 S1108 368 1432 326"/>
+              <path class="contour" d="M48 478 C166 438 298 454 410 502 S642 526 748 470"/>
+            </g>
+
+            <!-- agricultural terraces and low-density outskirts -->
+            <path class="field" style="fill:url(#paddy)" d="M18,814H506V1200H0V840Z"/>
+            <path class="field" style="fill:url(#paddy)" d="M1010,1048H1600V1200H980Z"/>
+            <path class="field" style="fill:url(#orchard)" d="M1010,520C1160,500 1280,542 1392,628C1318,678 1170,684 1020,652Z"/>
+            <g opacity=".8">
+              <path class="field" d="M88 840 H234 V906 H88Z"/>
+              <path class="field" d="M250 826 H410 V892 H250Z"/>
+              <path class="field" d="M62 928 H216 V1000 H62Z"/>
+              <path class="field" d="M244 916 H456 V992 H244Z"/>
+              <path class="field" d="M1038 1086 H1190 V1166 H1038Z"/>
+              <path class="field" d="M1210 1080 H1396 V1160 H1210Z"/>
+              <path class="field" d="M1412 1070 H1572 V1158 H1412Z"/>
+            </g>
+
+            <!-- water network -->
+            <path class="water-edge" stroke-width="34" d="M-40 760C118 710 242 710 384 752C528 794 628 800 760 758C918 708 1022 728 1174 770C1320 812 1444 802 1642 752"/>
+            <path class="water" stroke-width="22" d="M-40 760C118 710 242 710 384 752C528 794 628 800 760 758C918 708 1022 728 1174 770C1320 812 1444 802 1642 752"/>
+            <path class="water-edge" stroke-width="18" d="M178 384C210 434 260 482 318 526C386 576 422 632 426 704"/>
+            <path class="water" stroke-width="9" d="M178 384C210 434 260 482 318 526C386 576 422 632 426 704"/>
+            <ellipse cx="176" cy="384" rx="76" ry="34" fill="#9cc9e7" stroke="#d4ebf8" stroke-width="8"/>
+            <path class="water-edge" stroke-width="14" d="M1180 650C1160 706 1168 750 1218 786"/>
+            <path class="water" stroke-width="7" d="M1180 650C1160 706 1168 750 1218 786"/>
+
+            <!-- built-up land parcels -->
+            <path class="block" d="M522,812H1004V1118H514C496,988 498,894 522,812Z"/>
+            <path class="block" d="M1072,700C1188,644 1394,646 1504,750C1570,812 1576,930 1498,1010C1398,1114 1196,1088 1084,1000C992,928 984,776 1072,700Z"/>
+            <path class="block" d="M126,446C210,408 360,410 454,476C530,530 506,646 410,688C300,736 168,690 112,610C70,550 76,480 126,446Z"/>
+
+            <!-- parks, schools, shrines, and public grounds -->
+            <path class="park" d="M606 842H714V928H606Z"/>
+            <path class="park" d="M880 832C938 828 994 850 1004 904C970 940 920 950 872 928C844 892 850 858 880 832Z"/>
+            <path class="park" d="M1228 704C1294 680 1372 704 1404 760C1372 806 1298 814 1240 784C1214 760 1208 728 1228 704Z"/>
+            <path class="park" d="M238 448C288 420 348 436 374 484C352 526 302 540 254 518C226 498 220 470 238 448Z"/>
+            <path class="park" d="M128 1028H348V1128H128Z"/>
+
+            <!-- highways and arterial roads: case first, paint second -->
+            <g>
+              <path class="primary-case" stroke-width="20" d="M-30 352C220 326 446 338 682 348C910 358 1140 372 1628 318"/>
+              <path class="primary" stroke-width="13" d="M-30 352C220 326 446 338 682 348C910 358 1140 372 1628 318"/>
+              <path class="primary-case" stroke-width="18" d="M752 -28C744 176 726 336 748 506C772 692 820 880 806 1238"/>
+              <path class="primary" stroke-width="11" d="M752 -28C744 176 726 336 748 506C772 692 820 880 806 1238"/>
+              <path class="arterial-case" stroke-width="14" d="M42 720C278 708 464 752 658 842C804 910 918 926 1042 884C1188 836 1354 842 1570 892"/>
+              <path class="arterial" stroke-width="8" d="M42 720C278 708 464 752 658 842C804 910 918 926 1042 884C1188 836 1354 842 1570 892"/>
+              <path class="arterial-case" stroke-width="13" d="M510 1014C690 986 900 1000 1082 954C1240 914 1396 894 1586 918"/>
+              <path class="arterial" stroke-width="8" d="M510 1014C690 986 900 1000 1082 954C1240 914 1396 894 1586 918"/>
+              <path class="arterial-case" stroke-width="12" d="M260 410C330 520 430 608 566 668C664 710 736 760 778 828"/>
+              <path class="arterial" stroke-width="7" d="M260 410C330 520 430 608 566 668C664 710 736 760 778 828"/>
+            </g>
+
+            <!-- railways -->
+            <g>
+              <path class="rail" d="M-20 1070C172 1032 338 1008 510 1000C692 992 834 948 976 896C1148 832 1326 816 1624 846"/>
+              <path class="rail-dash" d="M-20 1070C172 1032 338 1008 510 1000C692 992 834 948 976 896C1148 832 1326 816 1624 846"/>
+              <path class="rail" opacity=".8" d="M1164 672C1210 748 1242 828 1246 1038"/>
+              <path class="rail-dash" opacity=".95" d="M1164 672C1210 748 1242 828 1246 1038"/>
+              <rect x="704" y="910" width="92" height="18" rx="3" fill="#fff" stroke="#70757a" stroke-width="2" transform="rotate(-13 750 919)"/>
+              <rect x="1260" y="826" width="120" height="18" rx="3" fill="#fff" stroke="#70757a" stroke-width="2" transform="rotate(4 1320 835)"/>
+            </g>
+
+            <!-- local street network -->
+            <g>
+              <path class="road-case" stroke-width="10" d="M538 856H1014M530 914H1008M522 972H1002M518 1034H988M574 810V1114M638 812V1116M706 812V1118M780 804V1128M852 812V1120M930 820V1110"/>
+              <path class="road" stroke-width="6" d="M538 856H1014M530 914H1008M522 972H1002M518 1034H988M574 810V1114M638 812V1116M706 812V1118M780 804V1128M852 812V1120M930 820V1110"/>
+              <path class="road-case" stroke-width="9" d="M1086 774C1196 734 1390 748 1498 804M1074 838C1194 798 1378 802 1512 860M1076 902C1182 872 1378 874 1500 934M1104 964C1212 954 1368 968 1464 1012M1164 700V1056M1240 682V1074M1322 676V1068M1410 714V1028"/>
+              <path class="road" stroke-width="5.5" d="M1086 774C1196 734 1390 748 1498 804M1074 838C1194 798 1378 802 1512 860M1076 902C1182 872 1378 874 1500 934M1104 964C1212 954 1368 968 1464 1012M1164 700V1056M1240 682V1074M1322 676V1068M1410 714V1028"/>
+              <path class="road-case" stroke-width="7" d="M130 486C220 458 342 468 440 520M118 548C238 510 358 536 476 600M160 620C258 580 344 602 430 658M198 430V682M286 418V706M374 442V684"/>
+              <path class="road" stroke-width="4.4" d="M130 486C220 458 342 468 440 520M118 548C238 510 358 536 476 600M160 620C258 580 344 602 430 658M198 430V682M286 418V706M374 442V684"/>
+              <path class="road-case" stroke-width="6" d="M72 884H458M60 962H482M66 1040H492M142 812V1186M232 808V1192M326 814V1200M420 840V1200"/>
+              <path class="road" stroke-width="3.8" d="M72 884H458M60 962H482M66 1040H492M142 812V1186M232 808V1192M326 814V1200M420 840V1200"/>
+              <path class="road-case" stroke-width="7" d="M1048 1118H1582M1074 1168H1600M1094 1062V1200M1198 1052V1200M1310 1054V1200M1448 1048V1200"/>
+              <path class="road" stroke-width="4.2" d="M1048 1118H1582M1074 1168H1600M1094 1062V1200M1198 1052V1200M1310 1054V1200M1448 1048V1200"/>
+              <path class="road-case" stroke-width="6" d="M996 604C1096 590 1194 606 1298 666M1040 642C1140 624 1238 646 1328 704M1126 542V682M1224 548V710M1322 604V746"/>
+              <path class="road" stroke-width="3.8" d="M996 604C1096 590 1194 606 1298 666M1040 642C1140 624 1238 646 1328 704M1126 542V682M1224 548V710M1322 604V746"/>
+            </g>
+
+            <!-- bridges -->
+            <g fill="#ffffff" stroke="#9aa0a6" stroke-width="1.5">
+              <rect x="748" y="744" width="60" height="24" rx="6" transform="rotate(78 778 756)"/>
+              <rect x="392" y="684" width="62" height="18" rx="5" transform="rotate(74 423 693)"/>
+              <rect x="1186" y="758" width="62" height="20" rx="5" transform="rotate(39 1217 768)"/>
+            </g>
+
+            <!-- building footprints, central town -->
+            <g>
+              <rect class="poi-building" x="602" y="866" width="66" height="42" rx="2"/>
+              <rect class="building" x="686" y="858" width="46" height="28" rx="2"/>
+              <rect class="building" x="748" y="848" width="42" height="36" rx="2"/>
+              <rect class="building-dark" x="812" y="842" width="38" height="48" rx="2"/>
+              <rect class="building" x="882" y="850" width="64" height="32" rx="2"/>
+              <rect class="building" x="552" y="928" width="54" height="34" rx="2"/>
+              <rect class="building" x="626" y="930" width="38" height="32" rx="2"/>
+              <rect class="building-dark" x="686" y="930" width="58" height="28" rx="2"/>
+              <rect class="poi-building" x="760" y="926" width="70" height="38" rx="2"/>
+              <rect class="building" x="850" y="924" width="42" height="36" rx="2"/>
+              <rect class="building" x="910" y="928" width="58" height="32" rx="2"/>
+              <rect class="building" x="544" y="988" width="38" height="34" rx="2"/>
+              <rect class="building" x="598" y="990" width="62" height="30" rx="2"/>
+              <rect class="building" x="678" y="986" width="44" height="36" rx="2"/>
+              <rect class="building-dark" x="744" y="990" width="50" height="34" rx="2"/>
+              <rect class="building" x="818" y="988" width="34" height="38" rx="2"/>
+              <rect class="building" x="872" y="990" width="46" height="34" rx="2"/>
+              <rect class="building" x="934" y="984" width="42" height="40" rx="2"/>
+              <rect class="building" x="542" y="1050" width="54" height="36" rx="2"/>
+              <rect class="building" x="614" y="1052" width="42" height="28" rx="2"/>
+              <rect class="building" x="676" y="1052" width="46" height="34" rx="2"/>
+              <rect class="poi-building" x="742" y="1046" width="74" height="46" rx="2"/>
+              <rect class="building" x="838" y="1050" width="52" height="32" rx="2"/>
+              <rect class="building" x="910" y="1048" width="40" height="38" rx="2"/>
+            </g>
+
+            <!-- building footprints, east hill town -->
+            <g transform="rotate(2 1300 870)">
+              <rect class="building" x="1112" y="742" width="52" height="34" rx="2"/>
+              <rect class="building" x="1188" y="726" width="46" height="40" rx="2"/>
+              <rect class="building" x="1260" y="720" width="56" height="34" rx="2"/>
+              <rect class="building" x="1342" y="728" width="54" height="34" rx="2"/>
+              <rect class="poi-building" x="1420" y="756" width="58" height="46" rx="2"/>
+              <rect class="building" x="1098" y="804" width="42" height="36" rx="2"/>
+              <rect class="building-dark" x="1166" y="790" width="56" height="40" rx="2"/>
+              <rect class="poi-building" x="1244" y="788" width="68" height="46" rx="2"/>
+              <rect class="building" x="1334" y="794" width="48" height="34" rx="2"/>
+              <rect class="building" x="1410" y="810" width="54" height="38" rx="2"/>
+              <rect class="building" x="1108" y="868" width="50" height="32" rx="2"/>
+              <rect class="building" x="1178" y="858" width="42" height="40" rx="2"/>
+              <rect class="building" x="1242" y="862" width="62" height="34" rx="2"/>
+              <rect class="building-dark" x="1328" y="862" width="52" height="38" rx="2"/>
+              <rect class="poi-building" x="1402" y="876" width="68" height="44" rx="2"/>
+              <rect class="building" x="1128" y="928" width="46" height="36" rx="2"/>
+              <rect class="building" x="1196" y="926" width="52" height="34" rx="2"/>
+              <rect class="building" x="1270" y="930" width="42" height="38" rx="2"/>
+              <rect class="building" x="1334" y="932" width="62" height="32" rx="2"/>
+              <rect class="building" x="1420" y="944" width="42" height="36" rx="2"/>
+              <rect class="building" x="1168" y="994" width="54" height="34" rx="2"/>
+              <rect class="building" x="1244" y="998" width="40" height="40" rx="2"/>
+              <rect class="building" x="1306" y="996" width="56" height="36" rx="2"/>
+              <rect class="building" x="1382" y="1004" width="44" height="34" rx="2"/>
+            </g>
+
+            <!-- building footprints, mountain village -->
+            <g transform="rotate(-7 290 550)">
+              <rect class="building" x="150" y="474" width="42" height="30" rx="2"/>
+              <rect class="building" x="214" y="464" width="38" height="32" rx="2"/>
+              <rect class="poi-building" x="274" y="456" width="60" height="42" rx="2"/>
+              <rect class="building" x="360" y="480" width="46" height="30" rx="2"/>
+              <rect class="building" x="128" y="536" width="48" height="32" rx="2"/>
+              <rect class="building" x="210" y="526" width="42" height="32" rx="2"/>
+              <rect class="building-dark" x="276" y="524" width="56" height="34" rx="2"/>
+              <rect class="building" x="358" y="546" width="50" height="30" rx="2"/>
+              <rect class="building" x="168" y="604" width="44" height="30" rx="2"/>
+              <rect class="poi-building" x="240" y="594" width="70" height="40" rx="2"/>
+              <rect class="building" x="334" y="612" width="42" height="32" rx="2"/>
+            </g>
+
+            <!-- labels and route markers are all fictional -->
+            <g>
+              <text class="place-label" x="742" y="895">三日月町</text>
+              <text class="station-label" x="704" y="944">三日月町駅</text>
+              <text class="place-label" x="1226" y="756">杉並ヶ岡</text>
+              <text class="station-label" x="1270" y="816">杉並ヶ岡駅</text>
+              <text class="place-label" x="226" y="448">霞ノ杜</text>
+              <text class="minor-label" x="110" y="360">水辺の丘</text>
+              <text class="minor-label" x="520" y="792">杜川</text>
+              <text class="minor-label" x="1030" y="348">北環状道路</text>
+              <text class="minor-label" x="810" y="536">旧街道</text>
+              <text class="minor-label" x="1154" y="1040">南畑地区</text>
+              <g transform="translate(906 358)">
+                <rect class="route-shield" x="0" y="0" width="42" height="22" rx="11"/>
+                <text x="21" y="15" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#3c4043">県19</text>
+              </g>
+              <g transform="translate(786 696)">
+                <rect class="route-shield" x="0" y="0" width="46" height="22" rx="11"/>
+                <text x="23" y="15" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#3c4043">町道7</text>
+              </g>
+            </g>
+          </svg>
+          <div id="pinsLayer"></div>
+          <div id="popupLayer"></div>
+        </div>
+
+        <div class="zoom-buttons">
+          <button id="zoomIn" aria-label="拡大">+</button>
+          <button id="zoomOut" aria-label="縮小">−</button>
+        </div>
+        <div class="map-utility" aria-hidden="true">
+          <button class="control-button" type="button" title="現在地">◎</button>
+          <button class="pegman" type="button" title="ストリートビュー">●</button>
+        </div>
+        <div class="layers-card">レイヤ</div>
+        <div class="map-scale">500 m</div>
+        <div class="gm-attribution"><span>架空地図データ</span><span>利用規約</span><span>フィードバック</span></div>
       </div>
     </div>
   </div>
@@ -511,75 +811,27 @@
         });
       }
 
-      function fillRegionList() {
-        var ul = document.getElementById("regionList");
-        ul.innerHTML = "";
-        var order = [
-          { key: "mikazuki", dot: "pm-civic" },
-          { key: "suginami", dot: "pm-civic" },
-          { key: "kasumi", dot: "pm-tourism" },
-        ];
-        order.forEach(function (o) {
-          var r = REGION[o.key];
-          var li = document.createElement("li");
-          li.innerHTML = '<span class="pin-mini ' + o.dot + '"></span><div class="row-main"><div class="row-title">' + r.name + '</div><div class="row-sub">' + r.sub + "</div></div>";
-          li.addEventListener("click", function () {
-            map.flyTo([r.lat, r.lng], r.flyZoom, { duration: 1.1 });
-          });
-          ul.appendChild(li);
+      function setFilter(tab) {
+        document.querySelectorAll(".sp-tab, .chip").forEach(function (x) {
+          x.classList.toggle("active", x.dataset.tab === tab);
         });
+        renderSidebar(tab);
       }
 
-      function parseUrlAndApply() {
-        var u;
-        try {
-          u = new URL(window.location.href);
-        } catch (e) {
-          return;
-        }
-        var lat = u.searchParams.get("lat");
-        var lng = u.searchParams.get("lng");
-        var z = parseFloat(u.searchParams.get("z") || "14");
-        if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
-          map.setView([parseFloat(lat), parseFloat(lng)], isNaN(z) ? 14 : z);
-          return;
-        }
-        var q = (u.searchParams.get("q") || "").trim();
-        if (q) {
-          runSearchQuery(q);
-          return;
-        }
-        var focus = (u.searchParams.get("focus") || u.searchParams.get("f") || "").toLowerCase();
-        if (focus === "kasumi" || focus === "kanomori") {
-          var K = REGION.kasumi;
-          map.flyTo([K.lat, K.lng], K.flyZoom, { duration: 1.1 });
-          return;
-        }
-        if (focus === "mikazuki" || focus === "mikatsuki" || focus === "tsukimachi") {
-          var M = REGION.mikazuki;
-          map.flyTo([M.lat, M.lng], M.flyZoom, { duration: 1.1 });
-          return;
-        }
-        if (focus === "suginami" || focus === "suginamigaoka") {
-          var S = REGION.suginami;
-          map.flyTo([S.lat, S.lng], S.flyZoom, { duration: 1.1 });
-          return;
-        }
-        if (focus === "unknown" || focus === "mizube" || focus === "mizube-no-oka") {
-          var unk = PIN_DATA.find(function (d) { return d.id === "unknown"; });
-          if (unk) {
-            map.flyTo([unk.lat, unk.lng], 17, { duration: 1.2 });
-            setTimeout(function () {
-              var mk = markerIndex["unknown"];
-              if (mk) mk.openPopup();
-            }, 1000);
-          }
-          return;
-        }
-        var entry = (u.searchParams.get("from") || u.searchParams.get("entry") || "").toLowerCase();
-        if (entry === "urban-legend-board" || entry === "board" || entry === "bbs") {
-          var B = REGION.mikazuki;
-          map.flyTo([B.lat, B.lng], 13.5, { duration: 1.2 });
+      document.querySelectorAll(".sp-tab, .chip").forEach(function (t) {
+        t.addEventListener("click", function () {
+          setFilter(t.dataset.tab);
+        });
+      });
+
+      // 検索
+      document.getElementById("searchBtn").addEventListener("click", function () {
+        var q = (document.getElementById("searchInput").value || "").trim();
+        if (!q) return;
+        // 緯度,経度形式？
+        if (/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(q)) {
+          var p = q.split(",");
+          placeUserPinAtLatLng(parseFloat(p[0]), parseFloat(p[1]));
           return;
         }
         var h = (window.location.hash || "").replace(/^#/, "").toLowerCase();
@@ -647,7 +899,9 @@
       });
 
       function boot() {
-        bootMap();
+        renderPins();
+        setFilter("all");
+        setInitialView();
       }
 
       var t = setInterval(function () {
