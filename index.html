@@ -312,12 +312,16 @@
       flex: 0 0 auto;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
     }
-    .pm-sweets { background: #fb8c00; }
-    .pm-conv { background: #1a73e8; }
-    .pm-tourism { background: #5f6b73; }
-    .pm-civic { background: #9c27b0; }
-    .pm-school { background: #607d8b; }
-    .pm-unknown { background: #8e6bae; }
+    .pm-poi-1 { background: #ef6c6c; }
+    .pm-poi-2 { background: #29b6f6; }
+    .pm-poi-3 { background: #1a73e8; }
+    .pm-poi-4 { background: #795548; }
+    .pm-poi-5 { background: #a1887f; }
+    .pm-poi-6 { background: #e53935; }
+    .pm-poi-7 { background: #66bb6a; }
+    .pm-poi-8 { background: #fb8c00; }
+    .pm-poi-9 { background: #e53935; }
+    .pm-poi-10 { background: #7e57c2; }
     .pm-user { background: #1a73e8; }
 
     /* MapLibre コントロールを Google 寄りに */
@@ -751,31 +755,32 @@
       };
 
       var PIN_DATA = [
-        { id: "sweets-01", lat: 43.062, lng: 141.3544, category: "sweets", title: "パティスリー 北の窓", area: "北海道・札幌", rating: 4.6, body: "札幌駅北口から徒歩圏。ショコラと季節のタルトが定評。", reviewer: "kasumi_local", review: "道産子スイーツ部の定番寄り道。" },
-        { id: "sweets-02", lat: 38.2685, lng: 140.869, category: "sweets", title: "喫茶 杜若", area: "宮城・仙台", rating: 4.3, body: "勾当台公園寄りの小さな喫茶。ずんだプリン。", reviewer: "night_owl_42", review: "ずんだの香りが上品。" },
-        { id: "sweets-03", lat: 35.6938, lng: 139.7035, category: "sweets", title: "雪あめや 新宿南口店", area: "東京・新宿", rating: 4.1, body: "和菓子と抹茶スイーツ。駅から徒歩5分。", reviewer: "甘味らじお", review: "みたらし団子の焼き目◎。" },
-        { id: "sweets-04", lat: 35.1712, lng: 136.8818, category: "sweets", title: "木洩日庵 栄本店", area: "愛知・名古屋", rating: 4.5, body: "ロールケーキ専門。平日も並ぶ。", reviewer: "ご当地スイーツ部", review: "生地がしっとり。" },
-        { id: "sweets-05", lat: 34.7028, lng: 135.4962, category: "sweets", title: "カフェ夜灯 梅田", area: "大阪・梅田", rating: 4, body: "深夜まで営業のカフェ。タルトと紅茶。", reviewer: "夜更かしさん", review: "夜景側の席が落ち着く。" },
-        { id: "sweets-06", lat: 34.3855, lng: 132.4555, category: "sweets", title: "月待ちプリン 本通店", area: "広島・紙屋町", rating: 3.9, body: "瓶プリンとレモンケーキ。", reviewer: "kasumi_local", review: "瓶がかわいい。" },
-        { id: "sweets-07", lat: 33.5905, lng: 130.4018, category: "sweets", title: "スイーツ工房 こもれび 天神", area: "福岡・天神", rating: 4.4, body: "ジェラートと焼き菓子。", reviewer: "甘味らじお", review: "九州フルーツの酸味が効いてる。" },
-        { id: "conv-01", lat: 35.4055, lng: 139.0108, category: "conv", title: "ファイブイレブン 三日月町店", area: "三日月町", rating: 3.6, body: "24時間営業。スイーツ系新作は強め入荷の店舗らしい。", reviewer: "コンビ二スイーツ部", review: "問題のチョコ新作、ここは毎週水曜に大量入荷。" },
-        { id: "conv-02", lat: 35.412, lng: 139.0072, category: "conv", title: "ファイブイレブン 三日月東店", area: "三日月町", rating: 3.4, body: "旧街道沿い。駐車場広め。" },
-        { id: "conv-03", lat: 35.4288, lng: 138.9835, category: "conv", title: "ファイブイレブン 杉並ヶ岡北口店", area: "杉並ヶ岡", rating: 3.7, body: "杉並ヶ岡駅北口を出てすぐ。", reviewer: "甘味らじお", review: "新作スイーツの再入荷スピードが早い。" },
-        { id: "conv-04", lat: 35.4215, lng: 138.9695, category: "conv", title: "ローライン 杉並ヶ岡西", area: "杉並ヶ岡", rating: 3.3, body: "比較的小型店。深夜は閉店。" },
-        { id: "conv-05", lat: 35.4088, lng: 138.9995, category: "conv", title: "セイファイ 旧街道前店", area: "三日月町", rating: 3.5, body: "旧街道沿い。県内チェーン。" },
-        { id: "conv-06", lat: 36.0514, lng: 138.1198, category: "conv", title: "ファイブイレブン 霞ノ杜町役場前店", area: "霞ノ杜町", rating: 3.2, body: "町内の生活路線。新作は控えめ。", reviewer: "kasumi_local", review: "山間部ではここが拠点。" },
-        { id: "tourism-01", lat: 36.0532, lng: 138.1172, category: "tourism", title: "霞ノ杜神社", area: "霞ノ杜町", rating: 4.4, body: "丘陵の鎮守。早朝は霧がかかる。" },
-        { id: "tourism-02", lat: 36.0505, lng: 138.1155, category: "tourism", title: "杜の吊り橋", area: "霞ノ杜町", rating: 4.2, body: "川上の木造橋。揺れる。" },
-        { id: "tourism-03", lat: 36.0518, lng: 138.1205, category: "tourism", title: "霞ノ杜資料館", area: "霞ノ杜町", rating: 4, body: "町史・古地図。火・水休館。" },
-        { id: "tourism-04", lat: 36.054, lng: 138.1142, category: "tourism", title: "霧見展望休憩所", area: "霞ノ杜町", rating: 4.3, body: "山道の中腹の小休憩所。" },
-        { id: "tourism-05", lat: 36.0508, lng: 138.1215, category: "tourism", title: "杜の湯（足湯）", area: "霞ノ杜町", rating: 4.1, body: "川沿いの足湯。無料。" },
-        { id: "civic-01", lat: 36.0524, lng: 138.1189, category: "civic", title: "霞ノ杜町役場", area: "霞ノ杜町", rating: 0, body: "月〜金 8:30-17:15。町の窓口。" },
-        { id: "school-01", lat: 36.0535, lng: 138.1178, category: "school", title: "霞ノ杜町立 霞ノ杜小学校", area: "霞ノ杜町", rating: 0, body: "地域と連携した環境学習。" },
+        { id: "sweets-01", lat: 43.062, lng: 141.3544, category: "sweets", poiKind: 9, title: "パティスリー 北の窓", area: "北海道・札幌", rating: 4.6, body: "札幌駅北口から徒歩圏。ショコラと季節のタルトが定評。", reviewer: "kasumi_local", review: "道産子スイーツ部の定番寄り道。" },
+        { id: "sweets-02", lat: 38.2685, lng: 140.869, category: "sweets", poiKind: 8, title: "喫茶 杜若", area: "宮城・仙台", rating: 4.3, body: "勾当台公園寄りの小さな喫茶。ずんだプリン。", reviewer: "night_owl_42", review: "ずんだの香りが上品。" },
+        { id: "sweets-03", lat: 35.6938, lng: 139.7035, category: "sweets", poiKind: 9, title: "雪あめや 新宿南口店", area: "東京・新宿", rating: 4.1, body: "和菓子と抹茶スイーツ。駅から徒歩5分。", reviewer: "甘味らじお", review: "みたらし団子の焼き目◎。" },
+        { id: "sweets-04", lat: 35.1712, lng: 136.8818, category: "sweets", poiKind: 9, title: "木洩日庵 栄本店", area: "愛知・名古屋", rating: 4.5, body: "ロールケーキ専門。平日も並ぶ。", reviewer: "ご当地スイーツ部", review: "生地がしっとり。" },
+        { id: "sweets-05", lat: 34.7028, lng: 135.4962, category: "sweets", poiKind: 8, title: "カフェ夜灯 梅田", area: "大阪・梅田", rating: 4, body: "深夜まで営業のカフェ。タルトと紅茶。", reviewer: "夜更かしさん", review: "夜景側の席が落ち着く。" },
+        { id: "sweets-06", lat: 34.3855, lng: 132.4555, category: "sweets", poiKind: 9, title: "月待ちプリン 本通店", area: "広島・紙屋町", rating: 3.9, body: "瓶プリンとレモンケーキ。", reviewer: "kasumi_local", review: "瓶がかわいい。" },
+        { id: "sweets-07", lat: 33.5905, lng: 130.4018, category: "sweets", poiKind: 9, title: "スイーツ工房 こもれび 天神", area: "福岡・天神", rating: 4.4, body: "ジェラートと焼き菓子。", reviewer: "甘味らじお", review: "九州フルーツの酸味が効いてる。" },
+        { id: "conv-01", lat: 35.4055, lng: 139.0108, category: "conv", poiKind: 3, title: "ファイブイレブン 三日月町店", area: "三日月町", rating: 3.6, body: "24時間営業。スイーツ系新作は強め入荷の店舗らしい。", reviewer: "コンビ二スイーツ部", review: "問題のチョコ新作、ここは毎週水曜に大量入荷。" },
+        { id: "conv-02", lat: 35.412, lng: 139.0072, category: "conv", poiKind: 3, title: "ファイブイレブン 三日月東店", area: "三日月町", rating: 3.4, body: "旧街道沿い。駐車場広め。" },
+        { id: "conv-03", lat: 35.4288, lng: 138.9835, category: "conv", poiKind: 3, title: "ファイブイレブン 杉並ヶ岡北口店", area: "杉並ヶ岡", rating: 3.7, body: "杉並ヶ岡駅北口を出てすぐ。", reviewer: "甘味らじお", review: "新作スイーツの再入荷スピードが早い。" },
+        { id: "conv-04", lat: 35.4215, lng: 138.9695, category: "conv", poiKind: 3, title: "ローライン 杉並ヶ岡西", area: "杉並ヶ岡", rating: 3.3, body: "比較的小型店。深夜は閉店。" },
+        { id: "conv-05", lat: 35.4088, lng: 138.9995, category: "conv", poiKind: 3, title: "セイファイ 旧街道前店", area: "三日月町", rating: 3.5, body: "旧街道沿い。県内チェーン。" },
+        { id: "conv-06", lat: 36.0514, lng: 138.1198, category: "conv", poiKind: 3, title: "ファイブイレブン 霞ノ杜町役場前店", area: "霞ノ杜町", rating: 3.2, body: "町内の生活路線。新作は控えめ。", reviewer: "kasumi_local", review: "山間部ではここが拠点。" },
+        { id: "tourism-01", lat: 36.0532, lng: 138.1172, category: "tourism", poiKind: 6, title: "霞ノ杜神社", area: "霞ノ杜町", rating: 4.4, body: "丘陵の鎮守。早朝は霧がかかる。" },
+        { id: "tourism-02", lat: 36.0505, lng: 138.1155, category: "tourism", poiKind: 5, title: "杜の吊り橋", area: "霞ノ杜町", rating: 4.2, body: "川上の木造橋。揺れる。" },
+        { id: "tourism-03", lat: 36.0518, lng: 138.1205, category: "tourism", poiKind: 1, title: "霞ノ杜資料館", area: "霞ノ杜町", rating: 4, body: "町史・古地図。火・水休館。" },
+        { id: "tourism-04", lat: 36.054, lng: 138.1142, category: "tourism", poiKind: 7, title: "霧見展望休憩所", area: "霞ノ杜町", rating: 4.3, body: "山道の中腹の小休憩所。" },
+        { id: "tourism-05", lat: 36.0508, lng: 138.1215, category: "tourism", poiKind: 2, title: "杜の湯（足湯）", area: "霞ノ杜町", rating: 4.1, body: "川沿いの足湯。無料。" },
+        { id: "civic-01", lat: 36.0524, lng: 138.1189, category: "civic", poiKind: 4, title: "霞ノ杜町役場", area: "霞ノ杜町", rating: 0, body: "月〜金 8:30-17:15。町の窓口。" },
+        { id: "school-01", lat: 36.0535, lng: 138.1178, category: "school", poiKind: 4, title: "霞ノ杜町立 霞ノ杜小学校", area: "霞ノ杜町", rating: 0, body: "地域と連携した環境学習。", schoolGlyph: true },
         {
           id: "unknown",
           lat: 36.0509,
           lng: 138.1164,
           category: "unknown",
+          poiKind: 10,
           title: "（名称未設定）",
           area: "霞ノ杜町（北西・水辺）",
           rating: 0,
@@ -795,16 +800,55 @@
       var markerIndex = {};
       var selectedPinId = null;
 
-      function iconSvgGroup(cat) {
-        if (cat === "sweets") {
+      var POI_KIND_LABELS = [
+        "",
+        "資料館",
+        "温泉・足湯",
+        "コンビニ",
+        "役場",
+        "吊り橋・橋",
+        "神社",
+        "休憩所",
+        "喫茶店",
+        "スイーツ・飲食店",
+        "史跡",
+      ];
+
+      function fillForPoiKind(k) {
+        var fills = ["", "#ef6c6c", "#29b6f6", "#1a73e8", "#795548", "#a1887f", "#e53935", "#66bb6a", "#fb8c00", "#e53935", "#7e57c2"];
+        return fills[k] || "#78909c";
+      }
+
+      function iconSvgForPin(pin) {
+        if (pin.schoolGlyph) {
           return (
-            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">' +
-            '<path d="M15.8 12.2v8.8M17.15 12.2v8.8M18.5 12.2v8.8M15.8 12.2h2.7"/>' +
-            '<path d="M20.6 11.8l2.8 9.2h1.05l-2.45-9.2"/>' +
+            '<g class="gm-gpin-ico">' +
+            '<text x="22" y="20.2" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700" font-family="Roboto,Meiryo,sans-serif">文</text>' +
             "</g>"
           );
         }
-        if (cat === "conv") {
+        var k = pin.poiKind || 9;
+        if (k === 1) {
+          return (
+            '<g class="gm-gpin-ico" fill="#ffffff">' +
+            '<path d="M16 11.2L22 7.8L28 11.2z"/>' +
+            '<rect x="17.1" y="11.2" width="1.15" height="8.5"/>' +
+            '<rect x="19.35" y="11.2" width="1.15" height="8.5"/>' +
+            '<rect x="21.55" y="11.2" width="1.15" height="8.5"/>' +
+            '<rect x="23.75" y="11.2" width="1.15" height="8.5"/>' +
+            '<rect x="26" y="11.2" width="1.15" height="8.5"/>' +
+            '<rect x="16" y="19.2" width="12" height="2.4" rx="0.35"/>' +
+            "</g>"
+          );
+        }
+        if (k === 2) {
+          return (
+            '<g class="gm-gpin-ico">' +
+            '<text x="22" y="21.5" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700" font-family="Meiryo,sans-serif">♨</text>' +
+            "</g>"
+          );
+        }
+        if (k === 3) {
           return (
             '<g class="gm-gpin-ico" fill="#ffffff">' +
             '<path d="M17.4 15.4h9.2v7.6h-9.2zm1.9-2.4h5.4l-.65-1.85h-4.1z"/>' +
@@ -812,68 +856,101 @@
             "</g>"
           );
         }
-        if (cat === "tourism") {
-          return (
-            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.25" stroke-linecap="round">' +
-            '<path d="M14.2 13.1h15.6v1.35H14.2z"/>' +
-            '<path d="M15.9 13.1v7.2M28.1 13.1v7.2"/>' +
-            '<path d="M14.6 16.4h14.8"/>' +
-            '<path d="M22 16.4v4.2" opacity="0.9"/>' +
-            "</g>"
-          );
-        }
-        if (cat === "civic") {
+        if (k === 4) {
           return (
             '<g class="gm-gpin-ico" fill="#ffffff">' +
-            '<path d="M22 11.2l-5.2 3.2v6.4h10.4v-6.4zm-3.4 3.4h6.8l-3.4-2zm1.2 2.2h4v4.8h-4z"/>' +
-            '<path d="M18.6 18.4h1.1v2.6h-1.1zm3.15 0h1.1v2.6h-1.1zm3.15 0h1.1v2.6h-1.1z"/>' +
+            '<polygon points="17.2,14.5 22,10.2 26.8,14.5"/>' +
+            '<rect x="17.4" y="14.5" width="9.2" height="7.8" rx="0.45"/>' +
+            '<line x1="25.5" y1="10.8" x2="25.5" y2="7.8" stroke="#ffffff" stroke-width="1.05"/>' +
+            '<polygon points="25.5,7.8 27.6,9.3 25.5,8.4"/>' +
             "</g>"
           );
         }
-        if (cat === "school") {
+        if (k === 5) {
           return (
-            '<g class="gm-gpin-ico">' +
-            '<text x="22" y="20.2" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700" font-family="Roboto,Meiryo,sans-serif">文</text>' +
+            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.65" stroke-linecap="round">' +
+            '<path d="M14 20.2Q22 10.5 30 20.2"/>' +
+            '<path d="M14.2 20.2h15.6M18.5 20.2v2.2M25.5 20.2v2.2"/>' +
             "</g>"
           );
         }
-        if (cat === "user") {
-          return '<circle class="gm-gpin-ico" cx="22" cy="16.5" r="3.1" fill="#ffffff"/>';
+        if (k === 6) {
+          return (
+            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round">' +
+            '<path d="M14.3 13.2h15.4v1.35H14.3z"/>' +
+            '<path d="M16 13.2v7.4M28 13.2v7.4"/>' +
+            '<path d="M14.6 16.6h14.8"/>' +
+            "</g>"
+          );
+        }
+        if (k === 7) {
+          return (
+            '<g class="gm-gpin-ico" fill="#ffffff">' +
+            '<rect x="14.8" y="14.2" width="14.4" height="2.2" rx="0.35"/>' +
+            '<rect x="16.2" y="16.4" width="1.6" height="5.2" rx="0.2"/>' +
+            '<rect x="26.2" y="16.4" width="1.6" height="5.2" rx="0.2"/>' +
+            "</g>"
+          );
+        }
+        if (k === 8) {
+          return (
+            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">' +
+            '<path d="M17.2 14.8h6.2a2.1 2.1 0 0 1 2.1 1.9v2.3a2.1 2.1 0 0 1-2.1 1.9h-6.2"/>' +
+            '<path d="M25.5 15.8h1.6a1.25 1.25 0 0 1 0 2.5H25.5"/>' +
+            '<line x1="15.2" y1="22.2" x2="26.8" y2="22.2"/>' +
+            "</g>"
+          );
+        }
+        if (k === 9) {
+          return (
+            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">' +
+            '<path d="M15.8 12.2v8.8M17.15 12.2v8.8M18.5 12.2v8.8M15.8 12.2h2.7"/>' +
+            '<path d="M20.6 11.8l2.8 9.2h1.05l-2.45-9.2"/>' +
+            "</g>"
+          );
+        }
+        if (k === 10) {
+          return (
+            '<g class="gm-gpin-ico" fill="#ffffff">' +
+            '<rect x="20.4" y="12.8" width="2.4" height="2.4" rx="0.35"/>' +
+            '<rect x="17.6" y="15.6" width="2.4" height="2.4" rx="0.35"/>' +
+            '<rect x="23.2" y="15.6" width="2.4" height="2.4" rx="0.35"/>' +
+            "</g>"
+          );
         }
         return (
-          '<g class="gm-gpin-ico" fill="#ffffff">' +
-          '<rect x="20.4" y="12.8" width="2.4" height="2.4" rx="0.35"/>' +
-          '<rect x="17.6" y="15.6" width="2.4" height="2.4" rx="0.35"/>' +
-          '<rect x="23.2" y="15.6" width="2.4" height="2.4" rx="0.35"/>' +
+          '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">' +
+          '<path d="M15.8 12.2v8.8M17.15 12.2v8.8M18.5 12.2v8.8M15.8 12.2h2.7"/>' +
+          '<path d="M20.6 11.8l2.8 9.2h1.05l-2.45-9.2"/>' +
           "</g>"
         );
       }
 
-      function buildGooglePinSvg(cat) {
-        var fill =
-          cat === "sweets"
-            ? "#fb8c00"
-            : cat === "conv"
-              ? "#1a73e8"
-              : cat === "tourism"
-                ? "#5f6b73"
-                : cat === "civic"
-                  ? "#9c27b0"
-                  : cat === "school"
-                    ? "#607d8b"
-                    : cat === "user"
-                      ? "#1a73e8"
-                      : "#8e6bae";
+      function buildGooglePinSvg(pin) {
+        if (pin === "user" || (pin && pin.category === "user")) {
+          var fillU = "#1a73e8";
+          var tail = '<path fill="#ffffff" d="M22 26.35L15.1 26.75L22 50.6L28.9 26.75z"/>';
+          var bulb =
+            '<circle class="gm-gpin-fill" cx="22" cy="16.5" r="10.6" fill="' +
+            fillU +
+            '" stroke="#ffffff" stroke-width="2.85"/>';
+          var icoU = '<circle class="gm-gpin-ico" cx="22" cy="16.5" r="3.1" fill="#ffffff"/>';
+          return (
+            '<svg xmlns="http://www.w3.org/2000/svg" class="gm-gpin-svg" viewBox="0 0 44 52" width="44" height="52" aria-hidden="true">' +
+            tail +
+            bulb +
+            icoU +
+            "</svg>"
+          );
+        }
+        var fill = fillForPoiKind(pin.poiKind || 9);
         var tail = '<path fill="#ffffff" d="M22 26.35L15.1 26.75L22 50.6L28.9 26.75z"/>';
         var bulb =
           '<circle class="gm-gpin-fill" cx="22" cy="16.5" r="10.6" fill="' +
           fill +
           '" stroke="#ffffff" stroke-width="2.85"/>';
-        var ico = iconSvgGroup(cat);
-        var dot =
-          cat === "user"
-            ? ""
-            : '<circle class="gm-gpin-dot" cx="22" cy="16.5" r="3.15" fill="#ffffff" opacity="0"/>';
+        var ico = iconSvgForPin(pin);
+        var dot = '<circle class="gm-gpin-dot" cx="22" cy="16.5" r="3.15" fill="#ffffff" opacity="0"/>';
         return (
           '<svg xmlns="http://www.w3.org/2000/svg" class="gm-gpin-svg" viewBox="0 0 44 52" width="44" height="52" aria-hidden="true">' +
           tail +
@@ -884,14 +961,15 @@
         );
       }
 
-      function pinEl(cat) {
+      function pinEl(pin) {
         var d = document.createElement("div");
         d.className = "gm-marker-root";
         var wrap = document.createElement("div");
-        wrap.className = "gm-gpin-wrap gm-gpin--" + cat;
+        var isUser = pin && pin.category === "user";
+        wrap.className = "gm-gpin-wrap " + (isUser ? "gm-gpin--user" : "gm-gpin--k" + (pin.poiKind || 9));
         wrap.setAttribute("role", "button");
         wrap.setAttribute("tabindex", "0");
-        wrap.innerHTML = buildGooglePinSvg(cat);
+        wrap.innerHTML = buildGooglePinSvg(isUser ? { category: "user" } : pin);
         d.appendChild(wrap);
         return d;
       }
@@ -942,18 +1020,7 @@
               pin.rating.toFixed(1) +
               "（サンプル）"
             : "";
-        var catLabel =
-          pin.category === "sweets"
-            ? "スイーツ"
-            : pin.category === "conv"
-              ? "コンビニエンスストア"
-              : pin.category === "tourism"
-                ? "観光スポット"
-                : pin.category === "civic"
-                  ? "公共施設"
-                  : pin.category === "school"
-                    ? "学校"
-                    : "スポット";
+        var catLabel = pin.schoolGlyph ? "学校" : POI_KIND_LABELS[pin.poiKind] || "スポット";
         var hero =
           pin.category === "unknown"
             ? '<div class="gm-place-hero"><img src="' +
@@ -1158,7 +1225,7 @@
         closePlaceDetail();
         if (SWEETS_THREAD_MODE) return;
         PIN_DATA.forEach(function (p) {
-          var el = pinEl(p.category);
+          var el = pinEl(p);
           var mk = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat([p.lng, p.lat]).addTo(map);
           el.addEventListener("click", function (e) {
             e.stopPropagation();
@@ -1177,7 +1244,7 @@
           localStorage.removeItem(STATE_KEY);
           return;
         }
-        var uel = pinEl("user");
+        var uel = pinEl({ category: "user" });
         userMarker = new maplibregl.Marker({ element: uel, anchor: "bottom" }).setLngLat([ulng, ulat]).addTo(map);
         uel.addEventListener("click", function (e) {
           e.stopPropagation();
@@ -1271,16 +1338,7 @@
         });
         shops.forEach(function (p) {
           var li = document.createElement("li");
-          var dotCls =
-            p.category === "sweets"
-              ? "pm-sweets"
-              : p.category === "conv"
-                ? "pm-conv"
-                : p.category === "tourism"
-                  ? "pm-tourism"
-                  : p.category === "unknown"
-                    ? "pm-unknown"
-                    : "pm-civic";
+          var dotCls = "pin-mini pm-poi-" + (p.poiKind || 9);
           li.innerHTML =
             '<span class="pin-mini ' +
             dotCls +
@@ -1302,8 +1360,8 @@
         reviewed.forEach(function (p) {
           var li = document.createElement("li");
           li.innerHTML =
-            '<span class="pin-mini ' +
-            (p.category === "sweets" ? "pm-sweets" : "pm-conv") +
+            '<span class="pin-mini pm-poi-' +
+            (p.poiKind || 9) +
             '"></span>' +
             '<div class="row-main"><div class="row-title">' +
             p.title +
@@ -1329,16 +1387,14 @@
         var ul = document.getElementById("regionList");
         ul.innerHTML = "";
         [
-          { key: "mikazuki", dot: "pm-civic" },
-          { key: "suginami", dot: "pm-civic" },
-          { key: "kasumi", dot: "pm-tourism" },
+          { key: "mikazuki", dot: "pm-poi-9" },
+          { key: "suginami", dot: "pm-poi-9" },
+          { key: "kasumi", dot: "pm-poi-6" },
         ].forEach(function (o) {
           var r = REGION[o.key];
           var li = document.createElement("li");
           li.innerHTML =
-            '<span class="pin-mini ' +
-            o.dot +
-            '"></span><div class="row-main"><div class="row-title">' +
+            '<span class="pin-mini ' + o.dot + '"></span><div class="row-main"><div class="row-title">' +
             r.name +
             '</div><div class="row-sub">' +
             r.sub +
