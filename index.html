@@ -312,13 +312,13 @@
       flex: 0 0 auto;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
     }
-    .pm-sweets { background: #1a73e8; }
+    .pm-sweets { background: #fb8c00; }
     .pm-conv { background: #1a73e8; }
-    .pm-tourism { background: #ea4335; }
-    .pm-civic { background: #1a73e8; }
-    .pm-school { background: #34a853; }
-    .pm-unknown { background: #b0b0b0; }
-    .pm-user { background: #fbbc05; }
+    .pm-tourism { background: #5f6b73; }
+    .pm-civic { background: #9c27b0; }
+    .pm-school { background: #607d8b; }
+    .pm-unknown { background: #8e6bae; }
+    .pm-user { background: #1a73e8; }
 
     /* MapLibre コントロールを Google 寄りに */
     .map-shell .maplibregl-ctrl-bottom-right { margin-bottom: 16px; margin-right: 12px; }
@@ -334,41 +334,23 @@
       font-size: 18px !important;
     }
 
-    /* Google 風 POI 円 / 選択時は赤ティアドロップ */
-    .gm-marker-root { cursor: pointer; }
-    .gm-poi {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-      display: grid;
-      place-items: center;
-      transition: transform 0.15s ease, width 0.15s, height 0.15s, border-radius 0.15s;
+    /* Google Maps 風 POI: 白いピン形 + 色付き円 + 白グリフ（SVG） */
+    .gm-marker-root { cursor: pointer; line-height: 0; }
+    .gm-gpin-wrap {
+      display: block;
+      filter: drop-shadow(0 1.5px 2.2px rgba(0, 0, 0, 0.34));
+      transition: transform 0.12s ease;
     }
-    .gm-poi-glyph { font-size: 15px; line-height: 1; }
-    .gm-poi--sweets { background: #1a73e8; color: #fff; }
-    .gm-poi--conv { background: #1a73e8; color: #fff; }
-    .gm-poi--tourism { background: #34a853; color: #fff; }
-    .gm-poi--civic { background: #5f6368; color: #fff; }
-    .gm-poi--school { background: #34a853; color: #fff; }
-    .gm-poi--unknown { background: #9e9e9e; color: #fff; }
-    .gm-poi--user { background: #fbbc05; color: #fff; }
-    .gm-poi.is-selected {
-      width: 28px;
-      height: 28px;
-      border-radius: 50% 50% 50% 0;
-      transform: rotate(-45deg);
-      background: #ea4335 !important;
-      border-color: #fff;
+    .gm-marker-root:hover .gm-gpin-wrap { transform: scale(1.06); }
+    .gm-gpin-wrap .gm-gpin-svg { display: block; width: 44px; height: 52px; }
+    .gm-gpin-wrap.is-selected .gm-gpin-fill {
+      fill: #ea4335 !important;
     }
-    .gm-poi.is-selected .gm-poi-glyph {
-      transform: rotate(45deg);
-      font-size: 0;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #fff;
+    .gm-gpin-wrap.is-selected .gm-gpin-ico {
+      opacity: 0;
+    }
+    .gm-gpin-wrap.is-selected .gm-gpin-dot {
+      opacity: 1 !important;
     }
 
     .fiction-label-wrap { pointer-events: none; text-align: center; }
@@ -813,30 +795,109 @@
       var markerIndex = {};
       var selectedPinId = null;
 
-      function glyphFor(cat) {
-        if (cat === "sweets") return "🧁";
-        if (cat === "conv") return "🏪";
-        if (cat === "tourism") return "⛩";
-        if (cat === "civic") return "🏛";
-        if (cat === "school") return "🏫";
-        if (cat === "user") return "📍";
-        return "?";
+      function iconSvgGroup(cat) {
+        if (cat === "sweets") {
+          return (
+            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">' +
+            '<path d="M15.8 12.2v8.8M17.15 12.2v8.8M18.5 12.2v8.8M15.8 12.2h2.7"/>' +
+            '<path d="M20.6 11.8l2.8 9.2h1.05l-2.45-9.2"/>' +
+            "</g>"
+          );
+        }
+        if (cat === "conv") {
+          return (
+            '<g class="gm-gpin-ico" fill="#ffffff">' +
+            '<path d="M17.4 15.4h9.2v7.6h-9.2zm1.9-2.4h5.4l-.65-1.85h-4.1z"/>' +
+            '<path d="M20.2 13.2h3.6v1.2h-3.6z" opacity="0.85"/>' +
+            "</g>"
+          );
+        }
+        if (cat === "tourism") {
+          return (
+            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.25" stroke-linecap="round">' +
+            '<path d="M14.2 13.1h15.6v1.35H14.2z"/>' +
+            '<path d="M15.9 13.1v7.2M28.1 13.1v7.2"/>' +
+            '<path d="M14.6 16.4h14.8"/>' +
+            '<path d="M22 16.4v4.2" opacity="0.9"/>' +
+            "</g>"
+          );
+        }
+        if (cat === "civic") {
+          return (
+            '<g class="gm-gpin-ico" fill="#ffffff">' +
+            '<path d="M22 11.2l-5.2 3.2v6.4h10.4v-6.4zm-3.4 3.4h6.8l-3.4-2zm1.2 2.2h4v4.8h-4z"/>' +
+            '<path d="M18.6 18.4h1.1v2.6h-1.1zm3.15 0h1.1v2.6h-1.1zm3.15 0h1.1v2.6h-1.1z"/>' +
+            "</g>"
+          );
+        }
+        if (cat === "school") {
+          return (
+            '<g class="gm-gpin-ico">' +
+            '<text x="22" y="20.2" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700" font-family="Roboto,Meiryo,sans-serif">文</text>' +
+            "</g>"
+          );
+        }
+        if (cat === "user") {
+          return '<circle class="gm-gpin-ico" cx="22" cy="16.5" r="3.1" fill="#ffffff"/>';
+        }
+        return (
+          '<g class="gm-gpin-ico" fill="#ffffff">' +
+          '<rect x="20.4" y="12.8" width="2.4" height="2.4" rx="0.35"/>' +
+          '<rect x="17.6" y="15.6" width="2.4" height="2.4" rx="0.35"/>' +
+          '<rect x="23.2" y="15.6" width="2.4" height="2.4" rx="0.35"/>' +
+          "</g>"
+        );
+      }
+
+      function buildGooglePinSvg(cat) {
+        var fill =
+          cat === "sweets"
+            ? "#fb8c00"
+            : cat === "conv"
+              ? "#1a73e8"
+              : cat === "tourism"
+                ? "#5f6b73"
+                : cat === "civic"
+                  ? "#9c27b0"
+                  : cat === "school"
+                    ? "#607d8b"
+                    : cat === "user"
+                      ? "#1a73e8"
+                      : "#8e6bae";
+        var tail = '<path fill="#ffffff" d="M22 26.35L15.1 26.75L22 50.6L28.9 26.75z"/>';
+        var bulb =
+          '<circle class="gm-gpin-fill" cx="22" cy="16.5" r="10.6" fill="' +
+          fill +
+          '" stroke="#ffffff" stroke-width="2.85"/>';
+        var ico = iconSvgGroup(cat);
+        var dot =
+          cat === "user"
+            ? ""
+            : '<circle class="gm-gpin-dot" cx="22" cy="16.5" r="3.15" fill="#ffffff" opacity="0"/>';
+        return (
+          '<svg xmlns="http://www.w3.org/2000/svg" class="gm-gpin-svg" viewBox="0 0 44 52" width="44" height="52" aria-hidden="true">' +
+          tail +
+          bulb +
+          ico +
+          dot +
+          "</svg>"
+        );
       }
 
       function pinEl(cat) {
         var d = document.createElement("div");
         d.className = "gm-marker-root";
-        d.innerHTML =
-          '<div class="gm-poi gm-poi--' +
-          cat +
-          '" role="button" tabindex="0"><span class="gm-poi-glyph" aria-hidden="true">' +
-          glyphFor(cat) +
-          "</span></div>";
+        var wrap = document.createElement("div");
+        wrap.className = "gm-gpin-wrap gm-gpin--" + cat;
+        wrap.setAttribute("role", "button");
+        wrap.setAttribute("tabindex", "0");
+        wrap.innerHTML = buildGooglePinSvg(cat);
+        d.appendChild(wrap);
         return d;
       }
 
       function clearPinSelectionVisual() {
-        document.querySelectorAll(".gm-poi.is-selected").forEach(function (el) {
+        document.querySelectorAll(".gm-gpin-wrap.is-selected").forEach(function (el) {
           el.classList.remove("is-selected");
         });
         selectedPinId = null;
@@ -848,8 +909,8 @@
         var mk = markerIndex[pinId];
         if (!mk) return;
         var root = mk.getElement();
-        var poi = root && root.querySelector(".gm-poi");
-        if (poi) poi.classList.add("is-selected");
+        var wrap = root && root.querySelector(".gm-gpin-wrap");
+        if (wrap) wrap.classList.add("is-selected");
       }
 
       function escHtml(s) {
@@ -1098,7 +1159,7 @@
         if (SWEETS_THREAD_MODE) return;
         PIN_DATA.forEach(function (p) {
           var el = pinEl(p.category);
-          var mk = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([p.lng, p.lat]).addTo(map);
+          var mk = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat([p.lng, p.lat]).addTo(map);
           el.addEventListener("click", function (e) {
             e.stopPropagation();
             openPlaceDetail(p);
@@ -1117,7 +1178,7 @@
           return;
         }
         var uel = pinEl("user");
-        userMarker = new maplibregl.Marker({ element: uel, anchor: "center" }).setLngLat([ulng, ulat]).addTo(map);
+        userMarker = new maplibregl.Marker({ element: uel, anchor: "bottom" }).setLngLat([ulng, ulat]).addTo(map);
         uel.addEventListener("click", function (e) {
           e.stopPropagation();
           openUserMapPopup(
