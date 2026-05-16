@@ -661,6 +661,17 @@
     .ns-denied-card .ns-portal { margin-top: 14px; font-size: 12px; line-height: 1.5; word-break: break-all; }
     .ns-denied-card .ns-portal a { color: #1a73e8; }
   </style>
+  <script>
+    (function () {
+      try {
+        var q = new URLSearchParams(location.search);
+        var fp = q.get("kn_set_footprint");
+        if (fp === "purged_delete" || fp === "purged_keep") {
+          localStorage.setItem("signal_trace_kn_footprint_v2", fp);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <script>window.__TOKEN_RESOURCE_KEY__ = "ext:gougle-map"</script>
   <script>
     window.__TOKEN_DENIED__ = function (msg) {
@@ -1905,6 +1916,14 @@
                     window.opener.postMessage({ type: "KN_PURGE_SITE_RESPONSE", step: step, choice: c }, "*");
                   }
                 } catch (e2) {}
+                if (step === 5) {
+                  try {
+                    localStorage.setItem(
+                      "signal_trace_kn_footprint_v2",
+                      c ? "purged_delete" : "purged_keep"
+                    );
+                  } catch (e4) {}
+                }
                 knPurgeAdvance(step);
               }
               var bn = document.createElement("button");
