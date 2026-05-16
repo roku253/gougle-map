@@ -76,7 +76,33 @@
       position: relative;
       min-width: 0;
     }
-
+    .gm-fiction-note {
+      position: absolute;
+      left: 72px;
+      right: 12px;
+      bottom: 10px;
+      z-index: 125;
+      margin: 0;
+      padding: 8px 12px;
+      font-size: 11px;
+      line-height: 1.45;
+      color: #3c4043;
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 8px;
+      box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+      border: 1px solid #e8eaed;
+      max-width: min(520px, calc(100vw - 100px));
+      pointer-events: none;
+    }
+    .gm-fiction-note strong { font-weight: 600; color: #202124; }
+    @media (max-width: 600px) {
+      .gm-fiction-note {
+        left: 12px;
+        right: 12px;
+        max-width: none;
+        font-size: 10px;
+      }
+    }
     .topbar {
       position: absolute;
       left: 16px;
@@ -740,6 +766,7 @@
             <div>現在の下層は <strong>OpenFreeMap Liberty</strong>（OSM ベクトル）です。</div>
           </div>
         </div>
+        <p class="gm-fiction-note" role="note">※本サイトは謎解き作品のための<strong>架空サイト</strong>です。記載・表示されるサービス名・地名・人物名・団体名などはフィクションであり、<strong>実在のものとは一切関係ありません</strong>。</p>
       </div>
     </div>
   </div>
