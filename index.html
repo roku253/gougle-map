@@ -887,7 +887,7 @@
       var INTRO_HTML_ALL =
         "<strong>下層</strong>は実在の OSM ベクトル地図です（地名・店記号は非表示）。<strong>霞ノ杜町</strong>は長野県付近の座標を物語上の舞台として使用しています。";
       var INTRO_HTML_SWEETS =
-        "<strong>スイーツ</strong>タブでは、全国のスイーツ店のピンは<strong>ズームアウトしていても</strong>地図に表示されます。霞ノ杜エリアの店はこの一覧からは外しています。<strong>検索</strong>や周辺・観光タブで見つけてください。";
+        "<strong>スイーツ</strong>タブでは、全国のスイーツ店のピンは<strong>ズームアウトしていても</strong>地図に表示されます。霞ノ杜まちに関連する店・レビューは一覧・地図ともに出しません。<strong>検索</strong>や周辺・観光タブで見つけてください。";
 
       function isKasumiMapPin(p) {
         if (!p) return false;
@@ -895,6 +895,27 @@
         if (typeof p.lat === "number" && typeof p.lng === "number") {
           return Math.abs(p.lat - KASUMI_LAT) < 0.04 && Math.abs(p.lng - KASUMI_LNG) < 0.04;
         }
+        return false;
+      }
+
+      /** スイーツタブの一覧・レビュー・地図表示から除く（霞ノ杜まち／関連レビュアー・文言に絡む店） */
+      function isExcludedFromSweetsTab(p) {
+        if (!p) return false;
+        if (p.category !== "sweets") return false;
+        if (isKasumiMapPin(p)) return true;
+        var blob =
+          String(p.title || "") +
+          "\n" +
+          String(p.area || "") +
+          "\n" +
+          String(p.body || "") +
+          "\n" +
+          String(p.review || "") +
+          "\n" +
+          String(p.reviewer || "") +
+          "\n" +
+          String(p.meta || "");
+        if (/霞ノ杜|かすみのもり|kasumi_local/i.test(blob)) return true;
         return false;
       }
 
@@ -1008,7 +1029,9 @@
           if (!root) return;
           var cat = root.getAttribute("data-pin-category") || "";
           var show = z >= POI_PINS_MIN_ZOOM;
-          if (tab === "sweets" && cat === "sweets") show = true;
+          if (tab === "sweets" && cat === "sweets") {
+            show = root.getAttribute("data-sweets-excluded") !== "1";
+          }
           root.style.display = show ? "" : "none";
           root.style.pointerEvents = show ? "" : "none";
         });
@@ -1325,7 +1348,7 @@
           });
       }
 
-      function openPlaceDetail(pin) {
+      function openPlaceDetail(pin, skipPaddingSchedule) {
         closeMapPopup();
         closePlaceDetail();
         setPinSelected(pin.id);
@@ -1334,8 +1357,10 @@
         panel.classList.add("is-open");
         panel.setAttribute("aria-hidden", "false");
         wirePlacePanel(pin);
-        scheduleApplyMapChromePadding();
-        setTimeout(scheduleApplyMapChromePadding, 280);
+        if (!skipPaddingSchedule) {
+          scheduleApplyMapChromePadding();
+          setTimeout(scheduleApplyMapChromePadding, 280);
+        }
       }
 
       function labelEl(r) {
@@ -1404,24 +1429,11 @@
         if (Math.abs(lat - ANSWER_LAT) < 0.008 && Math.abs(lng - ANSWER_LNG) < 0.008) {
           return { lat: ANSWER_LAT, lng: ANSWER_LNG, isAnswer: true };
         }
-        if (lat >= 36.0 && lat <= 36.14 && lng >= 138.05 && lng <= 138.22) {
-          return {
-            lat: Math.max(36.02, Math.min(36.09, lat)),
-            lng: Math.max(138.08, Math.min(138.16, lng)),
-            isAnswer: false,
-          };
-        }
-        if (lat >= 35.35 && lat <= 35.48 && lng >= 138.86 && lng <= 139.06) {
-          return {
-            lat: Math.max(35.35, Math.min(35.48, lat)),
-            lng: Math.max(138.86, Math.min(139.06, lng)),
-            isAnswer: false,
-          };
-        }
         return { lat: lat, lng: lng, isAnswer: false };
       }
 
-      function placeUserPinAtLatLng(lat, lng) {
+      function placeUserPinAtLatLng(lat, lng, opts) {
+        opts = opts || {};
         if (SWEETS_THREAD_MODE) {
           window.alert("スイーツスレ表示では座標ピンは利用できません。");
           return;
@@ -1433,7 +1445,8 @@
         var p = latLngToResult(lat, lng);
         localStorage.setItem(STATE_KEY, p.lat + "," + p.lng);
         renderMarkers();
-        flyMapWithChrome({ center: [p.lng, p.lat], zoom: 16 });
+        var zz = typeof opts.zoom === "number" && !isNaN(opts.zoom) ? opts.zoom : 16;
+        flyMapWithChrome({ center: [p.lng, p.lat], zoom: zz });
         if (p.isAnswer) {
           setTimeout(function () {
             var unk = PIN_DATA.find(function (d) {
@@ -1452,6 +1465,9 @@
           var el = pinEl(p);
           el.setAttribute("data-pin-category", p.category);
           el.setAttribute("data-pin-id", p.id);
+          if (p.category === "sweets" && isExcludedFromSweetsTab(p)) {
+            el.setAttribute("data-sweets-excluded", "1");
+          }
           var mk = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat([p.lng, p.lat]).addTo(map);
           el.addEventListener("click", function (e) {
             e.stopPropagation();
@@ -1511,12 +1527,26 @@
       }
 
       function flyToPin(pin, openPop) {
-        flyMapWithChrome({ center: [pin.lng, pin.lat], zoom: 16 });
-        if (openPop && !SWEETS_THREAD_MODE) {
-          setTimeout(function () {
-            openPlaceDetail(pin);
-          }, 650);
+        if (!map) return;
+        if (SWEETS_THREAD_MODE) {
+          flyMapWithChrome({ center: [pin.lng, pin.lat], zoom: 15 });
+          return;
         }
+        if (openPop) {
+          map.stop();
+          openPlaceDetail(pin, true);
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              flyMapWithChrome({ center: [pin.lng, pin.lat], zoom: 16, duration: 480 });
+              map.once("moveend", function () {
+                scheduleApplyMapChromePadding();
+                setTimeout(scheduleApplyMapChromePadding, 140);
+              });
+            });
+          });
+          return;
+        }
+        flyMapWithChrome({ center: [pin.lng, pin.lat], zoom: 16 });
       }
 
       function runSearchFromInput() {
@@ -1559,7 +1589,7 @@
         reviewList.innerHTML = "";
         var shops = PIN_DATA.filter(function (p) {
           if (filter === "all") return p.category !== "civic" && p.category !== "school";
-          if (filter === "sweets") return p.category === "sweets" && !isKasumiMapPin(p);
+          if (filter === "sweets") return p.category === "sweets" && !isExcludedFromSweetsTab(p);
           if (filter === "conv") return p.category === "conv";
           if (filter === "other") return p.category === "tourism" || p.category === "unknown";
           return true;
@@ -1587,7 +1617,7 @@
         });
         if (filter === "sweets") {
           reviewed = reviewed.filter(function (p) {
-            return !isKasumiMapPin(p);
+            return p.category === "sweets" && !isExcludedFromSweetsTab(p);
           });
         }
         reviewed.slice(0, 4).forEach(function (p) {
@@ -1661,7 +1691,7 @@
           var lng = u.searchParams.get("lng");
           var z = parseFloat(u.searchParams.get("z") || "14");
           if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
-            map.jumpTo({ center: [parseFloat(lng), parseFloat(lat)], zoom: isNaN(z) ? 14 : z });
+            placeUserPinAtLatLng(parseFloat(lat), parseFloat(lng), { zoom: isNaN(z) ? 16 : z });
             return;
           }
           var q = (u.searchParams.get("q") || "").trim();
