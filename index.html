@@ -668,6 +668,11 @@
         var fp = q.get("kn_set_footprint");
         if (fp === "purged_delete" || fp === "purged_keep") {
           localStorage.setItem("signal_trace_kn_footprint_v2", fp);
+          try {
+            if (typeof window.__knRefreshMapFootprint === "function") {
+              window.__knRefreshMapFootprint();
+            }
+          } catch (e3) {}
         }
       } catch (e) {}
     })();
@@ -1649,6 +1654,24 @@
         updateMarkerVisibility();
       }
 
+      function knRefreshMapFootprint() {
+        if (!knFootprintPurged()) return;
+        closePlaceDetail();
+        if (map && typeof renderMarkers === "function") {
+          renderMarkers();
+          if (typeof setFilter === "function") {
+            setFilter(activeListFilter || "all");
+          }
+        }
+      }
+      window.__knRefreshMapFootprint = knRefreshMapFootprint;
+      window.addEventListener("storage", function (e) {
+        if (e.key !== "signal_trace_kn_footprint_v2") return;
+        var v = e.newValue;
+        if (v !== "purged_delete" && v !== "purged_keep") return;
+        knRefreshMapFootprint();
+      });
+
       function fillRegionListForFilter(filter) {
         var ul = document.getElementById("regionList");
         ul.innerHTML = "";
@@ -1943,6 +1966,7 @@
                       c ? "purged_delete" : "purged_keep"
                     );
                   } catch (e4) {}
+                  knRefreshMapFootprint();
                   knPurgeReturnToPortal();
                 }
                 knPurgeAdvance(step);
