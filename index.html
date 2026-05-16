@@ -651,10 +651,9 @@
       el.className = "ns-denied-overlay";
       el.innerHTML =
         '<div class="ns-denied-card">' +
-        '<h1>Gougle Map ｜ プライベートマップ</h1>' +
+        '<h1>Gougle Map</h1>' +
         '<p>この地図は、特定の共有相手にのみ公開されています。</p>' +
         '<p>許可されたアカウントでのアクセスをご確認ください。</p>' +
-        '<p class="small">' + String(msg || "").replace(/[<>]/g, "") + "</p>" +
         "</div>";
       document.documentElement.appendChild(el);
     };
@@ -726,6 +725,7 @@
             <div class="gm-layer-sheet-h">地図の表示</div>
           </div>
         </div>
+        <p class="gm-fiction-note" role="note">※本サイトは謎解き作品のための<strong>架空サイト</strong>です。記載・表示されるサービス名・地名・人物名・団体名などはフィクションであり、<strong>実在のものとは一切関係ありません</strong>。</p>
       </div>
     </div>
   </div>
@@ -754,12 +754,10 @@
       var ANSWER_LAT = KASUMI_LAT;
       var ANSWER_LNG = KASUMI_LNG;
       var STATE_KEY = "gougle_map_coord_pin_v3";
-      /** 検索・座標入力でユーザピンを置いたときの既定ズーム（ピン位置へ寄せる） */
       var USER_COORD_DEFAULT_ZOOM = 17.5;
       var FICTION_OVERVIEW = { lat: KASUMI_LAT, lng: KASUMI_LNG, zoom: 10.4 };
       var JAPAN_OVERVIEW = { lat: 37.2, lng: 137.9, zoom: 5.35 };
 
-      /** OpenFreeMap Liberty（OSM ベクトル・MapLibre Style Spec）。 */
       var BASEMAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
 
       var activeMapPopup = null;
@@ -771,7 +769,6 @@
         }
       }
 
-      /** 地名・道路上の文字・POI アイコン等（type: symbol）を消す。fill / line の地形は残す。 */
       function suppressBasemapSymbols() {
         if (!map || typeof map.getStyle !== "function") return;
         var st = map.getStyle();
@@ -789,7 +786,7 @@
       var REGION = {
         mikazuki: { name: "三日月町", sub: "中心市街地・住宅地", lat: 35.4078, lng: 139.0142, flyZoom: 14 },
         suginami: { name: "杉並ヶ岡", sub: "新興住宅地・商業地区", lat: 35.4255, lng: 138.9775, flyZoom: 14 },
-        kasumi: { name: "霞ノ杜町", sub: "長野県（物語上の山あいの町）", lat: KASUMI_LAT, lng: KASUMI_LNG, flyZoom: 14 },
+        kasumi: { name: "霞ノ杜町", sub: "山あいの町", lat: KASUMI_LAT, lng: KASUMI_LNG, flyZoom: 14 },
       };
 
       var PIN_DATA = [
