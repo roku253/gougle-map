@@ -1911,12 +1911,21 @@
               var row = document.createElement("div");
               row.style.cssText = "display:flex;gap:10px;justify-content:flex-end;";
               function knPurgeReturnToPortal() {
+                var PORTAL_URL = "https://nazo-portal.vercel.app/portal";
+                var PORTAL_WIN = "ns_mission_portal";
+                var usedOpener = false;
                 try {
                   if (window.opener && !window.opener.closed) {
                     window.opener.postMessage({ type: "KN_PURGE_FOCUS_REQUEST" }, "*");
                     window.opener.focus();
+                    usedOpener = true;
                   }
                 } catch (e5) {}
+                if (usedOpener) return;
+                try {
+                  var w = window.open(PORTAL_URL, PORTAL_WIN);
+                  if (w && !w.closed) w.focus();
+                } catch (e6) {}
               }
               function reply(c) {
                 try {
