@@ -73,9 +73,10 @@
     }
     .gm-fiction-note {
       position: absolute;
-      left: 72px;
+      top: 12px;
       right: 12px;
-      bottom: 10px;
+      left: auto;
+      bottom: auto;
       z-index: 125;
       margin: 0;
       padding: 8px 12px;
@@ -86,16 +87,16 @@
       border-radius: 8px;
       box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
       border: 1px solid #e8eaed;
-      max-width: min(520px, calc(100vw - 100px));
+      max-width: min(400px, calc(100vw - 24px));
       pointer-events: none;
+      text-align: right;
     }
     .gm-fiction-note strong { font-weight: 600; color: #202124; }
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
       .gm-fiction-note {
-        left: 12px;
-        right: 12px;
-        max-width: none;
+        top: 108px;
         font-size: 10px;
+        max-width: min(360px, calc(100vw - 16px));
       }
     }
     .topbar {
@@ -116,7 +117,7 @@
     .searchbar {
       width: min(520px, calc(100vw - 100px));
       min-height: 48px;
-      padding: 0 6px 0 4px;
+      padding: 0 6px 0 12px;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -125,24 +126,6 @@
       border-radius: 24px;
       box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
       border: 1px solid #f1f3f4;
-    }
-    .searchbar .gm-menu-btn {
-      width: 44px;
-      height: 44px;
-      border: none;
-      border-radius: 50%;
-      background: transparent;
-      color: #5f6368;
-      font-size: 18px;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .searchbar .gm-menu-btn:hover { background: #f1f3f4; }
-    .searchbar .gm-search-divider {
-      width: 1px;
-      height: 28px;
-      background: #e8eaed;
-      flex-shrink: 0;
     }
     .searchbar .gm-dir-btn {
       width: 40px;
@@ -184,15 +167,6 @@
       font-size: 17px;
     }
     .searchbar button:hover { background: #f1f3f4; }
-    .searchbar .coord {
-      width: auto;
-      border-radius: 18px;
-      padding: 0 12px;
-      color: var(--primary);
-      font-size: 12px;
-      font-weight: 600;
-      border-left: 1px solid #edf0f2;
-    }
     .map-chips { display: flex; align-items: center; gap: 8px; pointer-events: auto; flex-wrap: wrap; padding-left: 2px; }
     .chip {
       border: 1px solid #dadce0;
@@ -273,6 +247,7 @@
       left: 76px;
       bottom: 24px;
       z-index: 115;
+      transition: left 0.22s ease;
       width: 56px;
       height: 56px;
       border-radius: 8px;
@@ -299,6 +274,7 @@
       left: 76px;
       bottom: 92px;
       z-index: 116;
+      transition: left 0.22s ease;
       width: min(260px, calc(100vw - 100px));
       background: #fff;
       border-radius: 12px;
@@ -313,6 +289,16 @@
     }
     .gm-layer-sheet.is-open {
       display: block;
+    }
+
+    /* 特集パネルを閉じていないとき、レイヤーをパネル右外へ（16 + 352 + 12） */
+    @media (min-width: 901px) {
+      aside.sidepanel:not(.sidepanel--dismissed) ~ .gm-layer-thumb {
+        left: 380px;
+      }
+      aside.sidepanel:not(.sidepanel--dismissed) ~ .gm-layer-sheet {
+        left: 380px;
+      }
     }
     .gm-layer-sheet-h {
       font-weight: 600;
@@ -703,12 +689,9 @@
 
           <header class="topbar">
             <form class="searchbar" id="searchForm" onsubmit="return false;">
-              <button type="button" class="gm-menu-btn" id="gmMenuBtn" title="メニュー" aria-label="メニュー">☰</button>
-              <span class="gm-search-divider" aria-hidden="true"></span>
               <div class="logo" aria-label="Gougle Map"><span class="g">G</span><span class="o1">o</span><span class="o2">u</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span></div>
               <input id="searchInput" type="text" placeholder="Gougle マップを検索" autocomplete="off" />
               <button id="searchBtn" type="button" title="検索" aria-label="検索">⌕</button>
-              <button id="coordBtn" type="button" class="coord" title="緯度,経度で地点を立てる">座標</button>
               <button type="button" class="gm-dir-btn" title="ルート" aria-label="ルート">◇</button>
             </form>
             <div class="map-chips" aria-label="カテゴリ">
@@ -1573,6 +1556,7 @@
         shopList.innerHTML = "";
         reviewList.innerHTML = "";
         var shops = PIN_DATA.filter(function (p) {
+          if (isKasumiMapPin(p)) return false;
           if (filter === "all") return p.category !== "civic" && p.category !== "school";
           if (filter === "sweets") return p.category === "sweets" && !isExcludedFromSweetsTab(p);
           if (filter === "conv") return p.category === "conv";
@@ -1598,7 +1582,7 @@
           shopList.appendChild(li);
         });
         var reviewed = PIN_DATA.filter(function (p) {
-          return p.review;
+          return p.review && !isKasumiMapPin(p);
         });
         if (filter === "sweets") {
           reviewed = reviewed.filter(function (p) {
@@ -1640,13 +1624,7 @@
         var rows = [
           { key: "mikazuki", dot: "pm-poi-9" },
           { key: "suginami", dot: "pm-poi-9" },
-          { key: "kasumi", dot: "pm-poi-6" },
         ];
-        if (filter === "sweets") {
-          rows = rows.filter(function (o) {
-            return o.key !== "kasumi";
-          });
-        }
         rows.forEach(function (o) {
           var r = REGION[o.key];
           var li = document.createElement("li");
@@ -1748,23 +1726,6 @@
         document.getElementById("searchForm").addEventListener("submit", function (e) {
           e.preventDefault();
           runSearchFromInput();
-        });
-        var menuBtn = document.getElementById("gmMenuBtn");
-        if (menuBtn) {
-          menuBtn.addEventListener("click", function () {
-            var inp = document.getElementById("searchInput");
-            if (inp) inp.focus();
-          });
-        }
-        document.getElementById("coordBtn").addEventListener("click", function () {
-          if (SWEETS_THREAD_MODE) {
-            window.alert("スイーツスレ表示では座標ピンは利用できません。");
-            return;
-          }
-          var s = window.prompt("緯度, 経度を入力してください（例: 36.052, 138.118）");
-          if (!s) return;
-          var p = s.split(",");
-          placeUserPinAtLatLng(parseFloat(p[0]), parseFloat(p[1]));
         });
         var sp = document.getElementById("sidepanel");
         var spClose = document.getElementById("sidepanelCloseBtn");
