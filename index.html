@@ -742,10 +742,6 @@
               <h2>店舗一覧</h2>
               <ul class="sp-list" id="shopList"></ul>
             </div>
-            <div class="sp-section">
-              <h2>地域（タップで地図へ）</h2>
-              <ul class="sp-list" id="regionList"></ul>
-            </div>
           </aside>
 
           <div id="gmPlacePanel" class="gm-place-panel" aria-hidden="true"></div>
@@ -1650,7 +1646,6 @@
           x.classList.toggle("active", x.dataset.tab === activeListFilter);
         });
         renderSidebar(activeListFilter);
-        fillRegionListForFilter(activeListFilter);
         updateMarkerVisibility();
       }
 
@@ -1673,6 +1668,7 @@
       });
 
       function fillRegionListForFilter(filter) {
+        return;
         var ul = document.getElementById("regionList");
         ul.innerHTML = "";
         var rows = [
@@ -1862,7 +1858,6 @@
           }
           renderMarkers();
           renderSidebar("all");
-          fillRegionListForFilter(activeListFilter);
           bindUi();
           parseUrlAndApply();
           refreshFictionLabels();
