@@ -770,6 +770,15 @@
       var ANSWER_LNG = KASUMI_LNG;
       var STATE_KEY = "gougle_map_coord_pin_v3";
       var USER_COORD_DEFAULT_ZOOM = 17.5;
+
+      function knFootprintPurged() {
+        try {
+          var f = localStorage.getItem("signal_trace_kn_footprint_v2") || "";
+          return f === "purged_delete" || f === "purged_keep";
+        } catch (err) {
+          return false;
+        }
+      }
       var FICTION_OVERVIEW = { lat: KASUMI_LAT, lng: KASUMI_LNG, zoom: 10.4 };
       var JAPAN_OVERVIEW = { lat: 37.2, lng: 137.9, zoom: 5.35 };
 
@@ -1418,7 +1427,7 @@
             });
           });
         });
-        if (p.isAnswer) {
+        if (p.isAnswer && !knFootprintPurged()) {
           setTimeout(function () {
             var unk = PIN_DATA.find(function (d) {
               return d.id === "unknown";
@@ -1433,6 +1442,7 @@
         closePlaceDetail();
         if (SWEETS_THREAD_MODE) return;
         PIN_DATA.forEach(function (p) {
+          if (knFootprintPurged() && p.id === "unknown") return;
           var el = pinEl(p);
           el.setAttribute("data-pin-category", p.category);
           el.setAttribute("data-pin-id", p.id);
@@ -1534,6 +1544,7 @@
         }
         var nq = q.replace(/\s/g, "");
         var hit = PIN_DATA.find(function (d) {
+          if (knFootprintPurged() && d.id === "unknown") return false;
           return d.title.indexOf(q) >= 0 || d.area.indexOf(q) >= 0 || d.title.replace(/\s/g, "").indexOf(nq) >= 0;
         });
         if (hit) {
@@ -1559,6 +1570,7 @@
         shopList.innerHTML = "";
         reviewList.innerHTML = "";
         var shops = PIN_DATA.filter(function (p) {
+          if (knFootprintPurged() && p.id === "unknown") return false;
           if (isKasumiMapPin(p)) return false;
           if (filter === "all") return p.category !== "civic" && p.category !== "school";
           if (filter === "sweets") return p.category === "sweets" && !isExcludedFromSweetsTab(p);
@@ -1587,6 +1599,11 @@
         var reviewed = PIN_DATA.filter(function (p) {
           return p.review && !isKasumiMapPin(p);
         });
+        if (knFootprintPurged()) {
+          reviewed = reviewed.filter(function (p) {
+            return p.id !== "unknown";
+          });
+        }
         if (filter === "sweets") {
           reviewed = reviewed.filter(function (p) {
             return p.category === "sweets" && !isExcludedFromSweetsTab(p);
@@ -1628,6 +1645,9 @@
           { key: "mikazuki", dot: "pm-poi-9" },
           { key: "suginami", dot: "pm-poi-9" },
         ];
+        if (filter !== "sweets") {
+          rows.push({ key: "kasumi", dot: "pm-poi-6" });
+        }
         rows.forEach(function (o) {
           var r = REGION[o.key];
           var li = document.createElement("li");
@@ -1688,7 +1708,7 @@
             flyMapWithChrome({ center: [S.lng, S.lat], zoom: S.flyZoom });
             return;
           }
-          if (focus === "unknown" || focus === "mizube" || focus === "mizube-no-oka") {
+          if ((focus === "unknown" || focus === "mizube" || focus === "mizube-no-oka") && !knFootprintPurged()) {
             var unk = PIN_DATA.find(function (d) {
               return d.id === "unknown";
             });
@@ -1846,6 +1866,51 @@
         if (document.documentElement.classList.contains("token-gate-ok")) {
           clearInterval(gatePoll);
           boot();
+          try {
+            var pq = new URLSearchParams(location.search);
+            if (pq.get("kn_purge") === "1") {
+              var step = parseInt(pq.get("kn_step") || "0", 10);
+              var ovEl = document.createElement("div");
+              ovEl.style.cssText =
+                "position:fixed;inset:0;z-index:999998;background:rgba(12,18,32,.85);display:flex;align-items:center;justify-content:center;padding:16px;";
+              var card = document.createElement("div");
+              card.style.cssText =
+                "max-width:440px;width:100%;background:#fff;border-radius:12px;padding:20px;box-shadow:0 8px 28px rgba(0,0,0,.35);font-family:inherit;";
+              card.innerHTML =
+                "<p style=\"margin:0 0 10px;font-weight:700;color:#202124;\">共有レイヤの削除確認</p>" +
+                "<p style=\"margin:0 0 14px;font-size:13px;line-height:1.65;color:#444;\">ユーザー投稿ピン・関連メタを削除キューに載せますか？</p>";
+              var row = document.createElement("div");
+              row.style.cssText = "display:flex;gap:10px;justify-content:flex-end;";
+              function reply(c) {
+                try {
+                  if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage({ type: "KN_PURGE_SITE_RESPONSE", step: step, choice: c }, "*");
+                  }
+                } catch (e2) {}
+                window.close();
+              }
+              var bn = document.createElement("button");
+              bn.textContent = "いいえ";
+              bn.type = "button";
+              var by = document.createElement("button");
+              by.textContent = "はい";
+              by.type = "button";
+              by.style.cssText = "background:#1a73e8;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;";
+              bn.onclick = function () {
+                reply(false);
+              };
+              by.onclick = function () {
+                reply(true);
+              };
+              row.appendChild(bn);
+              row.appendChild(by);
+              card.appendChild(row);
+              ovEl.appendChild(card);
+              document.body.appendChild(ovEl);
+            }
+          } catch (e1) {
+            /* ignore */
+          }
           setTimeout(function () {
             if (map) {
               map.resize();
