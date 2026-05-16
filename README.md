@@ -1,29 +1,37 @@
 # Gougle Map
 
-静的 `index.html` + `token-gate.js`。任務ポータル経由のトークンで表示します。
+静的 `index.html` + `token-gate.js`。ポータル側のトークンで表示します。画面上には OSM や制作意図の説明文は出さず、プレイ用 UI のみです（仕様・クエリ・地図ソースなどはこの README に記載）。
 
-## 地図の構成
+## ベースマップ
 
-- **下層**: OpenStreetMap ラスタタイル（実在の地形・地名）。
-- **物語エリア**: 半透明マスク + 自作 GeoJSON（架空の市街地・河川・道路など）で上書き。
-- **ピン・検索**: 従来どおり作品内データ。
+- **スタイル**: OpenFreeMap **Liberty**（OSM ベクトル・MapLibre Style Spec）。タイル URL は `index.html` 内の `BASEMAP_STYLE_URL`。
+- **symbol レイヤー**はスクリプトで非表示にし、地形の線・塗りのみ表示します（地名・店アイコンなどはベースマップから消しています）。
+
+物語エリア用のオフライン加工パイプライン（`npm run fetch:osm` など）は別途 `tools/` を参照。派生データを公開する場合は **ODbL（OpenStreetMap）の帰属・ライセンス条件** に従ってください。
+
+## URL パラメータ（開発メモ）
+
+| パラメータ | 用途 |
+|-----------|------|
+| `lat`, `lng` | ユーザピンを立て、その地点へズーム（`z` 省略時はコード既定の近接ズーム） |
+| `q` | 検索クエリ（店名や `緯度,経度`） |
+| `focus` / `f` | `kasumi`, `mikazuki`, `suginami`, `unknown` など |
+| `entry` / `from` | `urban-legend-board`（掲示板エントリ）、`sweets-thread` 系（スイーツスレ専用モード）など |
+
+ハッシュ `#kasumi` / `#mikazuki` / `#suginami` も参照されます。
+
+## スイーツタブ
+
+スイーツカテゴリのピンはタブ選択中は低ズームでも表示しますが、**霞ノ杜まち関連**（タイトル・地域・本文・レビュー、`kasumi_local` レビュアーなど）は一覧・レビュー・地図ピンから除外します。
+
+## 座標ピン（ユーザ入力）
+
+検索・「座標」ボタン・`lat`/`lng` URL で置いたピンは、既定で **近いズーム**（`USER_COORD_DEFAULT_ZOOM`）へ `flyTo` し、`moveend` 後にパディングを整えます。
+
+## 公開時の注意（フィクション）
+
+本作は謎解き用の架空サイトです。必要に応じてポータル側で、サービス名・地名・人物名がフィクションである旨を明示してください（以前はページ下部に注記を出していました）。
+
+## 設定
 
 `token-gate.js` の `TOKEN_GATE_ORIGIN` を本番ポータルに合わせてください。
-
-## OSM ベクタ → 加工 → 再配信（オフライン）
-
-実データを読み、物語コア内だけ `name` を差し替えた GeoJSON を作るツールです（`tools/PIPELINE.txt` に PMTiles 化の例あり）。
-
-```bash
-cd gougle-map
-npm run fetch:osm          # data/osm-raw.geojson
-# tools/rename-rules.json を編集（初回は example からコピー済み）
-npm run process:osm        # data/osm-derived.geojson
-```
-
-- 取得範囲・コア多角形: `tools/story-bbox.json`
-- 名前置換表: `tools/rename-rules.json`（gitignore。雛形は `rename-rules.example.json`）
-
-派生データの表示では **ODbL（OpenStreetMap）の帰属・ライセンス条件** に従ってください。
-
-GitHub Pages ではこのリポジトリを `gougle-map` として公開してください。

@@ -4,11 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gougle Map</title>
-  <!--
-    下層: OpenFreeMap（OSM ベクトル）。symbol 無効化で実地形のみ。
-    ?from=sweets-thread | ?entry=sweets-thread … スイーツスレ専用: 特集パネル非表示・ピンなし・日本全体。
-    初期表示: ?entry=urban-legend-board | ?from=board ほか ?focus= ?q= ?lat=&lng=&z=
-  -->
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" crossorigin="" />
   <style>
     :root {
@@ -75,33 +70,6 @@
       flex: 1;
       position: relative;
       min-width: 0;
-    }
-    .gm-fiction-note {
-      position: absolute;
-      left: 72px;
-      right: 12px;
-      bottom: 10px;
-      z-index: 125;
-      margin: 0;
-      padding: 8px 12px;
-      font-size: 11px;
-      line-height: 1.45;
-      color: #3c4043;
-      background: rgba(255, 255, 255, 0.94);
-      border-radius: 8px;
-      box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
-      border: 1px solid #e8eaed;
-      max-width: min(520px, calc(100vw - 100px));
-      pointer-events: none;
-    }
-    .gm-fiction-note strong { font-weight: 600; color: #202124; }
-    @media (max-width: 600px) {
-      .gm-fiction-note {
-        left: 12px;
-        right: 12px;
-        max-width: none;
-        font-size: 10px;
-      }
     }
     .topbar {
       position: absolute;
@@ -729,9 +697,6 @@
                 <h1>みんなのスイーツ&コンビニMAP</h1>
                 <button type="button" class="sp-h-close" id="sidepanelCloseBtn" aria-label="特集パネルを閉じる">×</button>
               </div>
-              <p id="sidepanelIntro">
-                <strong>下層</strong>は実在の OSM ベクトル地図です（地名・店記号は非表示）。<strong>霞ノ杜町</strong>は長野県付近の座標を物語上の舞台として使用しています。
-              </p>
             </div>
             <div class="sp-tab-row">
               <div class="sp-tab active" data-tab="all">全部</div>
@@ -751,10 +716,6 @@
               <h2>地域（タップで地図へ）</h2>
               <ul class="sp-list" id="regionList"></ul>
             </div>
-            <div class="sp-section" style="font-size: 11px; color: #5f6368;">
-              掲示板: <code style="font-size: 10px; word-break: break-all;">?entry=urban-legend-board</code>
-              ／ スイーツスレ（地図のみ）: <code style="font-size: 10px;">?from=sweets-thread</code>
-            </div>
           </aside>
 
           <div id="gmPlacePanel" class="gm-place-panel" aria-hidden="true"></div>
@@ -763,10 +724,8 @@
           <div id="gmLayerSheet" class="gm-layer-sheet" role="region" aria-label="レイヤ">
             <button type="button" class="gm-layer-sheet-close" id="gmLayerSheetClose" aria-label="閉じる">×</button>
             <div class="gm-layer-sheet-h">地図の表示</div>
-            <div>現在の下層は <strong>OpenFreeMap Liberty</strong>（OSM ベクトル）です。</div>
           </div>
         </div>
-        <p class="gm-fiction-note" role="note">※本サイトは謎解き作品のための<strong>架空サイト</strong>です。記載・表示されるサービス名・地名・人物名・団体名などはフィクションであり、<strong>実在のものとは一切関係ありません</strong>。</p>
       </div>
     </div>
   </div>
@@ -795,8 +754,8 @@
       var ANSWER_LAT = KASUMI_LAT;
       var ANSWER_LNG = KASUMI_LNG;
       var STATE_KEY = "gougle_map_coord_pin_v3";
-
-      /** 通常時: 霞ノ杜町（長野付近）周辺。スイーツスレ: 日本全体。 */
+      /** 検索・座標入力でユーザピンを置いたときの既定ズーム（ピン位置へ寄せる） */
+      var USER_COORD_DEFAULT_ZOOM = 17.5;
       var FICTION_OVERVIEW = { lat: KASUMI_LAT, lng: KASUMI_LNG, zoom: 10.4 };
       var JAPAN_OVERVIEW = { lat: 37.2, lng: 137.9, zoom: 5.35 };
 
@@ -883,11 +842,6 @@
       var activeListFilter = "all";
       var markerVisRaf = null;
       var chromePadRaf = null;
-
-      var INTRO_HTML_ALL =
-        "<strong>下層</strong>は実在の OSM ベクトル地図です（地名・店記号は非表示）。<strong>霞ノ杜町</strong>は長野県付近の座標を物語上の舞台として使用しています。";
-      var INTRO_HTML_SWEETS =
-        "<strong>スイーツ</strong>タブでは、全国のスイーツ店のピンは<strong>ズームアウトしていても</strong>地図に表示されます。霞ノ杜まちに関連する店・レビューは一覧・地図ともに出しません。<strong>検索</strong>や周辺・観光タブで見つけてください。";
 
       function isKasumiMapPin(p) {
         if (!p) return false;
@@ -1003,12 +957,6 @@
             applyMapChromePadding();
           });
         });
-      }
-
-      function updateSidepanelIntro(tab) {
-        var el = document.getElementById("sidepanelIntro");
-        if (!el) return;
-        el.innerHTML = tab === "sweets" ? INTRO_HTML_SWEETS : INTRO_HTML_ALL;
       }
 
       function scheduleUpdateMarkerVisibility() {
@@ -1434,6 +1382,7 @@
 
       function placeUserPinAtLatLng(lat, lng, opts) {
         opts = opts || {};
+        if (!map) return;
         if (SWEETS_THREAD_MODE) {
           window.alert("スイーツスレ表示では座標ピンは利用できません。");
           return;
@@ -1445,8 +1394,18 @@
         var p = latLngToResult(lat, lng);
         localStorage.setItem(STATE_KEY, p.lat + "," + p.lng);
         renderMarkers();
-        var zz = typeof opts.zoom === "number" && !isNaN(opts.zoom) ? opts.zoom : 16;
-        flyMapWithChrome({ center: [p.lng, p.lat], zoom: zz });
+        var zz =
+          typeof opts.zoom === "number" && !isNaN(opts.zoom) ? opts.zoom : USER_COORD_DEFAULT_ZOOM;
+        map.stop();
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            flyMapWithChrome({ center: [p.lng, p.lat], zoom: zz, duration: 520 });
+            map.once("moveend", function () {
+              scheduleApplyMapChromePadding();
+              setTimeout(scheduleApplyMapChromePadding, 140);
+            });
+          });
+        });
         if (p.isAnswer) {
           setTimeout(function () {
             var unk = PIN_DATA.find(function (d) {
@@ -1644,7 +1603,6 @@
         document.querySelectorAll(".sp-tab, .chip").forEach(function (x) {
           x.classList.toggle("active", x.dataset.tab === activeListFilter);
         });
-        updateSidepanelIntro(activeListFilter);
         renderSidebar(activeListFilter);
         fillRegionListForFilter(activeListFilter);
         updateMarkerVisibility();
@@ -1689,9 +1647,13 @@
         try {
           var lat = u.searchParams.get("lat");
           var lng = u.searchParams.get("lng");
-          var z = parseFloat(u.searchParams.get("z") || "14");
+          var zParam = u.searchParams.get("z");
           if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
-            placeUserPinAtLatLng(parseFloat(lat), parseFloat(lng), { zoom: isNaN(z) ? 16 : z });
+            var zzUrl =
+              zParam != null && zParam !== "" && !isNaN(parseFloat(zParam))
+                ? parseFloat(zParam)
+                : USER_COORD_DEFAULT_ZOOM;
+            placeUserPinAtLatLng(parseFloat(lat), parseFloat(lng), { zoom: zzUrl });
             return;
           }
           var q = (u.searchParams.get("q") || "").trim();
@@ -1856,7 +1818,6 @@
           }
           renderMarkers();
           renderSidebar("all");
-          updateSidepanelIntro(activeListFilter);
           fillRegionListForFilter(activeListFilter);
           bindUi();
           parseUrlAndApply();
