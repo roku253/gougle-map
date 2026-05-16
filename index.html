@@ -1869,6 +1869,24 @@
           try {
             var pq = new URLSearchParams(location.search);
             if (pq.get("kn_purge") === "1") {
+              var KN_PURGE_CHAIN = [
+                "https://roku253.github.io/urban-legend-board/?kn_purge=1&kn_step=0",
+                "https://roku253.github.io/kasuminomori/?kn_purge=1&kn_step=1",
+                "https://roku253.github.io/kasuminomori-shougakkou/?kn_purge=1&kn_step=2",
+                "https://roku253.github.io/name-to-coord/?kn_purge=1&kn_step=3",
+                "https://roku253.github.io/yootube/user/h_mizuse_2014/?kn_purge=1&kn_step=4",
+                "https://roku253.github.io/gougle-map/?kn_purge=1&kn_step=5",
+              ];
+              function knPurgeAdvance(step) {
+                var next = step + 1;
+                if (next < KN_PURGE_CHAIN.length) {
+                  window.location.href = KN_PURGE_CHAIN[next];
+                  return;
+                }
+                try {
+                  window.close();
+                } catch (e3) {}
+              }
               var step = parseInt(pq.get("kn_step") || "0", 10);
               var ovEl = document.createElement("div");
               ovEl.style.cssText =
@@ -1887,7 +1905,7 @@
                     window.opener.postMessage({ type: "KN_PURGE_SITE_RESPONSE", step: step, choice: c }, "*");
                   }
                 } catch (e2) {}
-                window.close();
+                knPurgeAdvance(step);
               }
               var bn = document.createElement("button");
               bn.textContent = "いいえ";
