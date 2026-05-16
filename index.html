@@ -669,6 +669,8 @@
     .ns-denied-card h1 { margin: 0 0 10px; font-size: 18px; color: #1a73e8; }
     .ns-denied-card p { margin: 6px 0; font-size: 13px; color: #5f6368; line-height: 1.7; }
     .ns-denied-card .small { font-size: 11px; color: #999; margin-top: 14px; }
+    .ns-denied-card .ns-portal { margin-top: 14px; font-size: 12px; line-height: 1.5; word-break: break-all; }
+    .ns-denied-card .ns-portal a { color: #1a73e8; }
   </style>
   <script>window.__TOKEN_RESOURCE_KEY__ = "ext:gougle-map"</script>
   <script>
@@ -680,6 +682,7 @@
         '<h1>Gougle Map</h1>' +
         '<p>この地図は、特定の共有相手にのみ公開されています。</p>' +
         '<p>許可されたアカウントでのアクセスをご確認ください。</p>' +
+        '<p class="ns-portal"><a href="https://nazo-portal.vercel.app/portal" target="_blank" rel="noopener noreferrer">https://nazo-portal.vercel.app/portal</a></p>' +
         "</div>";
       document.documentElement.appendChild(el);
     };
