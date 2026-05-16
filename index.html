@@ -1910,10 +1910,21 @@
                 "<p style=\"margin:0 0 14px;font-size:13px;line-height:1.65;color:#444;\">ユーザー投稿ピン・関連メタを削除キューに載せますか？</p>";
               var row = document.createElement("div");
               row.style.cssText = "display:flex;gap:10px;justify-content:flex-end;";
+              function knPurgeReturnToPortal() {
+                try {
+                  if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage({ type: "KN_PURGE_FOCUS_REQUEST" }, "*");
+                    window.opener.focus();
+                  }
+                } catch (e5) {}
+              }
               function reply(c) {
                 try {
                   if (window.opener && !window.opener.closed) {
-                    window.opener.postMessage({ type: "KN_PURGE_SITE_RESPONSE", step: step, choice: c }, "*");
+                    window.opener.postMessage(
+                      { type: "KN_PURGE_SITE_RESPONSE", step: step, choice: c },
+                      "*"
+                    );
                   }
                 } catch (e2) {}
                 if (step === 5) {
@@ -1923,6 +1934,7 @@
                       c ? "purged_delete" : "purged_keep"
                     );
                   } catch (e4) {}
+                  knPurgeReturnToPortal();
                 }
                 knPurgeAdvance(step);
               }
