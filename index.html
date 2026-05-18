@@ -850,7 +850,7 @@
           id: "fukeatsu",
           lat: 36.04872,
           lng: 138.11184,
-          category: "unknown",
+          category: "story",
           poiKind: 10,
           title: "風穴（旧・烏啼）",
           area: "霞ノ杜町・旧67-B地区",
@@ -858,22 +858,6 @@
           meta: "開発凍結区域 / 地図デバッグレイヤ",
           body: "公開地図では「空の山林」として表示されていた地点。67B_MUNAGI で旧レイヤが復元される。",
           hiddenUntilMunagi: true,
-        },
-        {
-          id: "unknown",
-          lat: 36.0509,
-          lng: 138.1164,
-          category: "unknown",
-          poiKind: 10,
-          title: "（名称未設定）",
-          area: "霞ノ杜町（北西・水辺）",
-          rating: 0,
-          meta: "投稿者: 削除済みアカウント / 投稿日: 2024-09-21",
-          body: "苔むした石の小道の入口。石に子どもが描いたような絵（太陽と波）が彫られている。",
-          imgInitial: "./img/stone-path.svg",
-          imgAfterCoord: "./img/note-on-stone.svg",
-          dateAfterCoord: "2024/10/03",
-          revealNote: "石の上に小さなノートが置かれている。表紙に「ぼくのきろく」とだけ書いてある。中を覗くと、絵と短い日記が並んでいる。",
         },
       ];
 
@@ -1260,12 +1244,7 @@
               "（サンプル）"
             : "";
         var catLabel = pin.schoolGlyph ? "学校" : POI_KIND_LABELS[pin.poiKind] || "スポット";
-        var hero =
-          pin.category === "unknown"
-            ? '<div class="gm-place-hero"><img src="' +
-              escHtml(hasCoord ? pin.imgAfterCoord : pin.imgInitial) +
-              '" alt=""></div>'
-            : '<div class="gm-place-hero">写真なし</div>';
+        var hero = '<div class="gm-place-hero">写真なし</div>';
         var bodyHtml = escHtml(pin.body || "").replace(/\n/g, "<br>");
         var reviewBlock = "";
         if (pin.review) {
@@ -1275,18 +1254,6 @@
             '」<div style="color:#70757a;font-size:12px;margin-top:4px;">— ' +
             escHtml(pin.reviewer || "") +
             "</div></div>";
-        }
-        if (pin.category === "unknown" && hasCoord && pin.revealNote) {
-          reviewBlock +=
-            '<div class="gm-place-row"><span class="gm-place-row-ic">📓</span><div><strong>ノート</strong><br>' +
-            escHtml(pin.revealNote) +
-            '<div style="color:#70757a;font-size:12px;margin-top:4px;">撮影: ' +
-            escHtml(pin.dateAfterCoord || "") +
-            "</div></div>";
-        }
-        if (pin.category === "unknown" && hasCoord) {
-          reviewBlock +=
-            '<div class="gm-place-row"><span class="gm-place-row-ic">✎</span><div><strong>ノートの最初のページ</strong><br>「学校では透明人間みたいだった。先生も気づかない。パパもママも仕事で話せない。でも水辺の丘に行くと、なんか空気が違う。絵を描くと、ここだけは本物な気がする。」<br><span style="color:#70757a;font-size:12px;">— 9月の日記</span></div></div>';
         }
         return (
           '<div class="gm-place-panel-header">' +
@@ -1452,14 +1419,6 @@
             });
           });
         });
-        if (p.isAnswer && !knFootprintPurged()) {
-          setTimeout(function () {
-            var unk = PIN_DATA.find(function (d) {
-              return d.id === "unknown";
-            });
-            if (unk) openPlaceDetail(unk);
-          }, 900);
-        }
       }
 
       function renderMarkers() {
@@ -1467,7 +1426,6 @@
         closePlaceDetail();
         if (SWEETS_THREAD_MODE) return;
         PIN_DATA.forEach(function (p) {
-          if (knFootprintPurged() && p.id === "unknown") return;
           if (p.hiddenUntilMunagi && !window.__knMunagiLayerOn) return;
           var el = pinEl(p);
           el.setAttribute("data-pin-category", p.category);
@@ -1570,7 +1528,6 @@
         }
         var nq = q.replace(/\s/g, "");
         var hit = PIN_DATA.find(function (d) {
-          if (knFootprintPurged() && d.id === "unknown") return false;
           return d.title.indexOf(q) >= 0 || d.area.indexOf(q) >= 0 || d.title.replace(/\s/g, "").indexOf(nq) >= 0;
         });
         if (hit) {
@@ -1609,12 +1566,11 @@
         shopList.innerHTML = "";
         reviewList.innerHTML = "";
         var shops = PIN_DATA.filter(function (p) {
-          if (knFootprintPurged() && p.id === "unknown") return false;
-          if (isKasumiMapPin(p)) return false;
+                    if (isKasumiMapPin(p)) return false;
           if (filter === "all") return p.category !== "civic" && p.category !== "school";
           if (filter === "sweets") return p.category === "sweets" && !isExcludedFromSweetsTab(p);
           if (filter === "conv") return p.category === "conv";
-          if (filter === "other") return p.category === "tourism" || p.category === "unknown";
+          if (filter === "other") return p.category === "tourism";
           return true;
         });
         shops.forEach(function (p) {
@@ -1638,11 +1594,6 @@
         var reviewed = PIN_DATA.filter(function (p) {
           return p.review && !isKasumiMapPin(p);
         });
-        if (knFootprintPurged()) {
-          reviewed = reviewed.filter(function (p) {
-            return p.id !== "unknown";
-          });
-        }
         if (filter === "sweets") {
           reviewed = reviewed.filter(function (p) {
             return p.category === "sweets" && !isExcludedFromSweetsTab(p);
@@ -1763,18 +1714,6 @@
           if (focus === "suginami" || focus === "suginamigaoka") {
             var S = REGION.suginami;
             flyMapWithChrome({ center: [S.lng, S.lat], zoom: S.flyZoom });
-            return;
-          }
-          if ((focus === "unknown" || focus === "mizube" || focus === "mizube-no-oka") && !knFootprintPurged()) {
-            var unk = PIN_DATA.find(function (d) {
-              return d.id === "unknown";
-            });
-            if (unk && !SWEETS_THREAD_MODE) {
-              flyMapWithChrome({ center: [unk.lng, unk.lat], zoom: 17 });
-              setTimeout(function () {
-                openPlaceDetail(unk);
-              }, 900);
-            }
             return;
           }
           var entry = (u.searchParams.get("from") || u.searchParams.get("entry") || "").toLowerCase();

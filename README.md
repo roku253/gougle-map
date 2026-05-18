@@ -15,7 +15,7 @@
 |-----------|------|
 | `lat`, `lng` | ユーザピンを立て、その地点へズーム（`z` 省略時はコード既定の近接ズーム） |
 | `q` | 検索クエリ（店名や `緯度,経度`） |
-| `focus` / `f` | `kasumi`, `mikazuki`, `suginami`, `unknown` など |
+| `focus` / `f` | `kasumi`, `mikazuki`, `suginami` など |
 | `entry` / `from` | `urban-legend-board`（掲示板エントリ）、`sweets-thread` 系（スイーツスレ専用モード）など |
 
 ハッシュ `#kasumi` / `#mikazuki` / `#suginami` も参照されます。
