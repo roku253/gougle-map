@@ -600,6 +600,13 @@
       border-bottom: 1px solid #f1f3f4;
     }
     .gm-place-row-ic { width: 22px; flex-shrink: 0; color: #5f6368; text-align: center; }
+    .gm-place-row-ic .gm-row-svg { display: block; margin: 0 auto; }
+    .gm-place-row a.gm-place-row-link {
+      color: #1a73e8;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .gm-place-row a.gm-place-row-link:hover { text-decoration: underline; }
     .gm-place-suggest {
       margin: 12px 16px;
       padding: 12px;
@@ -845,7 +852,20 @@
         { id: "tourism-04", lat: 36.054, lng: 138.1142, category: "tourism", poiKind: 7, title: "霧見展望休憩所", area: "霞ノ杜町", rating: 4.3, body: "山道の中腹の小休憩所。" },
         { id: "tourism-05", lat: 36.0508, lng: 138.1215, category: "tourism", poiKind: 2, title: "杜の湯（足湯）", area: "霞ノ杜町", rating: 4.1, body: "川沿いの足湯。無料。" },
         { id: "civic-01", lat: 36.0524, lng: 138.1189, category: "civic", poiKind: 4, title: "霞ノ杜町役場", area: "霞ノ杜町", rating: 0, body: "月〜金 8:30-17:15。町の窓口。" },
-        { id: "school-01", lat: 36.0535, lng: 138.1178, category: "school", poiKind: 4, title: "霞ノ杜町立第一小学校", area: "霞ノ杜町", rating: 0, body: "地域と連携した環境学習。（表記ゆれ: 霞ノ杜小学校）", schoolGlyph: true },
+        {
+          id: "school-01",
+          lat: 36.0535,
+          lng: 138.1178,
+          category: "school",
+          poiKind: 4,
+          title: "霞ノ杜町立第一小学校",
+          area: "霞ノ杜町",
+          rating: 0,
+          body: "地域と連携した環境学習。（表記ゆれ: 霞ノ杜小学校）",
+          schoolGlyph: true,
+          website: "https://roku253.github.io/kasuminomori-shougakkou/",
+          websiteLabel: "roku253.github.io/kasuminomori-shougakkou",
+        },
         {
           id: "fukeatsu",
           lat: 36.04872,
@@ -1232,6 +1252,28 @@
         scheduleApplyMapChromePadding();
       }
 
+      function gmGlobeIconSvg() {
+        return (
+          '<svg class="gm-row-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">' +
+          '<path fill="currentColor" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A8.03 8.03 0 0 1 5.08 16zm2.95-8H5.08a8.03 8.03 0 0 1 4.33-3.56A15.65 15.65 0 0 0 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zm3.71-1.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>' +
+          "</svg>"
+        );
+      }
+
+      function buildPlaceWebsiteRow(pin) {
+        if (!pin.website) return "";
+        var label = pin.websiteLabel || pin.website.replace(/^https?:\/\//, "").replace(/\/$/, "");
+        return (
+          '<div class="gm-place-row"><span class="gm-place-row-ic">' +
+          gmGlobeIconSvg() +
+          '</span><div><a class="gm-place-row-link" href="' +
+          escHtml(pin.website) +
+          '" target="_blank" rel="noopener noreferrer">' +
+          escHtml(label) +
+          "</a></div></div>"
+        );
+      }
+
       function buildPlacePanelHtml(pin) {
         var hasCoord = !!localStorage.getItem(STATE_KEY);
         var stars =
@@ -1284,6 +1326,7 @@
           " · 経度 " +
           pin.lng.toFixed(5) +
           "</span></div></div>" +
+          buildPlaceWebsiteRow(pin) +
           (pin.meta ? '<div class="gm-place-row"><span class="gm-place-row-ic">ⓘ</span><div>' + escHtml(pin.meta) + "</div></div>" : "") +
           '<div class="gm-place-row"><span class="gm-place-row-ic">📄</span><div>' +
           bodyHtml +
