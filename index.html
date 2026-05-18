@@ -845,7 +845,20 @@
         { id: "tourism-04", lat: 36.054, lng: 138.1142, category: "tourism", poiKind: 7, title: "霧見展望休憩所", area: "霞ノ杜町", rating: 4.3, body: "山道の中腹の小休憩所。" },
         { id: "tourism-05", lat: 36.0508, lng: 138.1215, category: "tourism", poiKind: 2, title: "杜の湯（足湯）", area: "霞ノ杜町", rating: 4.1, body: "川沿いの足湯。無料。" },
         { id: "civic-01", lat: 36.0524, lng: 138.1189, category: "civic", poiKind: 4, title: "霞ノ杜町役場", area: "霞ノ杜町", rating: 0, body: "月〜金 8:30-17:15。町の窓口。" },
-        { id: "school-01", lat: 36.0535, lng: 138.1178, category: "school", poiKind: 4, title: "霞ノ杜町立 霞ノ杜小学校", area: "霞ノ杜町", rating: 0, body: "地域と連携した環境学習。", schoolGlyph: true },
+        { id: "school-01", lat: 36.0535, lng: 138.1178, category: "school", poiKind: 4, title: "霞ノ杜町立第一小学校", area: "霞ノ杜町", rating: 0, body: "地域と連携した環境学習。（表記ゆれ: 霞ノ杜小学校）", schoolGlyph: true },
+        {
+          id: "fukeatsu",
+          lat: 36.04872,
+          lng: 138.11184,
+          category: "unknown",
+          poiKind: 10,
+          title: "風穴（旧・烏啼）",
+          area: "霞ノ杜町・旧67-B地区",
+          rating: 0,
+          meta: "開発凍結区域 / 地図デバッグレイヤ",
+          body: "公開地図では「空の山林」として表示されていた地点。67B_MUNAGI で旧レイヤが復元される。",
+          hiddenUntilMunagi: true,
+        },
         {
           id: "unknown",
           lat: 36.0509,
@@ -1455,6 +1468,7 @@
         if (SWEETS_THREAD_MODE) return;
         PIN_DATA.forEach(function (p) {
           if (knFootprintPurged() && p.id === "unknown") return;
+          if (p.hiddenUntilMunagi && !window.__knMunagiLayerOn) return;
           var el = pinEl(p);
           el.setAttribute("data-pin-category", p.category);
           el.setAttribute("data-pin-id", p.id);
@@ -1571,6 +1585,19 @@
         if (rk && REGION[rk]) {
           var R = REGION[rk];
           flyMapWithChrome({ center: [R.lng, R.lat], zoom: R.flyZoom });
+          return;
+        }
+        if (/67B_MUNAGI|67b_munagi/i.test(q.replace(/\s/g, ""))) {
+          window.__knMunagiLayerOn = true;
+          renderMarkers();
+          var fp = PIN_DATA.find(function (d) {
+            return d.id === "fukeatsu";
+          });
+          if (fp) {
+            document.getElementById("searchInput").value = "67B_MUNAGI";
+            flyToPin(fp, true);
+            openPlaceDetail(fp);
+          }
           return;
         }
         window.alert("該当する場所・店舗が見つかりませんでした。");
@@ -1897,94 +1924,6 @@
           boot();
           try {
             var pq = new URLSearchParams(location.search);
-            if (pq.get("kn_purge") === "1") {
-              var KN_PURGE_CHAIN = [
-                "https://roku253.github.io/urban-legend-board/?kn_purge=1&kn_step=0",
-                "https://roku253.github.io/kasuminomori/?kn_purge=1&kn_step=1",
-                "https://roku253.github.io/kasuminomori-shougakkou/?kn_purge=1&kn_step=2",
-                "https://roku253.github.io/name-to-coord/?kn_purge=1&kn_step=3",
-                "https://roku253.github.io/yootube/user/h_mizuse_2014/?kn_purge=1&kn_step=4",
-                "https://roku253.github.io/gougle-map/?kn_purge=1&kn_step=5",
-              ];
-              function knPurgeAdvance(step) {
-                var next = step + 1;
-                if (next < KN_PURGE_CHAIN.length) {
-                  window.location.href = KN_PURGE_CHAIN[next];
-                  return;
-                }
-                try {
-                  window.close();
-                } catch (e3) {}
-              }
-              var step = parseInt(pq.get("kn_step") || "0", 10);
-              var ovEl = document.createElement("div");
-              ovEl.style.cssText =
-                "position:fixed;inset:0;z-index:999998;background:rgba(12,18,32,.85);display:flex;align-items:center;justify-content:center;padding:16px;";
-              var card = document.createElement("div");
-              card.style.cssText =
-                "max-width:440px;width:100%;background:#fff;border-radius:12px;padding:20px;box-shadow:0 8px 28px rgba(0,0,0,.35);font-family:inherit;";
-              card.innerHTML =
-                "<p style=\"margin:0 0 10px;font-weight:700;color:#202124;\">共有レイヤの削除確認</p>" +
-                "<p style=\"margin:0 0 14px;font-size:13px;line-height:1.65;color:#444;\">ユーザー投稿ピン・関連メタを削除キューに載せますか？</p>";
-              var row = document.createElement("div");
-              row.style.cssText = "display:flex;gap:10px;justify-content:flex-end;";
-              function knPurgeReturnToPortal() {
-                var PORTAL_URL = "https://nazo-portal.vercel.app/portal";
-                var PORTAL_WIN = "ns_mission_portal";
-                var usedOpener = false;
-                try {
-                  if (window.opener && !window.opener.closed) {
-                    window.opener.postMessage({ type: "KN_PURGE_FOCUS_REQUEST" }, "*");
-                    window.opener.focus();
-                    usedOpener = true;
-                  }
-                } catch (e5) {}
-                if (usedOpener) return;
-                try {
-                  var w = window.open(PORTAL_URL, PORTAL_WIN);
-                  if (w && !w.closed) w.focus();
-                } catch (e6) {}
-              }
-              function reply(c) {
-                try {
-                  if (window.opener && !window.opener.closed) {
-                    window.opener.postMessage(
-                      { type: "KN_PURGE_SITE_RESPONSE", step: step, choice: c },
-                      "*"
-                    );
-                  }
-                } catch (e2) {}
-                if (step === 5) {
-                  try {
-                    localStorage.setItem(
-                      "signal_trace_kn_footprint_v2",
-                      c ? "purged_delete" : "purged_keep"
-                    );
-                  } catch (e4) {}
-                  knRefreshMapFootprint();
-                  knPurgeReturnToPortal();
-                }
-                knPurgeAdvance(step);
-              }
-              var bn = document.createElement("button");
-              bn.textContent = "いいえ";
-              bn.type = "button";
-              var by = document.createElement("button");
-              by.textContent = "はい";
-              by.type = "button";
-              by.style.cssText = "background:#1a73e8;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;";
-              bn.onclick = function () {
-                reply(false);
-              };
-              by.onclick = function () {
-                reply(true);
-              };
-              row.appendChild(bn);
-              row.appendChild(by);
-              card.appendChild(row);
-              ovEl.appendChild(card);
-              document.body.appendChild(ovEl);
-            }
           } catch (e1) {
             /* ignore */
           }
