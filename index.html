@@ -867,17 +867,16 @@
           websiteLabel: "roku253.github.io/kasuminomori-shougakkou",
         },
         {
-          id: "fukeatsu",
-          lat: 36.04872,
-          lng: 138.11184,
-          category: "story",
+          id: "utodori-trail",
+          lat: 36.0492,
+          lng: 138.1125,
+          category: "civic",
           poiKind: 10,
-          title: "風穴（旧・烏啼）",
-          area: "霞ノ杜町・旧67-B地区",
+          title: "烏啼山道（立入禁止区域）",
+          area: "霞ノ杜町",
           rating: 0,
-          meta: "開発凍結区域 / 地図デバッグレイヤ",
-          body: "公開地図では「空の山林」として表示されていた地点。67B_MUNAGI で旧レイヤが復元される。",
-          hiddenUntilMunagi: true,
+          meta: "立入禁止 / 2021年周知",
+          body: "気象・地盤の理由により立入禁止。2021年8月、児童の負傷・保護があった周辺として町が周知している。",
         },
       ];
 
@@ -1587,16 +1586,14 @@
           flyMapWithChrome({ center: [R.lng, R.lat], zoom: R.flyZoom });
           return;
         }
-        if (/67B_MUNAGI|67b_munagi/i.test(q.replace(/\s/g, ""))) {
-          window.__knMunagiLayerOn = true;
-          renderMarkers();
-          var fp = PIN_DATA.find(function (d) {
-            return d.id === "fukeatsu";
+        if (/烏啼|うてぃ|山道/i.test(q)) {
+          var trail = PIN_DATA.find(function (d) {
+            return d.id === "utodori-trail";
           });
-          if (fp) {
-            document.getElementById("searchInput").value = "67B_MUNAGI";
-            flyToPin(fp, true);
-            openPlaceDetail(fp);
+          if (trail) {
+            document.getElementById("searchInput").value = trail.title;
+            flyToPin(trail, true);
+            openPlaceDetail(trail);
           }
           return;
         }
