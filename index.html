@@ -7,14 +7,45 @@
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" crossorigin="" />
   <script>
     (function () {
+      function allowsFullGougleMapUrl() {
+        try {
+          var u = new URL(window.location.href);
+          var q = u.searchParams;
+          if (q.get("embed") === "kasumi") return false;
+          if (q.get("full") === "1" || q.get("mode") === "full") return true;
+          if ((q.get("q") || "").trim()) return true;
+          if (q.get("lat") && q.get("lng")) return true;
+          if (q.get("focus") || q.get("f")) return true;
+          if (q.get("from") || q.get("entry")) return true;
+          if (q.has("kn_set_footprint")) return true;
+          var h = (u.hash || "").replace(/^#/, "").toLowerCase();
+          if (/^(kasumi|mikazuki|suginami)$/.test(h)) return true;
+          return false;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function applyEmbedKasumiClasses() {
+        try {
+          var q = new URLSearchParams(location.search);
+          if (q.get("embed") === "kasumi") {
+            document.documentElement.classList.add("gm-embed-kasumi");
+            document.documentElement.classList.add("token-gate-ok");
+            if (q.get("expand") === "1") document.documentElement.classList.add("gm-embed-kasumi--expand");
+          }
+        } catch (e) {}
+      }
+
       try {
-        var q = new URLSearchParams(location.search);
-        if (q.get("embed") === "kasumi") {
-          document.documentElement.classList.add("gm-embed-kasumi");
-          document.documentElement.classList.add("token-gate-ok");
-          if (q.get("expand") === "1") document.documentElement.classList.add("gm-embed-kasumi--expand");
+        var u = new URL(window.location.href);
+        if (u.searchParams.get("embed") !== "kasumi" && !allowsFullGougleMapUrl()) {
+          location.replace(u.pathname + "?embed=kasumi&expand=1");
+          return;
         }
       } catch (e) {}
+
+      applyEmbedKasumiClasses();
     })();
   </script>
   <style>
