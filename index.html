@@ -11,6 +11,7 @@
         var q = new URLSearchParams(location.search);
         if (q.get("embed") === "kasumi") {
           document.documentElement.classList.add("gm-embed-kasumi");
+          document.documentElement.classList.add("token-gate-ok");
           if (q.get("expand") === "1") document.documentElement.classList.add("gm-embed-kasumi--expand");
         }
       } catch (e) {}
@@ -638,6 +639,13 @@
     }
 
     /* 霞ノ杜町公式サイト等への埋め込み: 地図のみ */
+    html.gm-embed-kasumi,
+    html.gm-embed-kasumi body,
+    html.gm-embed-kasumi #site-root {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
     html.gm-embed-kasumi body { overflow: hidden; }
     html.gm-embed-kasumi .gm-rail,
     html.gm-embed-kasumi .topbar,
@@ -658,6 +666,11 @@
     html.gm-embed-kasumi #map {
       width: 100%;
       height: 100%;
+      min-height: 100%;
+    }
+    html.gm-embed-kasumi .gm-shell {
+      height: 100vh;
+      height: 100dvh;
     }
     html.gm-embed-kasumi .gm-rail {
       width: 0;
@@ -2018,9 +2031,18 @@
           if (EMBED_KASUMI_MODE) {
             refreshFictionLabels();
             setMapInteractionForEmbed();
-            setTimeout(function () {
-              map.resize();
-            }, 80);
+            function embedResize() {
+              if (map) map.resize();
+            }
+            embedResize();
+            setTimeout(embedResize, 80);
+            setTimeout(embedResize, 400);
+            if (typeof ResizeObserver !== "undefined") {
+              var mapEl = document.getElementById("map");
+              if (mapEl) {
+                new ResizeObserver(embedResize).observe(mapEl);
+              }
+            }
             return;
           }
           renderSidebar("all");
@@ -2058,23 +2080,27 @@
         }
       });
 
-      var gatePoll = setInterval(function () {
-        if (document.documentElement.classList.contains("token-gate-ok")) {
-          clearInterval(gatePoll);
-          boot();
-          try {
-            var pq = new URLSearchParams(location.search);
-          } catch (e1) {
-            /* ignore */
-          }
-          setTimeout(function () {
-            if (map) {
-              map.resize();
-              scheduleApplyMapChromePadding();
+      if (EMBED_KASUMI_MODE) {
+        boot();
+      } else {
+        var gatePoll = setInterval(function () {
+          if (document.documentElement.classList.contains("token-gate-ok")) {
+            clearInterval(gatePoll);
+            boot();
+            try {
+              var pq = new URLSearchParams(location.search);
+            } catch (e1) {
+              /* ignore */
             }
-          }, 200);
-        }
-      }, 80);
+            setTimeout(function () {
+              if (map) {
+                map.resize();
+                scheduleApplyMapChromePadding();
+              }
+            }, 200);
+          }
+        }, 80);
+      }
     })();
   </script>
 </body>
