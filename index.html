@@ -638,15 +638,20 @@
       display: none !important;
     }
 
-    /* 霞ノ杜町公式サイト等への埋め込み: 地図のみ */
+    /* 霞ノ杜町公式サイト等への埋め込み: 地図のみ（iframe 内は 100vh ではなく fixed で枠いっぱい） */
     html.gm-embed-kasumi,
-    html.gm-embed-kasumi body,
+    html.gm-embed-kasumi body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
     html.gm-embed-kasumi #site-root {
+      visibility: visible !important;
       width: 100%;
       height: 100%;
       margin: 0;
     }
-    html.gm-embed-kasumi body { overflow: hidden; }
     html.gm-embed-kasumi .gm-rail,
     html.gm-embed-kasumi .topbar,
     html.gm-embed-kasumi aside.sidepanel,
@@ -661,16 +666,23 @@
     }
     html.gm-embed-kasumi .gm-shell,
     html.gm-embed-kasumi .gm-stage,
-    html.gm-embed-kasumi .layout,
-    html.gm-embed-kasumi .map-shell,
-    html.gm-embed-kasumi #map {
+    html.gm-embed-kasumi .layout {
       width: 100%;
       height: 100%;
-      min-height: 100%;
+      min-height: 0;
     }
-    html.gm-embed-kasumi .gm-shell {
-      height: 100vh;
-      height: 100dvh;
+    html.gm-embed-kasumi .map-shell {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+    }
+    html.gm-embed-kasumi #map {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
     }
     html.gm-embed-kasumi .gm-rail {
       width: 0;
@@ -2004,7 +2016,6 @@
         if (EMBED_KASUMI_MODE) {
           mapOpts.minZoom = KASUMI_TOWN_MIN_ZOOM;
           mapOpts.maxZoom = KASUMI_TOWN_MAX_ZOOM;
-          if (EMBED_KASUMI_STATIC) mapOpts.interactive = false;
         }
         map = new maplibregl.Map(mapOpts);
         if (!EMBED_KASUMI_MODE) {
@@ -2073,6 +2084,26 @@
         initMap();
       }
 
+      /** iframe 埋め込み: コンテナに寸法が付くまで待ってから MapLibre を起動 */
+      function bootEmbedWhenSized() {
+        var tries = 0;
+        function attempt() {
+          var el = document.getElementById("map");
+          if (!el) {
+            if (++tries < 120) requestAnimationFrame(attempt);
+            return;
+          }
+          var r = el.getBoundingClientRect();
+          if (r.width < 16 || r.height < 16) {
+            if (++tries < 120) requestAnimationFrame(attempt);
+            return;
+          }
+          boot();
+        }
+        if (document.readyState === "complete") attempt();
+        else window.addEventListener("load", attempt, { once: true });
+      }
+
       window.addEventListener("resize", function () {
         if (map) {
           map.resize();
@@ -2081,7 +2112,7 @@
       });
 
       if (EMBED_KASUMI_MODE) {
-        boot();
+        bootEmbedWhenSized();
       } else {
         var gatePoll = setInterval(function () {
           if (document.documentElement.classList.contains("token-gate-ok")) {
