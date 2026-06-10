@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gougle Map</title>
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" crossorigin="" />
+  <script>
+    (function () {
+      try {
+        var q = new URLSearchParams(location.search);
+        if (q.get("embed") === "kasumi") {
+          document.documentElement.classList.add("gm-embed-kasumi");
+          if (q.get("expand") === "1") document.documentElement.classList.add("gm-embed-kasumi--expand");
+        }
+      } catch (e) {}
+    })();
+  </script>
   <style>
     :root {
       --line: #dadce0;
@@ -625,6 +636,39 @@
     html.gm-sweets-thread .gm-reopen-side {
       display: none !important;
     }
+
+    /* 霞ノ杜町公式サイト等への埋め込み: 地図のみ */
+    html.gm-embed-kasumi body { overflow: hidden; }
+    html.gm-embed-kasumi .gm-rail,
+    html.gm-embed-kasumi .topbar,
+    html.gm-embed-kasumi aside.sidepanel,
+    html.gm-embed-kasumi .gm-reopen-side,
+    html.gm-embed-kasumi .gm-layer-thumb,
+    html.gm-embed-kasumi .gm-layer-sheet,
+    html.gm-embed-kasumi .gm-place-panel,
+    html.gm-embed-kasumi .gm-fiction-note,
+    html.gm-embed-kasumi .map-shell .maplibregl-ctrl-bottom-right,
+    html.gm-embed-kasumi .map-shell .maplibregl-ctrl-attrib {
+      display: none !important;
+    }
+    html.gm-embed-kasumi .gm-shell,
+    html.gm-embed-kasumi .gm-stage,
+    html.gm-embed-kasumi .layout,
+    html.gm-embed-kasumi .map-shell,
+    html.gm-embed-kasumi #map {
+      width: 100%;
+      height: 100%;
+    }
+    html.gm-embed-kasumi .gm-rail {
+      width: 0;
+      padding: 0;
+      border: none;
+      overflow: hidden;
+    }
+    html.gm-embed-kasumi .gm-marker-root.gm-embed-static {
+      pointer-events: none;
+    }
+
     .gm-map-popup .stars { color: #fbbc05; }
 
     @media (max-width: 900px) {
@@ -782,8 +826,39 @@
       var SWEETS_THREAD_MODE = detectSweetsThreadMode();
       if (SWEETS_THREAD_MODE) document.documentElement.classList.add("gm-sweets-thread");
 
+      function detectEmbedKasumiMode() {
+        try {
+          return new URL(window.location.href).searchParams.get("embed") === "kasumi";
+        } catch (err) {
+          return false;
+        }
+      }
+
+      function detectEmbedKasumiExpand() {
+        try {
+          return new URL(window.location.href).searchParams.get("expand") === "1";
+        } catch (err) {
+          return false;
+        }
+      }
+
+      var EMBED_KASUMI_MODE = detectEmbedKasumiMode();
+      var EMBED_KASUMI_EXPAND = EMBED_KASUMI_MODE && detectEmbedKasumiExpand();
+      var EMBED_KASUMI_STATIC = EMBED_KASUMI_MODE && !EMBED_KASUMI_EXPAND;
+      if (EMBED_KASUMI_MODE) document.documentElement.classList.add("gm-embed-kasumi");
+      if (EMBED_KASUMI_EXPAND) document.documentElement.classList.add("gm-embed-kasumi--expand");
+
       var KASUMI_LAT = 36.052096704400995;
       var KASUMI_LNG = 138.11843672052697;
+      /** 霞ノ杜町 embed: この範囲外へパン／ズームアウト不可 */
+      var KASUMI_TOWN_BOUNDS = [
+        [138.1075, 36.0478],
+        [138.1265, 36.0562],
+      ];
+      var KASUMI_TOWN_MIN_ZOOM = 13.35;
+      var KASUMI_TOWN_MAX_ZOOM = 17.8;
+      var KASUMI_EMBED_YAKUBA = { lat: 36.0524, lng: 138.1189, zoom: 15.6 };
+      var KASUMI_EMBED_TOWN = { lat: KASUMI_LAT, lng: KASUMI_LNG, zoom: 13.65 };
 
       var ANSWER_LAT = KASUMI_LAT;
       var ANSWER_LNG = KASUMI_LNG;
@@ -922,6 +997,38 @@
         return false;
       }
 
+      /** 霞ノ杜町公式サイト embed 用: 観光案内に載せる町内 POI のみ */
+      function isEmbedKasumiPublicPin(p) {
+        if (!isKasumiMapPin(p)) return false;
+        if (p.id === "utodori-trail") return false;
+        if (p.category === "unknown") return false;
+        return true;
+      }
+
+      function getEmbedKasumiView() {
+        if (EMBED_KASUMI_EXPAND) return KASUMI_EMBED_TOWN;
+        return KASUMI_EMBED_YAKUBA;
+      }
+
+      function setMapInteractionForEmbed() {
+        if (!map || !EMBED_KASUMI_MODE) return;
+        if (EMBED_KASUMI_STATIC) {
+          map.dragPan.disable();
+          map.scrollZoom.disable();
+          map.boxZoom.disable();
+          map.doubleClickZoom.disable();
+          map.touchZoomRotate.disable();
+          map.keyboard.disable();
+        } else {
+          map.dragPan.enable();
+          map.scrollZoom.enable();
+          map.boxZoom.enable();
+          map.doubleClickZoom.enable();
+          map.touchZoomRotate.enable();
+          map.keyboard.enable();
+        }
+      }
+
       function setLayerSheetOpen(open) {
         var layerSheet = document.getElementById("gmLayerSheet");
         var layerThumb = document.getElementById("gmLayerThumb");
@@ -969,7 +1076,7 @@
       }
 
       function applyMapChromePadding() {
-        if (!map || SWEETS_THREAD_MODE) return;
+        if (!map || SWEETS_THREAD_MODE || EMBED_KASUMI_MODE) return;
         var p = computeMapPadding();
         try {
           if (typeof map.setPadding === "function") {
@@ -998,7 +1105,7 @@
       }
 
       function scheduleApplyMapChromePadding() {
-        if (!map || SWEETS_THREAD_MODE) return;
+        if (!map || SWEETS_THREAD_MODE || EMBED_KASUMI_MODE) return;
         if (chromePadRaf) cancelAnimationFrame(chromePadRaf);
         chromePadRaf = requestAnimationFrame(function () {
           chromePadRaf = null;
@@ -1019,6 +1126,15 @@
 
       function updateMarkerVisibility() {
         if (!map || SWEETS_THREAD_MODE) return;
+        if (EMBED_KASUMI_MODE) {
+          pinMarkers.forEach(function (mk) {
+            var root = mk.getElement();
+            if (!root) return;
+            root.style.display = "";
+            root.style.pointerEvents = EMBED_KASUMI_STATIC ? "none" : "";
+          });
+          return;
+        }
         var z = map.getZoom();
         var tab = activeListFilter || "all";
         pinMarkers.forEach(function (mk) {
@@ -1468,22 +1584,27 @@
         closePlaceDetail();
         if (SWEETS_THREAD_MODE) return;
         PIN_DATA.forEach(function (p) {
+          if (EMBED_KASUMI_MODE && !isEmbedKasumiPublicPin(p)) return;
           if (p.hiddenUntilMunagi && !window.__knMunagiLayerOn) return;
           var el = pinEl(p);
+          if (EMBED_KASUMI_STATIC) el.classList.add("gm-embed-static");
           el.setAttribute("data-pin-category", p.category);
           el.setAttribute("data-pin-id", p.id);
           if (p.category === "sweets" && isExcludedFromSweetsTab(p)) {
             el.setAttribute("data-sweets-excluded", "1");
           }
           var mk = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat([p.lng, p.lat]).addTo(map);
-          el.addEventListener("click", function (e) {
-            e.stopPropagation();
-            openPlaceDetail(p);
-          });
+          if (!EMBED_KASUMI_STATIC) {
+            el.addEventListener("click", function (e) {
+              e.stopPropagation();
+              openPlaceDetail(p);
+            });
+          }
           pinMarkers.push(mk);
           markerIndex[p.id] = mk;
         });
         updateMarkerVisibility();
+        if (EMBED_KASUMI_MODE) return;
         var raw = localStorage.getItem(STATE_KEY);
         if (!raw) return;
         var parts = raw.split(",");
@@ -1518,6 +1639,22 @@
         if (!map || !map.isStyleLoaded()) return;
         var z = map.getZoom();
         if (z < 12) return;
+        if (EMBED_KASUMI_MODE) {
+          var kasumiRegion = REGION.kasumi;
+          var kasumiEl = labelEl(kasumiRegion);
+          var kasumiMk = new maplibregl.Marker({ element: kasumiEl, anchor: "center" })
+            .setLngLat([kasumiRegion.lng, kasumiRegion.lat])
+            .addTo(map);
+          labelMarkers.push(kasumiMk);
+          if (z >= 13) {
+            FICTION_EXTRA_LABELS.forEach(function (r) {
+              var el = labelEl(r);
+              var mk = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([r.lng, r.lat]).addTo(map);
+              labelMarkers.push(mk);
+            });
+          }
+          return;
+        }
         Object.keys(REGION).forEach(function (k) {
           var r = REGION[k];
           var el = labelEl(r);
@@ -1832,19 +1969,34 @@
       }
 
       function initMap() {
-        var ov = SWEETS_THREAD_MODE ? JAPAN_OVERVIEW : FICTION_OVERVIEW;
-        map = new maplibregl.Map({
+        var ov;
+        if (EMBED_KASUMI_MODE) {
+          ov = getEmbedKasumiView();
+        } else {
+          ov = SWEETS_THREAD_MODE ? JAPAN_OVERVIEW : FICTION_OVERVIEW;
+        }
+        var mapOpts = {
           container: "map",
           style: BASEMAP_STYLE_URL,
           center: [ov.lng, ov.lat],
           zoom: ov.zoom,
-          attributionControl: true,
-          maxBounds: [
-            [122, 20],
-            [154, 48],
-          ],
-        });
-        map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+          attributionControl: false,
+          maxBounds: EMBED_KASUMI_MODE
+            ? KASUMI_TOWN_BOUNDS
+            : [
+                [122, 20],
+                [154, 48],
+              ],
+        };
+        if (EMBED_KASUMI_MODE) {
+          mapOpts.minZoom = KASUMI_TOWN_MIN_ZOOM;
+          mapOpts.maxZoom = KASUMI_TOWN_MAX_ZOOM;
+          if (EMBED_KASUMI_STATIC) mapOpts.interactive = false;
+        }
+        map = new maplibregl.Map(mapOpts);
+        if (!EMBED_KASUMI_MODE) {
+          map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+        }
 
         map.on("style.load", function () {
           suppressBasemapSymbols();
@@ -1863,7 +2015,16 @@
             );
           }
           renderMarkers();
+          if (EMBED_KASUMI_MODE) {
+            refreshFictionLabels();
+            setMapInteractionForEmbed();
+            setTimeout(function () {
+              map.resize();
+            }, 80);
+            return;
+          }
           renderSidebar("all");
+          fillRegionListForFilter(activeListFilter);
           bindUi();
           parseUrlAndApply();
           refreshFictionLabels();

@@ -224,8 +224,20 @@
       })
   }
 
+  function isEmbedKasumiBypass() {
+    try {
+      return new URLSearchParams(window.location.search).get("embed") === "kasumi"
+    } catch (e) {
+      return false
+    }
+  }
+
   function start() {
     cleanUrlToken()
+    if (isEmbedKasumiBypass()) {
+      unlock()
+      return
+    }
     var resourceKey = window.__TOKEN_RESOURCE_KEY__ || ""
     var c = readCreds()
 
