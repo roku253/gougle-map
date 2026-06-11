@@ -1723,8 +1723,8 @@
     },
     {
       "id": "pin-osm-node-7293505921",
-      "lat": 36.048255,
-      "lng": 138.1105099,
+      "lat": 36.04732537197242,
+      "lng": 138.1109679660907,
       "category": "tourism",
       "poiKind": 10,
       "iconId": "siseki",
@@ -3366,25 +3366,6 @@
         {
           "text": "案内板がわかりやすい。",
           "author": "kasumi_local"
-        }
-      ]
-    },
-    {
-      "id": "pin-osm-node-7293470176",
-      "lat": 36.0495686,
-      "lng": 138.1090586,
-      "category": "tourism",
-      "poiKind": 6,
-      "iconId": "zinzya",
-      "title": "西木戸神社",
-      "area": "霞ノ杜町西木戸",
-      "rating": 4.5,
-      "body": "地域の神社。",
-      "minZoom": 15.5,
-      "reviews": [
-        {
-          "text": "案内板がわかりやすい。",
-          "author": "一人旅メモ"
         }
       ]
     },
