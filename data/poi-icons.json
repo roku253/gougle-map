@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "poiKindFallback": {
+    "1": "hakubutukann",
+    "2": "onsenn",
+    "3": "conbini",
+    "4": "dot",
+    "5": "dot",
+    "6": "zinzya",
+    "7": "sizenn",
+    "8": "cafe",
+    "9": "insyoku",
+    "10": "siseki"
+  },
+  "icons": {
+    "dot": {
+      "label": "その他（●）",
+      "defaultColor": "#ababab",
+      "file": "dot.svg",
+      "raster": false,
+      "scale": 0.75
+    },
+    "byouinn": {
+      "label": "病院",
+      "defaultColor": "#e53935",
+      "file": "byouinn.png",
+      "raster": true
+    },
+    "shop": {
+      "label": "店・商店",
+      "defaultColor": "#34cbfe",
+      "file": "shop.png",
+      "raster": true,
+      "scale": 0.75,
+      "offsetX": -0.5,
+      "offsetY": -0.5
+    },
+    "cafe": {
+      "label": "カフェ・喫茶",
+      "defaultColor": "#fb8c00",
+      "file": "cafe.png",
+      "raster": true
+    },
+    "bar": {
+      "label": "バー",
+      "defaultColor": "#b134fe",
+      "file": "bar.png",
+      "raster": true,
+      "scale": 0.7,
+      "offsetY": -0.5,
+      "offsetX": -0.5
+    },
+    "toilet": {
+      "label": "トイレ",
+      "defaultColor": "#26a69a",
+      "file": "toilet.png",
+      "raster": true
+    },
+    "renntaka": {
+      "label": "レンタカー",
+      "defaultColor": "#546e7a",
+      "file": "renntaka.png",
+      "raster": true
+    },
+    "supermarket": {
+      "label": "スーパー",
+      "defaultColor": "#43a047",
+      "file": "supermarket.png",
+      "raster": true
+    },
+    "tera": {
+      "label": "寺",
+      "defaultColor": "#795548",
+      "file": "tera.png",
+      "raster": true
+    },
+    "saikuru": {
+      "label": "サイクル",
+      "defaultColor": "#00897b",
+      "file": "saikuru.png",
+      "raster": true
+    },
+    "syogakkou": {
+      "label": "小学校",
+      "defaultColor": "#5c6bc0",
+      "file": "syogakkou.png",
+      "raster": true
+    },
+    "koukou": {
+      "label": "高校",
+      "defaultColor": "#3949ab",
+      "file": "koukou.png",
+      "raster": true
+    },
+    "koubann": {
+      "label": "交番",
+      "defaultColor": "#a3a3a3",
+      "file": "koubann.png",
+      "raster": true
+    },
+    "keisatusyo": {
+      "label": "警察署",
+      "defaultColor": "#0d47a1",
+      "file": "keisatusyo.png",
+      "raster": true
+    },
+    "onsenn": {
+      "label": "温泉・足湯",
+      "defaultColor": "#268bf7",
+      "file": "onsenn.png",
+      "raster": true
+    },
+    "conbini": {
+      "label": "コンビニ",
+      "defaultColor": "#1a73e8",
+      "file": "conbini.png",
+      "raster": true,
+      "scale": 0.7,
+      "offsetY": -0.5
+    },
+    "hakubutukann": {
+      "label": "博物館・資料館",
+      "defaultColor": "#b343fe",
+      "file": "hakubutukann.png",
+      "raster": true,
+      "scale": 0.9,
+      "offsetY": -0.5
+    },
+    "hotel": {
+      "label": "ホテル",
+      "defaultColor": "#ff01dd",
+      "file": "hotel.png",
+      "raster": true,
+      "scale": 0.7
+    },
+    "sizenn": {
+      "label": "自然・公園",
+      "defaultColor": "#66bb6a",
+      "file": "sizenn.png",
+      "raster": true,
+      "scale": 0.85
+    },
+    "yubinnkyoku": {
+      "label": "郵便局",
+      "defaultColor": "#c62828",
+      "file": "yubinnkyoku.png",
+      "raster": true
+    },
+    "zinzya": {
+      "label": "神社",
+      "defaultColor": "#e53935",
+      "file": "zinzya.png",
+      "raster": true
+    },
+    "siseki": {
+      "label": "史跡",
+      "defaultColor": "#9e9e9e",
+      "file": "siseki.png",
+      "raster": true,
+      "scale": 0.8
+    },
+    "bank": {
+      "label": "銀行",
+      "defaultColor": "#455a64",
+      "file": "bank.png",
+      "raster": true
+    },
+    "insyoku": {
+      "label": "飲食店",
+      "defaultColor": "#ff0400",
+      "file": "insyoku.png",
+      "raster": true,
+      "scale": 0.7
+    },
+    "tyuusyazyou": {
+      "label": "駐車場",
+      "defaultColor": "#607d8b",
+      "file": "tyuusyazyou.png",
+      "raster": true
+    }
+  }
+}

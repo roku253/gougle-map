@@ -232,9 +232,22 @@
     }
   }
 
+  function isLocalDevHost() {
+    try {
+      var h = window.location.hostname
+      return h === "localhost" || h === "127.0.0.1" || h === "[::1]"
+    } catch (e) {
+      return false
+    }
+  }
+
   function start() {
     cleanUrlToken()
     if (isEmbedKasumiBypass()) {
+      unlock()
+      return
+    }
+    if (isLocalDevHost()) {
       unlock()
       return
     }

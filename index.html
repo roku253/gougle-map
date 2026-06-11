@@ -37,9 +37,22 @@
         } catch (e) {}
       }
 
+      function isLocalDevHost() {
+        try {
+          var h = window.location.hostname;
+          return h === "localhost" || h === "127.0.0.1" || h === "[::1]";
+        } catch (e) {
+          return false;
+        }
+      }
+
       try {
         var u = new URL(window.location.href);
-        if (u.searchParams.get("embed") !== "kasumi" && !allowsFullGougleMapUrl()) {
+        if (
+          !isLocalDevHost() &&
+          u.searchParams.get("embed") !== "kasumi" &&
+          !allowsFullGougleMapUrl()
+        ) {
           location.replace(u.pathname + "?embed=kasumi&expand=1");
           return;
         }
@@ -438,25 +451,107 @@
     }
 
     /* Google Maps 風 POI: 白いピン形 + 色付き円 + 白グリフ（SVG） */
-    .gm-marker-root { cursor: pointer; line-height: 0; }
+    .gm-marker-root {
+      cursor: pointer;
+      line-height: 0;
+    }
+    .gm-pin-anchor {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+    }
+    .gm-pin-name {
+      position: absolute;
+      left: 100%;
+      bottom: 17px;
+      margin-left: 3px;
+      white-space: nowrap;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+      pointer-events: none;
+      max-width: 148px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .gm-gpin-wrap.is-selected + .gm-pin-name {
+      opacity: 0;
+    }
     .gm-gpin-wrap {
+      position: relative;
       display: block;
+      width: 44px;
+      height: 44px;
       filter: drop-shadow(0 1.5px 2.2px rgba(0, 0, 0, 0.34));
       transition: transform 0.12s ease;
     }
     .gm-marker-root:hover .gm-gpin-wrap { transform: scale(1.06); }
-    .gm-gpin-wrap .gm-gpin-svg { display: block; width: 44px; height: 52px; }
+    .gm-gpin-wrap .gm-gpin-svg { display: block; width: 44px; height: 44px; }
+    .gm-gpin-ico-mask {
+      position: absolute;
+      left: calc(22px + var(--gm-icon-off-x, 0px));
+      top: calc(16.5px + var(--gm-icon-off-y, 0px));
+      width: 21px;
+      height: 21px;
+      transform: translate(-50%, -50%) scale(calc(1.08 * var(--gm-icon-scale, 1)));
+      background-color: #ffffff;
+      -webkit-mask-image: var(--gm-icon-url);
+      mask-image: var(--gm-icon-url);
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-position: center;
+      pointer-events: none;
+    }
     .gm-gpin-wrap.is-selected .gm-gpin-fill {
       fill: #ea4335 !important;
     }
-    .gm-gpin-wrap.is-selected .gm-gpin-ico {
+    .gm-gpin-wrap.is-selected .gm-gpin-ico-mask {
       opacity: 0;
     }
     .gm-gpin-wrap.is-selected .gm-gpin-dot {
       opacity: 1 !important;
     }
+    .gm-gpin-ico-img {
+      position: absolute;
+      left: calc(22px + var(--gm-icon-off-x, 0px));
+      top: calc(16.5px + var(--gm-icon-off-y, 0px));
+      width: 21px;
+      height: 21px;
+      transform: translate(-50%, -50%) scale(var(--gm-icon-scale, 1));
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gm-gpin-ico-img img {
+      width: 112%;
+      height: 112%;
+      object-fit: contain;
+      display: block;
+      filter: brightness(0) invert(1) contrast(1.2) drop-shadow(0 0 0.55px #fff) drop-shadow(0 0 0.55px #fff);
+    }
+    .gm-gpin-wrap.is-selected .gm-gpin-ico-img {
+      opacity: 0;
+    }
 
     .fiction-label-wrap { pointer-events: none; text-align: center; }
+    .fiction-label-inner {
+      display: inline-block;
+      transform-origin: center center;
+    }
+    html.gm-map-edit-on .fiction-label-wrap {
+      pointer-events: auto;
+      cursor: grab;
+    }
+    html.gm-map-edit-on .fiction-label-wrap:active { cursor: grabbing; }
+    html.gm-map-edit-on .fiction-label-wrap.is-selected {
+      outline: 2px dashed #1a73e8;
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
     .fiction-label-wrap .nm {
       font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
       font-size: 14px;
@@ -758,6 +853,163 @@
       display: none !important;
     }
 
+    /* ローカル開発: 地図データ編集パネル */
+    .gm-map-editor {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      z-index: 140;
+      width: min(320px, calc(100vw - 24px));
+      max-height: calc(100vh - 24px);
+      overflow: auto;
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(32, 33, 36, 0.22);
+      font-size: 12px;
+      color: #202124;
+      display: none;
+      pointer-events: auto;
+    }
+    html.gm-map-edit-on .gm-map-editor {
+      display: block;
+    }
+    .gm-map-editor-h {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-bottom: 1px solid #e8eaed;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .gm-map-editor-h button {
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      color: #5f6368;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+    .gm-map-editor-h button:hover { background: #f1f3f4; }
+    .gm-editor-tabs {
+      display: flex;
+      border-bottom: 1px solid #e8eaed;
+    }
+    .gm-editor-tabs button {
+      flex: 1;
+      border: none;
+      background: #fff;
+      padding: 8px 4px;
+      font-size: 12px;
+      cursor: pointer;
+      color: #5f6368;
+      border-bottom: 2px solid transparent;
+    }
+    .gm-editor-tabs button.is-active {
+      color: #1a73e8;
+      border-bottom-color: #1a73e8;
+      font-weight: 600;
+    }
+    .gm-editor-body { padding: 10px 12px 12px; }
+    .gm-editor-hint {
+      margin: 0 0 8px;
+      color: #5f6368;
+      line-height: 1.45;
+      font-size: 11px;
+    }
+    .gm-editor-field {
+      display: block;
+      margin-bottom: 8px;
+    }
+    .gm-editor-field span {
+      display: block;
+      margin-bottom: 3px;
+      color: #5f6368;
+      font-size: 11px;
+    }
+    .gm-editor-field input,
+    .gm-editor-field select,
+    .gm-editor-field textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    .gm-editor-field textarea { min-height: 52px; resize: vertical; }
+    .gm-editor-row { display: flex; gap: 6px; }
+    .gm-editor-row .gm-editor-field { flex: 1; }
+    .gm-ed-icon-preview {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      min-height: 72px;
+      margin: 8px 0 4px;
+      padding: 10px;
+      background: #f1f3f4;
+      border-radius: 8px;
+    }
+    .gm-ed-icon-preview .gm-gpin-wrap {
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+      transform: scale(1.35);
+      transform-origin: center bottom;
+    }
+    .gm-editor-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .gm-editor-actions button {
+      border: 1px solid #dadce0;
+      background: #fff;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .gm-editor-actions button.primary {
+      background: #1a73e8;
+      border-color: #1a73e8;
+      color: #fff;
+      font-weight: 600;
+    }
+    .gm-editor-actions button.danger {
+      color: #c5221f;
+      border-color: #f5c6c5;
+    }
+    .gm-editor-status {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #188038;
+      min-height: 1.2em;
+    }
+    .gm-editor-status.is-error { color: #c5221f; }
+    .gm-editor-section {
+      margin: 10px 0 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #202124;
+    }
+    .gm-editor-check {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: #202124;
+    }
+    .gm-editor-check input { width: auto; margin: 0; }
+    html.gm-map-edit-on .gm-marker-root.gm-edit-draggable {
+      outline: 2px dashed #1a73e8;
+      outline-offset: 2px;
+    }
+
     .gm-map-popup .stars { color: #fbbc05; }
 
     @media (max-width: 900px) {
@@ -866,6 +1118,247 @@
             </div>
           </header>
 
+          <aside id="gmMapEditor" class="gm-map-editor" aria-label="地図データ編集">
+            <div class="gm-map-editor-h">
+              <span>地図編集（ローカルのみ）</span>
+              <button type="button" id="gmEditorClose" title="閉じる" aria-label="閉じる">×</button>
+            </div>
+            <div class="gm-editor-tabs">
+              <button type="button" class="is-active" data-editor-tab="pins">ピン</button>
+              <button type="button" data-editor-tab="labels">ラベル</button>
+              <button type="button" data-editor-tab="icons">アイコン</button>
+            </div>
+            <div class="gm-editor-body" id="gmEditorPanePins">
+              <p class="gm-editor-hint">地図クリックでピン追加。ピンをドラッグで移動。町名・川名は「ラベル」タブで編集。</p>
+              <label class="gm-editor-field">
+                <span>ピンを選択</span>
+                <select id="gmEditorPinSelect"></select>
+              </label>
+              <label class="gm-editor-field">
+                <span>タイトル</span>
+                <input id="gmEdTitle" type="text" />
+              </label>
+              <label class="gm-editor-field">
+                <span>エリア</span>
+                <input id="gmEdArea" type="text" />
+              </label>
+              <div class="gm-editor-row">
+                <label class="gm-editor-field">
+                  <span>カテゴリ</span>
+                  <select id="gmEdCategory">
+                    <option value="sweets">sweets</option>
+                    <option value="conv">conv</option>
+                    <option value="tourism">tourism</option>
+                    <option value="civic">civic</option>
+                    <option value="school">school</option>
+                    <option value="unknown">unknown</option>
+                  </select>
+                </label>
+              </div>
+              <div class="gm-editor-row">
+                <label class="gm-editor-field">
+                  <span>アイコン</span>
+                  <select id="gmEdIconId"></select>
+                </label>
+                <label class="gm-editor-field">
+                  <span>アイコン色</span>
+                  <input id="gmEdIconColor" type="color" />
+                </label>
+              </div>
+              <label class="gm-editor-check">
+                <input id="gmEdIconColorCustom" type="checkbox" />
+                <span>このピンだけ個別の色を使う（オフ＝種別の既定色に追従）</span>
+              </label>
+              <div class="gm-editor-row">
+                <label class="gm-editor-field">
+                  <span>緯度</span>
+                  <input id="gmEdLat" type="text" inputmode="decimal" />
+                </label>
+                <label class="gm-editor-field">
+                  <span>経度</span>
+                  <input id="gmEdLng" type="text" inputmode="decimal" />
+                </label>
+              </div>
+              <label class="gm-editor-field">
+                <span>本文</span>
+                <textarea id="gmEdBody"></textarea>
+              </label>
+              <label class="gm-editor-field">
+                <span>表示開始ズーム（空欄＝全体既定）</span>
+                <input id="gmEdPinMinZoom" type="number" min="0" max="22" step="0.5" placeholder="例: 12" />
+              </label>
+              <div class="gm-editor-actions">
+                <button type="button" id="gmEdApplyPin">選択ピンに反映</button>
+                <button type="button" class="danger" id="gmEdDeletePin">削除</button>
+              </div>
+            </div>
+            <div class="gm-editor-body" id="gmEditorPaneLabels" hidden>
+              <p class="gm-editor-hint">町名・川名ラベルをクリックで選択、ドラッグで移動。地図クリックで川名などの追加ラベルを新規配置。編集中も表示開始ズームの設定どおり表示されます（ズームを変えて確認）。</p>
+              <label class="gm-editor-field">
+                <span>ラベル種別</span>
+                <select id="gmEdLabelKind">
+                  <option value="region:kasumi">地域: 霞ノ杜町</option>
+                  <option value="region:mikazuki">地域: 三日月町</option>
+                  <option value="region:suginami">地域: 杉並ヶ岡</option>
+                  <option value="extra:0">追加: 0</option>
+                  <option value="extra:1">追加: 1</option>
+                </select>
+              </label>
+              <label class="gm-editor-field">
+                <span>名前</span>
+                <input id="gmEdLabelName" type="text" />
+              </label>
+              <label class="gm-editor-field">
+                <span>サブ</span>
+                <input id="gmEdLabelSub" type="text" />
+              </label>
+              <div class="gm-editor-row">
+                <label class="gm-editor-field">
+                  <span>緯度</span>
+                  <input id="gmEdLabelLat" type="text" inputmode="decimal" />
+                </label>
+                <label class="gm-editor-field">
+                  <span>経度</span>
+                  <input id="gmEdLabelLng" type="text" inputmode="decimal" />
+                </label>
+              </div>
+              <label class="gm-editor-field">
+                <span>表示開始ズーム（空欄＝全体既定）</span>
+                <input id="gmEdLabelMinZoom" type="number" min="0" max="22" step="0.5" placeholder="例: 12" />
+              </label>
+              <label class="gm-editor-field">
+                <span>角度（°）0＝横書き、時計回り＋</span>
+                <input id="gmEdLabelAngle" type="number" min="-180" max="180" step="1" value="0" />
+              </label>
+              <p class="gm-editor-hint" style="margin-top:-2px;">角度を付けたラベルは地図に固定され、道路の向きに沿って回転します。</p>
+              <label class="gm-editor-check">
+                <input id="gmEdLabelUpright" type="checkbox" />
+                <span>地図を回転させても横書きのまま（角度0のときのみ）</span>
+              </label>
+              <p class="gm-editor-section">名前（町名・川名など）</p>
+              <div class="gm-editor-row">
+                <label class="gm-editor-field">
+                  <span>サイズ (px)</span>
+                  <input id="gmEdNameSize" type="number" min="8" max="48" step="1" />
+                </label>
+                <label class="gm-editor-field">
+                  <span>太さ</span>
+                  <select id="gmEdNameWeight">
+                    <option value="400">標準</option>
+                    <option value="700">太字</option>
+                  </select>
+                </label>
+              </div>
+              <div class="gm-editor-row">
+                <label class="gm-editor-field">
+                  <span>文字色</span>
+                  <input id="gmEdNameColor" type="color" />
+                </label>
+                <label class="gm-editor-field">
+                  <span>ふちの色</span>
+                  <input id="gmEdNameOutlineColor" type="color" />
+                </label>
+              </div>
+              <label class="gm-editor-check">
+                <input id="gmEdNameOutline" type="checkbox" />
+                <span>名前にふち（縁取り）を付ける</span>
+              </label>
+              <p class="gm-editor-section">サブタイトル</p>
+              <div class="gm-editor-row">
+                <label class="gm-editor-field">
+                  <span>サイズ (px)</span>
+                  <input id="gmEdSubSize" type="number" min="8" max="32" step="1" />
+                </label>
+                <label class="gm-editor-field">
+                  <span>太さ</span>
+                  <select id="gmEdSubWeight">
+                    <option value="400">標準</option>
+                    <option value="700">太字</option>
+                  </select>
+                </label>
+              </div>
+              <div class="gm-editor-row">
+                <label class="gm-editor-field">
+                  <span>文字色</span>
+                  <input id="gmEdSubColor" type="color" />
+                </label>
+                <label class="gm-editor-field">
+                  <span>ふちの色</span>
+                  <input id="gmEdSubOutlineColor" type="color" />
+                </label>
+              </div>
+              <label class="gm-editor-check">
+                <input id="gmEdSubOutline" type="checkbox" />
+                <span>サブにふち（縁取り）を付ける</span>
+              </label>
+              <div class="gm-editor-actions">
+                <button type="button" id="gmEdResetLabelStyle">見た目を既定に戻す</button>
+              </div>
+              <div class="gm-editor-actions">
+                <button type="button" id="gmEdApplyLabel">ラベルに反映</button>
+                <button type="button" id="gmEdAddExtraLabel">中心付近に追加</button>
+                <button type="button" class="danger" id="gmEdDeleteLabel">追加ラベルを削除</button>
+              </div>
+            </div>
+            <div class="gm-editor-body" id="gmEditorPaneIcons" hidden>
+              <p class="gm-editor-hint">種類ごとにピン内の表示サイズ・位置・既定の色を調整します。元画像の大きさが違うアイコン（コンビニ・自然・店など）向け。「反映して保存」で data/poi-icons.json に記録されます。</p>
+              <label class="gm-editor-field">
+                <span>アイコン種別</span>
+                <select id="gmEdIconDefaultsId"></select>
+              </label>
+              <div class="gm-editor-row">
+                <label class="gm-editor-field">
+                  <span>ピン内サイズ（1＝標準）</span>
+                  <input id="gmEdIconScale" type="number" min="0.4" max="2.5" step="0.05" value="1" />
+                </label>
+                <label class="gm-editor-field">
+                  <span>既定の色（円）</span>
+                  <input id="gmEdIconDefaultColor" type="color" />
+                </label>
+              </div>
+              <div class="gm-editor-row">
+                <label class="gm-editor-field">
+                  <span>位置補正 X (px)</span>
+                  <input id="gmEdIconOffX" type="number" min="-12" max="12" step="0.5" value="0" />
+                </label>
+                <label class="gm-editor-field">
+                  <span>位置補正 Y (px)</span>
+                  <input id="gmEdIconOffY" type="number" min="-12" max="12" step="0.5" value="0" />
+                </label>
+              </div>
+              <div class="gm-ed-icon-preview" id="gmEdIconPreview" aria-hidden="true"></div>
+              <div class="gm-editor-actions">
+                <button type="button" id="gmEdApplyIconDefaults">反映して保存</button>
+                <button type="button" id="gmEdResetIconDefaults">この種類を既定に戻す</button>
+              </div>
+            </div>
+            <div class="gm-editor-body" style="border-top:1px solid #e8eaed;padding-top:10px;">
+              <p class="gm-editor-section">全体の表示既定（新規・空欄時に使う）</p>
+              <div class="gm-editor-row">
+                <label class="gm-editor-field">
+                  <span>ピン既定ズーム</span>
+                  <input id="gmEdDefPinZoom" type="number" min="0" max="22" step="0.5" />
+                </label>
+                <label class="gm-editor-field">
+                  <span>町名既定ズーム</span>
+                  <input id="gmEdDefRegionZoom" type="number" min="0" max="22" step="0.5" />
+                </label>
+              </div>
+              <label class="gm-editor-field">
+                <span>追加ラベル既定ズーム</span>
+                <input id="gmEdDefExtraZoom" type="number" min="0" max="22" step="0.5" />
+              </label>
+              <label class="gm-editor-check">
+                <input id="gmEdShowPinNames" type="checkbox" checked />
+                <span>ピン名をピンの隣に表示（ピンと同色）</span>
+              </label>
+              <div class="gm-editor-actions">
+                <button type="button" class="primary" id="gmEdSave">JSONに保存</button>
+              </div>
+              <p class="gm-editor-status" id="gmEdStatus"></p>
+            </div>
+          </aside>
+
           <aside class="sidepanel" id="sidepanel">
             <div class="sp-h">
               <div class="sp-h-row">
@@ -920,6 +1413,34 @@
       var SWEETS_THREAD_MODE = detectSweetsThreadMode();
       if (SWEETS_THREAD_MODE) document.documentElement.classList.add("gm-sweets-thread");
 
+      function isLocalDevHostMain() {
+        try {
+          var h = window.location.hostname;
+          return h === "localhost" || h === "127.0.0.1" || h === "[::1]";
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function allowsFullGougleMapUrlMain() {
+        try {
+          var u = new URL(window.location.href);
+          var q = u.searchParams;
+          if (q.get("embed") === "kasumi") return false;
+          if (q.get("full") === "1" || q.get("mode") === "full") return true;
+          if ((q.get("q") || "").trim()) return true;
+          if (q.get("lat") && q.get("lng")) return true;
+          if (q.get("focus") || q.get("f")) return true;
+          if (q.get("from") || q.get("entry")) return true;
+          if (q.has("kn_set_footprint")) return true;
+          var h = (u.hash || "").replace(/^#/, "").toLowerCase();
+          if (/^(kasumi|mikazuki|suginami)$/.test(h)) return true;
+          return false;
+        } catch (e) {
+          return false;
+        }
+      }
+
       function detectEmbedKasumiMode() {
         try {
           return new URL(window.location.href).searchParams.get("embed") === "kasumi";
@@ -944,6 +1465,16 @@
       if (EMBED_KASUMI_MODE && window.self !== window.top) {
         document.documentElement.classList.add("gm-embed-kasumi-in-iframe");
       }
+
+      var LOCAL_DEV_HOST = isLocalDevHostMain();
+      var MAP_EDIT_AVAILABLE =
+        LOCAL_DEV_HOST && !EMBED_KASUMI_MODE && !SWEETS_THREAD_MODE && allowsFullGougleMapUrlMain();
+      var MAP_EDIT_MODE = false;
+      var MAP_EDIT_PIN_ID = null;
+      var MAP_EDIT_LABEL_REF = "region:kasumi";
+      var mapEditClickBound = false;
+      var logoTapCount = 0;
+      var logoTapTimer = null;
 
       var KASUMI_LAT = 36.052096704400995;
       var KASUMI_LNG = 138.11843672052697;
@@ -998,59 +1529,186 @@
         });
       }
 
-      var REGION = {
-        mikazuki: { name: "三日月町", sub: "中心市街地・住宅地", lat: 35.4078, lng: 139.0142, flyZoom: 14 },
-        suginami: { name: "杉並ヶ岡", sub: "新興住宅地・商業地区", lat: 35.4255, lng: 138.9775, flyZoom: 14 },
-        kasumi: { name: "霞ノ杜町", sub: "山あいの町", lat: KASUMI_LAT, lng: KASUMI_LNG, flyZoom: 14 },
+      var REGION = {};
+      var PIN_DATA = [];
+      var FICTION_EXTRA_LABELS = [];
+      var DEFAULT_MAP_SETTINGS = {
+        pinsDefaultMinZoom: 12,
+        regionDefaultMinZoom: 12,
+        extraDefaultMinZoom: 13,
+        showPinNames: true,
+        iconDefaults: {},
+        labelStyleDefaults: {
+          nameSize: 14,
+          nameWeight: 700,
+          nameColor: "#3e2723",
+          nameOutline: true,
+          nameOutlineColor: "#ffffff",
+          subSize: 10,
+          subWeight: 400,
+          subColor: "#5d4037",
+          subOutline: true,
+          subOutlineColor: "#ffffff",
+          angle: 0,
+        },
       };
+      var MAP_SETTINGS = JSON.parse(JSON.stringify(DEFAULT_MAP_SETTINGS));
 
-      var PIN_DATA = [
-        { id: "sweets-01", lat: 43.062, lng: 141.3544, category: "sweets", poiKind: 9, title: "パティスリー 北の窓", area: "北海道・札幌", rating: 4.6, body: "札幌駅北口から徒歩圏。ショコラと季節のタルトが定評。", reviewer: "kasumi_local", review: "道産子スイーツ部の定番寄り道。" },
-        { id: "sweets-02", lat: 38.2685, lng: 140.869, category: "sweets", poiKind: 8, title: "喫茶 杜若", area: "宮城・仙台", rating: 4.3, body: "勾当台公園寄りの小さな喫茶。ずんだプリン。", reviewer: "night_owl_42", review: "ずんだの香りが上品。" },
-        { id: "sweets-03", lat: 35.6938, lng: 139.7035, category: "sweets", poiKind: 9, title: "雪あめや 新宿南口店", area: "東京・新宿", rating: 4.1, body: "和菓子と抹茶スイーツ。駅から徒歩5分。", reviewer: "甘味らじお", review: "みたらし団子の焼き目◎。" },
-        { id: "sweets-04", lat: 35.1712, lng: 136.8818, category: "sweets", poiKind: 9, title: "木洩日庵 栄本店", area: "愛知・名古屋", rating: 4.5, body: "ロールケーキ専門。平日も並ぶ。", reviewer: "ご当地スイーツ部", review: "生地がしっとり。" },
-        { id: "sweets-05", lat: 34.7028, lng: 135.4962, category: "sweets", poiKind: 8, title: "カフェ夜灯 梅田", area: "大阪・梅田", rating: 4, body: "深夜まで営業のカフェ。タルトと紅茶。", reviewer: "夜更かしさん", review: "夜景側の席が落ち着く。" },
-        { id: "sweets-06", lat: 34.3855, lng: 132.4555, category: "sweets", poiKind: 9, title: "月待ちプリン 本通店", area: "広島・紙屋町", rating: 3.9, body: "瓶プリンとレモンケーキ。", reviewer: "kasumi_local", review: "瓶がかわいい。" },
-        { id: "sweets-07", lat: 33.5905, lng: 130.4018, category: "sweets", poiKind: 9, title: "スイーツ工房 こもれび 天神", area: "福岡・天神", rating: 4.4, body: "ジェラートと焼き菓子。", reviewer: "甘味らじお", review: "九州フルーツの酸味が効いてる。" },
-        { id: "conv-01", lat: 35.4055, lng: 139.0108, category: "conv", poiKind: 3, title: "ファイブイレブン 三日月町店", area: "三日月町", rating: 3.6, body: "24時間営業。スイーツ系新作は強め入荷の店舗らしい。", reviewer: "コンビ二スイーツ部", review: "問題のチョコ新作、ここは毎週水曜に大量入荷。" },
-        { id: "conv-02", lat: 35.412, lng: 139.0072, category: "conv", poiKind: 3, title: "ファイブイレブン 三日月東店", area: "三日月町", rating: 3.4, body: "旧街道沿い。駐車場広め。" },
-        { id: "conv-03", lat: 35.4288, lng: 138.9835, category: "conv", poiKind: 3, title: "ファイブイレブン 杉並ヶ岡北口店", area: "杉並ヶ岡", rating: 3.7, body: "杉並ヶ岡駅北口を出てすぐ。", reviewer: "甘味らじお", review: "新作スイーツの再入荷スピードが早い。" },
-        { id: "conv-04", lat: 35.4215, lng: 138.9695, category: "conv", poiKind: 3, title: "ローライン 杉並ヶ岡西", area: "杉並ヶ岡", rating: 3.3, body: "比較的小型店。深夜は閉店。" },
-        { id: "conv-05", lat: 35.4088, lng: 138.9995, category: "conv", poiKind: 3, title: "セイファイ 旧街道前店", area: "三日月町", rating: 3.5, body: "旧街道沿い。県内チェーン。" },
-        { id: "conv-06", lat: 36.0514, lng: 138.1198, category: "conv", poiKind: 3, title: "ファイブイレブン 霞ノ杜町役場前店", area: "霞ノ杜町", rating: 3.2, body: "町内の生活路線。新作は控えめ。", reviewer: "kasumi_local", review: "山間部ではここが拠点。" },
-        { id: "tourism-01", lat: 36.0532, lng: 138.1172, category: "tourism", poiKind: 6, title: "霞ノ杜神社", area: "霞ノ杜町", rating: 4.4, body: "丘陵の鎮守。早朝は霧がかかる。" },
-        { id: "tourism-02", lat: 36.0505, lng: 138.1155, category: "tourism", poiKind: 5, title: "杜の吊り橋", area: "霞ノ杜町", rating: 4.2, body: "川上の木造橋。揺れる。" },
-        { id: "tourism-03", lat: 36.0518, lng: 138.1205, category: "tourism", poiKind: 1, title: "霞ノ杜資料館", area: "霞ノ杜町", rating: 4, body: "町史・古地図。火・水休館。" },
-        { id: "tourism-04", lat: 36.054, lng: 138.1142, category: "tourism", poiKind: 7, title: "霧見展望休憩所", area: "霞ノ杜町", rating: 4.3, body: "山道の中腹の小休憩所。" },
-        { id: "tourism-05", lat: 36.0508, lng: 138.1215, category: "tourism", poiKind: 2, title: "杜の湯（足湯）", area: "霞ノ杜町", rating: 4.1, body: "川沿いの足湯。無料。" },
-        { id: "civic-01", lat: 36.0524, lng: 138.1189, category: "civic", poiKind: 4, title: "霞ノ杜町役場", area: "霞ノ杜町", rating: 0, body: "月〜金 8:30-17:15。町の窓口。" },
-        {
-          id: "school-01",
-          lat: 36.0535,
-          lng: 138.1178,
-          category: "school",
-          poiKind: 4,
-          title: "霞ノ杜町立第一小学校",
-          area: "霞ノ杜町",
-          rating: 0,
-          body: "地域と連携した環境学習。（表記ゆれ: 霞ノ杜小学校）",
-          schoolGlyph: true,
-          website: "https://roku253.github.io/kasuminomori-shougakkou/",
-          websiteLabel: "roku253.github.io/kasuminomori-shougakkou",
-        },
-        {
-          id: "utodori-trail",
-          lat: 36.0492,
-          lng: 138.1125,
-          category: "civic",
-          poiKind: 10,
-          title: "烏啼山道（立入禁止区域）",
-          area: "霞ノ杜町",
-          rating: 0,
-          meta: "立入禁止 / 2019年夏に周知強化",
-          body: "気象・地盤の理由により立入禁止。2019年夏に周知を強化した区域。",
-        },
-      ];
+      function getPinsDefaultMinZoom() {
+        return typeof MAP_SETTINGS.pinsDefaultMinZoom === "number" ? MAP_SETTINGS.pinsDefaultMinZoom : 12;
+      }
+
+      function getRegionDefaultMinZoom() {
+        return typeof MAP_SETTINGS.regionDefaultMinZoom === "number" ? MAP_SETTINGS.regionDefaultMinZoom : 12;
+      }
+
+      function getExtraDefaultMinZoom() {
+        return typeof MAP_SETTINGS.extraDefaultMinZoom === "number" ? MAP_SETTINGS.extraDefaultMinZoom : 13;
+      }
+
+      function getPinMinZoom(pin) {
+        if (pin && typeof pin.minZoom === "number") return pin.minZoom;
+        return getPinsDefaultMinZoom();
+      }
+
+      function getLabelMinZoom(ref, r) {
+        if (r && typeof r.minZoom === "number") return r.minZoom;
+        if (ref && ref.indexOf("region:") === 0) return getRegionDefaultMinZoom();
+        return getExtraDefaultMinZoom();
+      }
+
+      function labelVisibleAtZoom(ref, r, z) {
+        return z >= getLabelMinZoom(ref, r);
+      }
+
+      function resolveLabelStyle(r) {
+        var base = Object.assign({}, DEFAULT_MAP_SETTINGS.labelStyleDefaults, MAP_SETTINGS.labelStyleDefaults || {});
+        if (!r) return base;
+        var keys = [
+          "nameSize",
+          "nameWeight",
+          "nameColor",
+          "nameOutline",
+          "nameOutlineColor",
+          "subSize",
+          "subWeight",
+          "subColor",
+          "subOutline",
+          "subOutlineColor",
+          "angle",
+        ];
+        keys.forEach(function (k) {
+          if (r[k] !== undefined && r[k] !== null) base[k] = r[k];
+        });
+        return base;
+      }
+
+      function textOutlineCss(enabled, color) {
+        if (!enabled) return "none";
+        var c = color || "#ffffff";
+        return "0 0 3px " + c + ", 0 0 8px " + c + ", 1px 0 0 " + c + ", -1px 0 0 " + c + ", 0 1px 0 " + c + ", 0 -1px 0 " + c;
+      }
+
+      function parseLabelAngle(val) {
+        if (typeof val === "number" && !isNaN(val)) return val;
+        var n = parseFloat(val);
+        return isNaN(n) ? 0 : n;
+      }
+
+      function parseOptionalZoomInput(val) {
+        var t = String(val == null ? "" : val).trim();
+        if (!t) return undefined;
+        var n = parseFloat(t);
+        return isNaN(n) ? undefined : n;
+      }
+
+      function loadMapData() {
+        var bust = "?ts=" + Date.now();
+        return Promise.all([
+          fetch("./data/map-data.json" + bust).then(function (r) {
+            if (!r.ok) throw new Error("map-data.json " + r.status);
+            return r.json();
+          }),
+          fetch("./data/poi-icons.json" + bust).then(function (r) {
+            if (!r.ok) throw new Error("poi-icons.json " + r.status);
+            return r.json();
+          }),
+        ])
+          .then(function (results) {
+            var data = results[0];
+            applyPoiIconRegistry(results[1]);
+            PIN_DATA = data.pins || [];
+            REGION = data.region || {};
+            FICTION_EXTRA_LABELS = data.fictionExtraLabels || [];
+            MAP_SETTINGS = JSON.parse(JSON.stringify(DEFAULT_MAP_SETTINGS));
+            if (data.settings) {
+              if (typeof data.settings.pinsDefaultMinZoom === "number") {
+                MAP_SETTINGS.pinsDefaultMinZoom = data.settings.pinsDefaultMinZoom;
+              }
+              if (typeof data.settings.regionDefaultMinZoom === "number") {
+                MAP_SETTINGS.regionDefaultMinZoom = data.settings.regionDefaultMinZoom;
+              }
+              if (typeof data.settings.extraDefaultMinZoom === "number") {
+                MAP_SETTINGS.extraDefaultMinZoom = data.settings.extraDefaultMinZoom;
+              }
+              if (data.settings.labelStyleDefaults) {
+                MAP_SETTINGS.labelStyleDefaults = Object.assign(
+                  {},
+                  DEFAULT_MAP_SETTINGS.labelStyleDefaults,
+                  data.settings.labelStyleDefaults
+                );
+              }
+              if (data.settings.iconDefaults && typeof data.settings.iconDefaults === "object") {
+                migrateIconDefaultsFromMapSettings(data.settings.iconDefaults);
+              }
+              if (typeof data.settings.showPinNames === "boolean") {
+                MAP_SETTINGS.showPinNames = data.settings.showPinNames;
+              }
+            }
+            POI_PINS_MIN_ZOOM = getPinsDefaultMinZoom();
+            normalizePinIconColorsOnLoad();
+            if (REGION.kasumi && typeof REGION.kasumi.lat === "number") {
+              KASUMI_LAT = REGION.kasumi.lat;
+              KASUMI_LNG = REGION.kasumi.lng;
+            }
+            loadGlobalSettingsFields();
+            refreshEditorIconSelect();
+            refreshEditorIconDefaultsSelect();
+          });
+      }
+
+      function getShowPinNames() {
+        return MAP_SETTINGS.showPinNames !== false;
+      }
+
+      function shouldShowPinName(pin) {
+        if (!pin || pin.category === "user") return false;
+        if (pin.hidePinName) return false;
+        return getShowPinNames();
+      }
+
+      function loadGlobalSettingsFields() {
+        var pinZ = document.getElementById("gmEdDefPinZoom");
+        var regZ = document.getElementById("gmEdDefRegionZoom");
+        var extZ = document.getElementById("gmEdDefExtraZoom");
+        var showNames = document.getElementById("gmEdShowPinNames");
+        if (pinZ) pinZ.value = String(getPinsDefaultMinZoom());
+        if (regZ) regZ.value = String(getRegionDefaultMinZoom());
+        if (extZ) extZ.value = String(getExtraDefaultMinZoom());
+        if (showNames) showNames.checked = getShowPinNames();
+      }
+
+      function applyGlobalSettingsFields() {
+        var pinZ = parseOptionalZoomInput(document.getElementById("gmEdDefPinZoom").value);
+        var regZ = parseOptionalZoomInput(document.getElementById("gmEdDefRegionZoom").value);
+        var extZ = parseOptionalZoomInput(document.getElementById("gmEdDefExtraZoom").value);
+        var showNames = document.getElementById("gmEdShowPinNames");
+        if (pinZ != null) MAP_SETTINGS.pinsDefaultMinZoom = pinZ;
+        if (regZ != null) MAP_SETTINGS.regionDefaultMinZoom = regZ;
+        if (extZ != null) MAP_SETTINGS.extraDefaultMinZoom = extZ;
+        if (showNames) MAP_SETTINGS.showPinNames = showNames.checked;
+        POI_PINS_MIN_ZOOM = getPinsDefaultMinZoom();
+      }
 
       var map;
       var pinMarkers = [];
@@ -1062,6 +1720,7 @@
       var POI_PINS_MIN_ZOOM = 12;
       var activeListFilter = "all";
       var markerVisRaf = null;
+      var labelVisRaf = null;
       var chromePadRaf = null;
 
       function isKasumiMapPin(p) {
@@ -1221,6 +1880,15 @@
         });
       }
 
+      function scheduleRefreshFictionLabels() {
+        if (!map || SWEETS_THREAD_MODE) return;
+        if (labelVisRaf) return;
+        labelVisRaf = requestAnimationFrame(function () {
+          labelVisRaf = null;
+          refreshFictionLabels();
+        });
+      }
+
       function updateMarkerVisibility() {
         if (!map || SWEETS_THREAD_MODE) return;
         if (EMBED_KASUMI_MODE) {
@@ -1238,7 +1906,12 @@
           var root = mk.getElement();
           if (!root) return;
           var cat = root.getAttribute("data-pin-category") || "";
-          var show = z >= POI_PINS_MIN_ZOOM;
+          var minZAttr = root.getAttribute("data-pin-min-zoom");
+          var pinMinZoom =
+            minZAttr !== null && minZAttr !== "" && !isNaN(parseFloat(minZAttr))
+              ? parseFloat(minZAttr)
+              : getPinsDefaultMinZoom();
+          var show = z >= pinMinZoom;
           if (tab === "sweets" && cat === "sweets") {
             show = root.getAttribute("data-sweets-excluded") !== "1";
           }
@@ -1254,178 +1927,459 @@
         }
       }
 
-      var POI_KIND_LABELS = [
-        "",
-        "資料館",
-        "温泉・足湯",
-        "コンビニ",
-        "役場",
-        "吊り橋・橋",
-        "神社",
-        "休憩所",
-        "喫茶店",
-        "スイーツ・飲食店",
-        "史跡",
-      ];
+      var POI_ICONS_RAW = null;
+      var POI_ICON_REGISTRY = {};
+      var POI_ICON_REGISTRY_BASE = {};
+      var POI_KIND_ICON_FALLBACK = { 1: "hakubutukann", 2: "onsenn", 3: "conbini", 4: "dot", 5: "dot", 6: "zinzya", 7: "sizenn", 8: "cafe", 9: "insyoku", 10: "siseki" };
 
-      function fillForPoiKind(k) {
-        var fills = ["", "#ef6c6c", "#29b6f6", "#1a73e8", "#795548", "#a1887f", "#e53935", "#66bb6a", "#fb8c00", "#e53935", "#7e57c2"];
-        return fills[k] || "#78909c";
+      function applyPoiIconRegistry(data) {
+        if (!data) return;
+        POI_ICONS_RAW = data;
+        POI_ICON_REGISTRY = data.icons || {};
+        POI_ICON_REGISTRY_BASE = JSON.parse(JSON.stringify(POI_ICON_REGISTRY));
+        if (data.poiKindFallback) POI_KIND_ICON_FALLBACK = data.poiKindFallback;
       }
 
-      function iconSvgForPin(pin) {
-        if (pin.schoolGlyph) {
-          return (
-            '<g class="gm-gpin-ico">' +
-            '<text x="22" y="20.2" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700" font-family="Roboto,Meiryo,sans-serif">文</text>' +
-            "</g>"
-          );
+      function migrateIconDefaultsFromMapSettings(iconDefaults) {
+        if (!iconDefaults || typeof iconDefaults !== "object") return;
+        Object.keys(iconDefaults).forEach(function (id) {
+          var over = iconDefaults[id];
+          var meta = POI_ICON_REGISTRY[id];
+          if (!meta || !over || typeof over !== "object") return;
+          if (typeof over.scale === "number" && over.scale > 0) meta.scale = over.scale;
+          if (over.defaultColor) meta.defaultColor = over.defaultColor;
+          if (typeof over.offsetX === "number") meta.offsetX = over.offsetX;
+          if (typeof over.offsetY === "number") meta.offsetY = over.offsetY;
+        });
+      }
+
+      function buildPoiIconsPayload() {
+        return {
+          version: (POI_ICONS_RAW && POI_ICONS_RAW.version) || 1,
+          poiKindFallback: POI_KIND_ICON_FALLBACK,
+          icons: POI_ICON_REGISTRY,
+        };
+      }
+
+      function getPinIconId(pin) {
+        if (pin && pin.iconId && POI_ICON_REGISTRY[pin.iconId]) return pin.iconId;
+        if (pin && pin.schoolGlyph) return "syogakkou";
+        var k = pin && pin.poiKind != null ? String(pin.poiKind) : "9";
+        return POI_KIND_ICON_FALLBACK[k] || POI_KIND_ICON_FALLBACK["9"] || "dot";
+      }
+
+      function getRegistryIconMeta(iconId) {
+        if (iconId && POI_ICON_REGISTRY[iconId]) return POI_ICON_REGISTRY[iconId];
+        return POI_ICON_REGISTRY.dot || { label: "その他（●）", defaultColor: "#78909c", file: "dot.svg" };
+      }
+
+      function getPinIconMeta(iconId) {
+        return getRegistryIconMeta(iconId);
+      }
+
+      function getIconScale(iconId) {
+        var meta = getRegistryIconMeta(iconId);
+        if (meta && typeof meta.scale === "number" && meta.scale > 0) return meta.scale;
+        return 1;
+      }
+
+      function getIconOffset(iconId) {
+        var meta = getRegistryIconMeta(iconId);
+        return {
+          x: meta && typeof meta.offsetX === "number" ? meta.offsetX : 0,
+          y: meta && typeof meta.offsetY === "number" ? meta.offsetY : 0,
+        };
+      }
+
+      function getPinIconUrl(iconId) {
+        var meta = getPinIconMeta(iconId);
+        return "./img/icons/" + (meta.file || (iconId || "dot") + ".svg");
+      }
+
+      function isRasterPinIcon(iconId) {
+        var meta = getPinIconMeta(iconId);
+        if (meta.raster === true) return true;
+        return /\.png$/i.test(meta.file || "");
+      }
+
+      function pinUsesCustomIconColor(pin) {
+        return !!(pin && pin.useCustomIconColor && pin.iconColor);
+      }
+
+      function getPinColor(pin) {
+        if (pinUsesCustomIconColor(pin)) return pin.iconColor;
+        return getPinIconMeta(getPinIconId(pin)).defaultColor || "#78909c";
+      }
+
+      function updatePinIconColorFieldState() {
+        var customEl = document.getElementById("gmEdIconColorCustom");
+        var colorEl = document.getElementById("gmEdIconColor");
+        var iconSel = document.getElementById("gmEdIconId");
+        if (!customEl || !colorEl) return;
+        var useCustom = customEl.checked;
+        colorEl.disabled = !useCustom;
+        if (!useCustom && iconSel) {
+          colorEl.value = getPinIconMeta(iconSel.value || "dot").defaultColor || "#78909c";
         }
-        var k = pin.poiKind || 9;
-        if (k === 1) {
-          return (
-            '<g class="gm-gpin-ico" fill="#ffffff">' +
-            '<path d="M16 11.2L22 7.8L28 11.2z"/>' +
-            '<rect x="17.1" y="11.2" width="1.15" height="8.5"/>' +
-            '<rect x="19.35" y="11.2" width="1.15" height="8.5"/>' +
-            '<rect x="21.55" y="11.2" width="1.15" height="8.5"/>' +
-            '<rect x="23.75" y="11.2" width="1.15" height="8.5"/>' +
-            '<rect x="26" y="11.2" width="1.15" height="8.5"/>' +
-            '<rect x="16" y="19.2" width="12" height="2.4" rx="0.35"/>' +
-            "</g>"
-          );
+      }
+
+      function syncPinIconColorFromEditor(p) {
+        if (!p) return;
+        var iconId = document.getElementById("gmEdIconId").value || getPinIconId(p) || "dot";
+        p.iconId = iconId;
+        var customEl = document.getElementById("gmEdIconColorCustom");
+        if (customEl && customEl.checked) {
+          p.iconColor = document.getElementById("gmEdIconColor").value;
+          p.useCustomIconColor = true;
+        } else {
+          delete p.iconColor;
+          delete p.useCustomIconColor;
         }
-        if (k === 2) {
-          return (
-            '<g class="gm-gpin-ico">' +
-            '<text x="22" y="21.5" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700" font-family="Meiryo,sans-serif">♨</text>' +
-            "</g>"
-          );
-        }
-        if (k === 3) {
-          return (
-            '<g class="gm-gpin-ico" fill="#ffffff">' +
-            '<path d="M17.4 15.4h9.2v7.6h-9.2zm1.9-2.4h5.4l-.65-1.85h-4.1z"/>' +
-            '<path d="M20.2 13.2h3.6v1.2h-3.6z" opacity="0.85"/>' +
-            "</g>"
-          );
-        }
-        if (k === 4) {
-          return (
-            '<g class="gm-gpin-ico" fill="#ffffff">' +
-            '<polygon points="17.2,14.5 22,10.2 26.8,14.5"/>' +
-            '<rect x="17.4" y="14.5" width="9.2" height="7.8" rx="0.45"/>' +
-            '<line x1="25.5" y1="10.8" x2="25.5" y2="7.8" stroke="#ffffff" stroke-width="1.05"/>' +
-            '<polygon points="25.5,7.8 27.6,9.3 25.5,8.4"/>' +
-            "</g>"
-          );
-        }
-        if (k === 5) {
-          return (
-            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.65" stroke-linecap="round">' +
-            '<path d="M14 20.2Q22 10.5 30 20.2"/>' +
-            '<path d="M14.2 20.2h15.6M18.5 20.2v2.2M25.5 20.2v2.2"/>' +
-            "</g>"
-          );
-        }
-        if (k === 6) {
-          return (
-            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round">' +
-            '<path d="M14.3 13.2h15.4v1.35H14.3z"/>' +
-            '<path d="M16 13.2v7.4M28 13.2v7.4"/>' +
-            '<path d="M14.6 16.6h14.8"/>' +
-            "</g>"
-          );
-        }
-        if (k === 7) {
-          return (
-            '<g class="gm-gpin-ico" fill="#ffffff">' +
-            '<rect x="14.8" y="14.2" width="14.4" height="2.2" rx="0.35"/>' +
-            '<rect x="16.2" y="16.4" width="1.6" height="5.2" rx="0.2"/>' +
-            '<rect x="26.2" y="16.4" width="1.6" height="5.2" rx="0.2"/>' +
-            "</g>"
-          );
-        }
-        if (k === 8) {
-          return (
-            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">' +
-            '<path d="M17.2 14.8h6.2a2.1 2.1 0 0 1 2.1 1.9v2.3a2.1 2.1 0 0 1-2.1 1.9h-6.2"/>' +
-            '<path d="M25.5 15.8h1.6a1.25 1.25 0 0 1 0 2.5H25.5"/>' +
-            '<line x1="15.2" y1="22.2" x2="26.8" y2="22.2"/>' +
-            "</g>"
-          );
-        }
-        if (k === 9) {
-          return (
-            '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">' +
-            '<path d="M15.8 12.2v8.8M17.15 12.2v8.8M18.5 12.2v8.8M15.8 12.2h2.7"/>' +
-            '<path d="M20.6 11.8l2.8 9.2h1.05l-2.45-9.2"/>' +
-            "</g>"
-          );
-        }
-        if (k === 10) {
-          return (
-            '<g class="gm-gpin-ico" fill="#ffffff">' +
-            '<rect x="20.4" y="12.8" width="2.4" height="2.4" rx="0.35"/>' +
-            '<rect x="17.6" y="15.6" width="2.4" height="2.4" rx="0.35"/>' +
-            '<rect x="23.2" y="15.6" width="2.4" height="2.4" rx="0.35"/>' +
-            "</g>"
-          );
-        }
-        return (
-          '<g class="gm-gpin-ico" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">' +
-          '<path d="M15.8 12.2v8.8M17.15 12.2v8.8M18.5 12.2v8.8M15.8 12.2h2.7"/>' +
-          '<path d="M20.6 11.8l2.8 9.2h1.05l-2.45-9.2"/>' +
-          "</g>"
+        delete p.iconColorCustom;
+      }
+
+      function normalizePinIconColorsOnLoad() {
+        PIN_DATA.forEach(function (p) {
+          delete p.iconColorCustom;
+          if (!p.useCustomIconColor) delete p.iconColor;
+        });
+      }
+
+      function refreshPinsIconColorFromRegistry(iconId) {
+        if (!iconId) return;
+        PIN_DATA.forEach(function (p) {
+          if (getPinIconId(p) !== iconId) return;
+          if (p.useCustomIconColor) return;
+          delete p.iconColor;
+          delete p.useCustomIconColor;
+          delete p.iconColorCustom;
+        });
+      }
+
+      function getPinIconLabel(pin) {
+        if (pin && pin.schoolGlyph) return "学校";
+        return getPinIconMeta(getPinIconId(pin)).label || "スポット";
+      }
+
+      /** 涙型先端が viewBox 下端より少し上（y≈40.5 / 高さ44）のため補正 */
+      var PIN_MARKER_TIP_OFFSET_Y = 3.5;
+
+      function getPinMarkerOpts(extra) {
+        return Object.assign(
+          {
+            anchor: "bottom",
+            offset: [0, PIN_MARKER_TIP_OFFSET_Y],
+            rotationAlignment: "viewport",
+            pitchAlignment: "viewport",
+          },
+          extra || {}
         );
       }
 
-      function buildGooglePinSvg(pin) {
-        if (pin === "user" || (pin && pin.category === "user")) {
-          var fillU = "#1a73e8";
-          var tail = '<path fill="#ffffff" d="M22 26.35L15.1 26.75L22 50.6L28.9 26.75z"/>';
-          var bulb =
-            '<circle class="gm-gpin-fill" cx="22" cy="16.5" r="10.6" fill="' +
-            fillU +
-            '" stroke="#ffffff" stroke-width="2.85"/>';
-          var icoU = '<circle class="gm-gpin-ico" cx="22" cy="16.5" r="3.1" fill="#ffffff"/>';
-          return (
-            '<svg xmlns="http://www.w3.org/2000/svg" class="gm-gpin-svg" viewBox="0 0 44 52" width="44" height="52" aria-hidden="true">' +
-            tail +
-            bulb +
-            icoU +
-            "</svg>"
-          );
-        }
-        var fill = fillForPoiKind(pin.poiKind || 9);
-        var tail = '<path fill="#ffffff" d="M22 26.35L15.1 26.75L22 50.6L28.9 26.75z"/>';
+      function buildTeardropPinSvg(fill) {
+        var tail =
+          '<path fill="#ffffff" d="M15.1 26.75L21.2 38.3Q22 40.5 22.8 38.3L28.9 26.75z"/>';
         var bulb =
           '<circle class="gm-gpin-fill" cx="22" cy="16.5" r="10.6" fill="' +
-          fill +
+          escHtml(fill) +
           '" stroke="#ffffff" stroke-width="2.85"/>';
-        var ico = iconSvgForPin(pin);
         var dot = '<circle class="gm-gpin-dot" cx="22" cy="16.5" r="3.15" fill="#ffffff" opacity="0"/>';
         return (
-          '<svg xmlns="http://www.w3.org/2000/svg" class="gm-gpin-svg" viewBox="0 0 44 52" width="44" height="52" aria-hidden="true">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" class="gm-gpin-svg" viewBox="0 0 44 44" width="44" height="44" aria-hidden="true">' +
           tail +
           bulb +
-          ico +
           dot +
           "</svg>"
         );
       }
 
+      function buildPinIconLayer(iconUrl, iconId, scaleOverride, offsetOverride) {
+        var scale = typeof scaleOverride === "number" ? scaleOverride : getIconScale(iconId);
+        var off =
+          offsetOverride && typeof offsetOverride === "object"
+            ? offsetOverride
+            : getIconOffset(iconId);
+        var vars = [];
+        if (scale !== 1) vars.push("--gm-icon-scale:" + scale);
+        if (off.x) vars.push("--gm-icon-off-x:" + off.x + "px");
+        if (off.y) vars.push("--gm-icon-off-y:" + off.y + "px");
+        var styleAttr = vars.length ? ' style="' + vars.join(";") + '"' : "";
+        if (isRasterPinIcon(iconId)) {
+          return (
+            '<span class="gm-gpin-ico-img"' +
+            styleAttr +
+            ' aria-hidden="true">' +
+            '<img src="' +
+            iconUrl +
+            '" alt="" draggable="false" decoding="async"/>' +
+            "</span>"
+          );
+        }
+        vars.push("--gm-icon-url:url('" + iconUrl + "')");
+        return (
+          '<span class="gm-gpin-ico-mask" style="' + vars.join(";") + '" aria-hidden="true"></span>'
+        );
+      }
+
+      function syncPinNameElementStyle(el, pin) {
+        if (!el || !pin) return;
+        var color = getPinColor(pin);
+        el.style.color = color;
+        el.style.textShadow = textOutlineCss(true, "#ffffff");
+      }
+
+      function buildPinNameElement(pin) {
+        if (!shouldShowPinName(pin)) return null;
+        var title = (pin.title || "").trim();
+        if (!title) return null;
+        var nameEl = document.createElement("span");
+        nameEl.className = "gm-pin-name";
+        nameEl.textContent = title;
+        syncPinNameElementStyle(nameEl, pin);
+        return nameEl;
+      }
+
+      function buildPinMarkup(pin) {
+        if (pin === "user" || (pin && pin.category === "user")) {
+          return (
+            buildTeardropPinSvg("#1a73e8") +
+            '<span class="gm-gpin-ico-mask" style="--gm-icon-url:url(\'./img/icons/dot.svg\')" aria-hidden="true"></span>'
+          );
+        }
+        var iconId = getPinIconId(pin);
+        var iconUrl = getPinIconUrl(iconId);
+        var fill = getPinColor(pin);
+        return buildTeardropPinSvg(fill) + buildPinIconLayer(iconUrl, iconId);
+      }
+
       function pinEl(pin) {
         var d = document.createElement("div");
         d.className = "gm-marker-root";
+        var anchor = document.createElement("div");
+        anchor.className = "gm-pin-anchor";
         var wrap = document.createElement("div");
         var isUser = pin && pin.category === "user";
-        wrap.className = "gm-gpin-wrap " + (isUser ? "gm-gpin--user" : "gm-gpin--k" + (pin.poiKind || 9));
+        var iconId = isUser ? "user" : getPinIconId(pin);
+        wrap.className = "gm-gpin-wrap " + (isUser ? "gm-gpin--user" : "gm-gpin--icon-" + iconId);
         wrap.setAttribute("role", "button");
         wrap.setAttribute("tabindex", "0");
-        wrap.innerHTML = buildGooglePinSvg(isUser ? { category: "user" } : pin);
-        d.appendChild(wrap);
+        wrap.innerHTML = buildPinMarkup(isUser ? { category: "user" } : pin);
+        anchor.appendChild(wrap);
+        if (!isUser) {
+          var nameEl = buildPinNameElement(pin);
+          if (nameEl) anchor.appendChild(nameEl);
+        }
+        d.appendChild(anchor);
         return d;
+      }
+
+      function refreshEditorIconSelect() {
+        var sel = document.getElementById("gmEdIconId");
+        if (!sel) return;
+        var prev = sel.value;
+        sel.innerHTML = "";
+        var ids = Object.keys(POI_ICON_REGISTRY);
+        ids.sort(function (a, b) {
+          if (a === "dot") return -1;
+          if (b === "dot") return 1;
+          var la = (POI_ICON_REGISTRY[a] && POI_ICON_REGISTRY[a].label) || a;
+          var lb = (POI_ICON_REGISTRY[b] && POI_ICON_REGISTRY[b].label) || b;
+          return la.localeCompare(lb, "ja");
+        });
+        ids.forEach(function (id) {
+          var meta = POI_ICON_REGISTRY[id];
+          var opt = document.createElement("option");
+          opt.value = id;
+          opt.textContent = (meta && meta.label) || id;
+          sel.appendChild(opt);
+        });
+        if (prev && POI_ICON_REGISTRY[prev]) sel.value = prev;
+      }
+
+      function refreshEditorIconDefaultsSelect() {
+        var sel = document.getElementById("gmEdIconDefaultsId");
+        if (!sel) return;
+        var prev = sel.value;
+        sel.innerHTML = "";
+        var ids = Object.keys(POI_ICON_REGISTRY);
+        ids.sort(function (a, b) {
+          if (a === "dot") return -1;
+          if (b === "dot") return 1;
+          var la = (POI_ICON_REGISTRY[a] && POI_ICON_REGISTRY[a].label) || a;
+          var lb = (POI_ICON_REGISTRY[b] && POI_ICON_REGISTRY[b].label) || b;
+          return la.localeCompare(lb, "ja");
+        });
+        ids.forEach(function (id) {
+          var meta = POI_ICON_REGISTRY[id];
+          var opt = document.createElement("option");
+          opt.value = id;
+          opt.textContent = (meta && meta.label) || id;
+          sel.appendChild(opt);
+        });
+        if (prev && POI_ICON_REGISTRY[prev]) sel.value = prev;
+        else if (ids.length) sel.value = ids[0];
+        loadEditorIconDefaultsFields();
+      }
+
+      function readIconDefaultsForm() {
+        return {
+          scale: parseFloat(document.getElementById("gmEdIconScale").value),
+          defaultColor: document.getElementById("gmEdIconDefaultColor").value,
+          offsetX: parseFloat(document.getElementById("gmEdIconOffX").value),
+          offsetY: parseFloat(document.getElementById("gmEdIconOffY").value),
+        };
+      }
+
+      function loadEditorIconDefaultsFields() {
+        var sel = document.getElementById("gmEdIconDefaultsId");
+        if (!sel || !sel.value) return;
+        var id = sel.value;
+        var meta = getRegistryIconMeta(id);
+        document.getElementById("gmEdIconScale").value = String(
+          typeof meta.scale === "number" ? meta.scale : 1
+        );
+        document.getElementById("gmEdIconDefaultColor").value = meta.defaultColor || "#78909c";
+        document.getElementById("gmEdIconOffX").value = String(
+          typeof meta.offsetX === "number" ? meta.offsetX : 0
+        );
+        document.getElementById("gmEdIconOffY").value = String(
+          typeof meta.offsetY === "number" ? meta.offsetY : 0
+        );
+        refreshIconDefaultsPreview();
+      }
+
+      function writeIconDefaultsEntry(iconId, form) {
+        if (!iconId || !POI_ICON_REGISTRY[iconId]) return;
+        var meta = POI_ICON_REGISTRY[iconId];
+        var base = POI_ICON_REGISTRY_BASE[iconId] || {};
+        if (!isNaN(form.scale) && form.scale > 0 && Math.abs(form.scale - 1) > 0.001) {
+          meta.scale = Math.round(form.scale * 100) / 100;
+        } else {
+          delete meta.scale;
+        }
+        if (form.defaultColor && form.defaultColor !== (base.defaultColor || "")) {
+          meta.defaultColor = form.defaultColor;
+        } else if (base.defaultColor) {
+          meta.defaultColor = base.defaultColor;
+        }
+        if (!isNaN(form.offsetX) && Math.abs(form.offsetX) > 0.001) {
+          meta.offsetX = Math.round(form.offsetX * 10) / 10;
+        } else {
+          delete meta.offsetX;
+        }
+        if (!isNaN(form.offsetY) && Math.abs(form.offsetY) > 0.001) {
+          meta.offsetY = Math.round(form.offsetY * 10) / 10;
+        } else {
+          delete meta.offsetY;
+        }
+      }
+
+      function refreshIconDefaultsPreview() {
+        var box = document.getElementById("gmEdIconPreview");
+        var sel = document.getElementById("gmEdIconDefaultsId");
+        if (!box || !sel || !sel.value) return;
+        var id = sel.value;
+        var form = readIconDefaultsForm();
+        var color = form.defaultColor || getRegistryIconMeta(id).defaultColor || "#78909c";
+        var scale = !isNaN(form.scale) && form.scale > 0 ? form.scale : 1;
+        var off = {
+          x: !isNaN(form.offsetX) ? form.offsetX : 0,
+          y: !isNaN(form.offsetY) ? form.offsetY : 0,
+        };
+        box.innerHTML =
+          '<div class="gm-gpin-wrap">' +
+          buildTeardropPinSvg(color) +
+          buildPinIconLayer(getPinIconUrl(id), id, scale, off) +
+          "</div>";
+      }
+
+      function syncEditorIconDefaultsToRegistry() {
+        var sel = document.getElementById("gmEdIconDefaultsId");
+        if (!sel || !sel.value) return;
+        writeIconDefaultsEntry(sel.value, readIconDefaultsForm());
+      }
+
+      function parseDevApiResponse(r) {
+        return r.text().then(function (text) {
+          var j = null;
+          try {
+            j = text ? JSON.parse(text) : null;
+          } catch (e) {
+            if (r.status === 404) {
+              throw new Error(
+                "保存 API が見つかりません（404）。npm run dev のターミナルに表示された URL のポート番号で開き直してください（5199 と 5200 が違うことがあります）"
+              );
+            }
+            throw new Error(
+              (r.status ? "HTTP " + r.status + ": " : "") + String(text || "サーバー応答が不正です").slice(0, 160)
+            );
+          }
+          return { ok: r.ok, status: r.status, j: j };
+        });
+      }
+
+      function savePoiIconsData(options) {
+        if (!MAP_EDIT_AVAILABLE) {
+          return Promise.reject(new Error("npm run dev で起動したときのみファイル保存できます"));
+        }
+        if (!options || !options.skipSync) syncEditorIconDefaultsToRegistry();
+        return fetch("/api/poi-icons", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildPoiIconsPayload()),
+        })
+          .then(parseDevApiResponse)
+          .then(function (res) {
+            if (!res.ok || !res.j || !res.j.ok) {
+              throw new Error((res.j && res.j.error) || "アイコン設定の保存に失敗");
+            }
+            return res.j;
+          });
+      }
+
+      function applyEditorIconDefaults() {
+        var sel = document.getElementById("gmEdIconDefaultsId");
+        if (!sel || !sel.value) return;
+        var iconId = sel.value;
+        syncEditorIconDefaultsToRegistry();
+        refreshPinsIconColorFromRegistry(iconId);
+        renderMarkers();
+        refreshIconDefaultsPreview();
+        setEditorStatus("保存中…");
+        savePoiIconsData()
+          .then(function () {
+            setEditorStatus("保存しました: data/poi-icons.json（同種ピンの色も更新）");
+          })
+          .catch(function (err) {
+            setEditorStatus(String(err.message || err), true);
+          });
+      }
+
+      function resetEditorIconDefaults() {
+        var sel = document.getElementById("gmEdIconDefaultsId");
+        if (!sel || !sel.value) return;
+        var base = POI_ICON_REGISTRY_BASE[sel.value];
+        if (base) POI_ICON_REGISTRY[sel.value] = JSON.parse(JSON.stringify(base));
+        loadEditorIconDefaultsFields();
+        renderMarkers();
+        setEditorStatus("保存中…");
+        savePoiIconsData()
+          .then(function () {
+            setEditorStatus("既定に戻して保存しました: data/poi-icons.json");
+          })
+          .catch(function (err) {
+            setEditorStatus(String(err.message || err), true);
+          });
+      }
+
+      function previewEditorIconDefaultsOnMap() {
+        if (!MAP_EDIT_MODE || getActiveEditorTab() !== "icons") return;
+        var sel = document.getElementById("gmEdIconDefaultsId");
+        if (!sel || !sel.value) return;
+        writeIconDefaultsEntry(sel.value, readIconDefaultsForm());
+        refreshPinsIconColorFromRegistry(sel.value);
+        renderMarkers();
+        refreshIconDefaultsPreview();
       }
 
       function clearPinSelectionVisual() {
@@ -1497,7 +2451,7 @@
               pin.rating.toFixed(1) +
               "（サンプル）"
             : "";
-        var catLabel = pin.schoolGlyph ? "学校" : POI_KIND_LABELS[pin.poiKind] || "スポット";
+        var catLabel = getPinIconLabel(pin);
         var hero = '<div class="gm-place-hero">写真なし</div>';
         var bodyHtml = escHtml(pin.body || "").replace(/\n/g, "<br>");
         var reviewBlock = "";
@@ -1580,10 +2534,122 @@
       }
 
       function labelEl(r) {
+        var s = resolveLabelStyle(r);
         var d = document.createElement("div");
         d.className = "fiction-label-wrap";
-        d.innerHTML = '<div><div class="nm">' + r.name + '</div><div class="sub">' + r.sub + "</div></div>";
+        var inner = document.createElement("div");
+        inner.className = "fiction-label-inner";
+        var nm = document.createElement("div");
+        nm.className = "nm";
+        nm.textContent = r.name || "";
+        var sub = document.createElement("div");
+        sub.className = "sub";
+        sub.textContent = r.sub || "";
+        nm.style.fontSize = s.nameSize + "px";
+        nm.style.fontWeight = String(s.nameWeight);
+        nm.style.color = s.nameColor;
+        nm.style.textShadow = textOutlineCss(s.nameOutline, s.nameOutlineColor);
+        sub.style.fontSize = s.subSize + "px";
+        sub.style.fontWeight = String(s.subWeight);
+        sub.style.color = s.subColor;
+        sub.style.textShadow = textOutlineCss(s.subOutline, s.subOutlineColor);
+        var angle = parseLabelAngle(s.angle);
+        if (angle !== 0) inner.style.transform = "rotate(" + angle + "deg)";
+        inner.appendChild(nm);
+        inner.appendChild(sub);
+        d.appendChild(inner);
         return d;
+      }
+
+      function getLabelByRef(ref) {
+        if (!ref) return null;
+        var parts = ref.split(":");
+        if (parts[0] === "region") return REGION[parts[1]] || null;
+        if (parts[0] === "extra") return FICTION_EXTRA_LABELS[parseInt(parts[1], 10)] || null;
+        return null;
+      }
+
+      function getActiveEditorTab() {
+        var iconsPane = document.getElementById("gmEditorPaneIcons");
+        if (iconsPane && !iconsPane.hidden) return "icons";
+        var pinsPane = document.getElementById("gmEditorPanePins");
+        return pinsPane && !pinsPane.hidden ? "pins" : "labels";
+      }
+
+      function updateLabelDeleteButton() {
+        var btn = document.getElementById("gmEdDeleteLabel");
+        if (!btn) return;
+        var isExtra = MAP_EDIT_LABEL_REF && MAP_EDIT_LABEL_REF.indexOf("extra:") === 0;
+        btn.disabled = !isExtra;
+        btn.style.opacity = isExtra ? "1" : "0.45";
+      }
+
+      function selectEditorLabel(ref) {
+        MAP_EDIT_LABEL_REF = ref;
+        document.querySelectorAll("[data-editor-tab]").forEach(function (b) {
+          var isLabels = b.getAttribute("data-editor-tab") === "labels";
+          b.classList.toggle("is-active", isLabels);
+        });
+        document.getElementById("gmEditorPanePins").hidden = true;
+        document.getElementById("gmEditorPaneLabels").hidden = false;
+        var iconsPane = document.getElementById("gmEditorPaneIcons");
+        if (iconsPane) iconsPane.hidden = true;
+        var sel = document.getElementById("gmEdLabelKind");
+        if (sel) sel.value = ref;
+        loadEditorLabelFields();
+        refreshFictionLabels();
+      }
+
+      function getLabelMarkerAlignOpts(r) {
+        var angle = parseLabelAngle(resolveLabelStyle(r).angle);
+        if (angle !== 0) {
+          // 地図面に沿って傾く（立体ビューでも道路の向きを維持）
+          return { rotationAlignment: "map", pitchAlignment: "map" };
+        }
+        if (r && r.upright) {
+          return { rotationAlignment: "viewport", pitchAlignment: "viewport" };
+        }
+        return {};
+      }
+
+      function updateLabelUprightFieldState() {
+        var angleEl = document.getElementById("gmEdLabelAngle");
+        var uprightEl = document.getElementById("gmEdLabelUpright");
+        if (!angleEl || !uprightEl) return;
+        var hasAngle = parseLabelAngle(angleEl.value) !== 0;
+        uprightEl.disabled = hasAngle;
+        if (hasAngle) uprightEl.checked = false;
+      }
+
+      function addLabelMarker(ref, r) {
+        var el = labelEl(r);
+        el.setAttribute("data-label-ref", ref);
+        if (MAP_EDIT_MODE && MAP_EDIT_LABEL_REF === ref) el.classList.add("is-selected");
+        var mkOpts = Object.assign({ element: el, anchor: "center" }, getLabelMarkerAlignOpts(r));
+        if (MAP_EDIT_MODE) mkOpts.draggable = true;
+        var mk = new maplibregl.Marker(mkOpts).setLngLat([r.lng, r.lat]).addTo(map);
+        if (MAP_EDIT_MODE) {
+          el.classList.add("gm-edit-draggable");
+          mk.on("dragend", function () {
+            var ll = mk.getLngLat();
+            r.lat = ll.lat;
+            r.lng = ll.lng;
+            if (MAP_EDIT_LABEL_REF === ref) {
+              document.getElementById("gmEdLabelLat").value = String(r.lat);
+              document.getElementById("gmEdLabelLng").value = String(r.lng);
+            }
+            if (ref === "region:kasumi") {
+              KASUMI_LAT = r.lat;
+              KASUMI_LNG = r.lng;
+            }
+            setEditorStatus("ラベル位置を変更しました（未保存）");
+          });
+          el.addEventListener("click", function (e) {
+            e.stopPropagation();
+            selectEditorLabel(ref);
+          });
+        }
+        labelMarkers.push(mk);
       }
 
       function wirePopupClose(popup) {
@@ -1690,8 +2756,32 @@
           if (p.category === "sweets" && isExcludedFromSweetsTab(p)) {
             el.setAttribute("data-sweets-excluded", "1");
           }
-          var mk = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat([p.lng, p.lat]).addTo(map);
-          if (!EMBED_KASUMI_STATIC) {
+          if (typeof p.minZoom === "number") {
+            el.setAttribute("data-pin-min-zoom", String(p.minZoom));
+          }
+          var mkOpts = getPinMarkerOpts({ element: el });
+          if (MAP_EDIT_MODE) mkOpts.draggable = true;
+          var mk = new maplibregl.Marker(mkOpts).setLngLat([p.lng, p.lat]).addTo(map);
+          if (MAP_EDIT_MODE) {
+            el.classList.add("gm-edit-draggable");
+            mk.on("dragend", function () {
+              var ll = mk.getLngLat();
+              p.lat = ll.lat;
+              p.lng = ll.lng;
+              if (MAP_EDIT_PIN_ID === p.id) {
+                document.getElementById("gmEdLat").value = String(p.lat);
+                document.getElementById("gmEdLng").value = String(p.lng);
+              }
+              setEditorStatus("位置を変更しました（未保存）");
+            });
+            el.addEventListener("click", function (e) {
+              e.stopPropagation();
+              MAP_EDIT_PIN_ID = p.id;
+              var sel = document.getElementById("gmEditorPinSelect");
+              if (sel) sel.value = p.id;
+              loadEditorPinFields();
+            });
+          } else if (!EMBED_KASUMI_STATIC) {
             el.addEventListener("click", function (e) {
               e.stopPropagation();
               openPlaceDetail(p);
@@ -1713,7 +2803,9 @@
           return;
         }
         var uel = pinEl({ category: "user" });
-        userMarker = new maplibregl.Marker({ element: uel, anchor: "bottom" }).setLngLat([ulng, ulat]).addTo(map);
+        userMarker = new maplibregl.Marker(getPinMarkerOpts({ element: uel }))
+          .setLngLat([ulng, ulat])
+          .addTo(map);
         uel.addEventListener("click", function (e) {
           e.stopPropagation();
           openUserMapPopup(
@@ -1725,46 +2817,29 @@
         updateMarkerVisibility();
       }
 
-      var FICTION_EXTRA_LABELS = [
-        { name: "水辺の丘", sub: "杜川上流", lat: 36.0541, lng: 138.1148 },
-        { name: "杜川", sub: "— 作品内河川 —", lat: 36.0512, lng: 138.122 },
-      ];
-
       function refreshFictionLabels() {
         clearLabels();
         if (SWEETS_THREAD_MODE) return;
         if (!map || !map.isStyleLoaded()) return;
         var z = map.getZoom();
-        if (z < 12) return;
         if (EMBED_KASUMI_MODE) {
-          var kasumiRegion = REGION.kasumi;
-          var kasumiEl = labelEl(kasumiRegion);
-          var kasumiMk = new maplibregl.Marker({ element: kasumiEl, anchor: "center" })
-            .setLngLat([kasumiRegion.lng, kasumiRegion.lat])
-            .addTo(map);
-          labelMarkers.push(kasumiMk);
-          if (z >= 13) {
-            FICTION_EXTRA_LABELS.forEach(function (r) {
-              var el = labelEl(r);
-              var mk = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([r.lng, r.lat]).addTo(map);
-              labelMarkers.push(mk);
-            });
+          if (REGION.kasumi && labelVisibleAtZoom("region:kasumi", REGION.kasumi, z)) {
+            addLabelMarker("region:kasumi", REGION.kasumi);
           }
+          FICTION_EXTRA_LABELS.forEach(function (r, i) {
+            var ref = "extra:" + i;
+            if (labelVisibleAtZoom(ref, r, z)) addLabelMarker(ref, r);
+          });
           return;
         }
         Object.keys(REGION).forEach(function (k) {
-          var r = REGION[k];
-          var el = labelEl(r);
-          var mk = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([r.lng, r.lat]).addTo(map);
-          labelMarkers.push(mk);
+          var ref = "region:" + k;
+          if (REGION[k] && labelVisibleAtZoom(ref, REGION[k], z)) addLabelMarker(ref, REGION[k]);
         });
-        if (z >= 13) {
-          FICTION_EXTRA_LABELS.forEach(function (r) {
-            var el = labelEl(r);
-            var mk = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([r.lng, r.lat]).addTo(map);
-            labelMarkers.push(mk);
-          });
-        }
+        FICTION_EXTRA_LABELS.forEach(function (r, i) {
+          var ref = "extra:" + i;
+          if (labelVisibleAtZoom(ref, r, z)) addLabelMarker(ref, r);
+        });
       }
 
       function flyToPin(pin, openPop) {
@@ -1849,10 +2924,10 @@
         });
         shops.forEach(function (p) {
           var li = document.createElement("li");
-          var dotCls = "pin-mini pm-poi-" + (p.poiKind || 9);
+          var miniColor = getPinColor(p);
           li.innerHTML =
-            '<span class="pin-mini ' +
-            dotCls +
+            '<span class="pin-mini" style="background:' +
+            escHtml(miniColor) +
             '"></span>' +
             '<div class="row-main"><div class="row-title">' +
             p.title +
@@ -1876,8 +2951,8 @@
         reviewed.slice(0, 4).forEach(function (p) {
           var li = document.createElement("li");
           li.innerHTML =
-            '<span class="pin-mini pm-poi-' +
-            (p.poiKind || 9) +
+            '<span class="pin-mini" style="background:' +
+            escHtml(getPinColor(p)) +
             '"></span>' +
             '<div class="row-main"><div class="row-title">' +
             p.title +
@@ -2149,11 +3224,528 @@
           updateMarkerVisibility();
         });
         map.on("moveend", refreshFictionLabels);
-        map.on("zoom", scheduleUpdateMarkerVisibility);
+        map.on("zoom", function () {
+          scheduleUpdateMarkerVisibility();
+          scheduleRefreshFictionLabels();
+        });
+      }
+
+      function setEditorStatus(msg, isError) {
+        var el = document.getElementById("gmEdStatus");
+        if (!el) return;
+        el.textContent = msg || "";
+        el.classList.toggle("is-error", !!isError);
+      }
+
+      function buildMapDataPayload() {
+        var settings = JSON.parse(JSON.stringify(MAP_SETTINGS));
+        delete settings.iconDefaults;
+        return {
+          version: 1,
+          settings: settings,
+          pins: PIN_DATA,
+          region: REGION,
+          fictionExtraLabels: FICTION_EXTRA_LABELS,
+        };
+      }
+
+      function saveMapData() {
+        applyGlobalSettingsFields();
+        syncEditorIconDefaultsToRegistry();
+        setEditorStatus("保存中…");
+        var mapReq = fetch("/api/map-data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildMapDataPayload()),
+        }).then(parseDevApiResponse);
+        var iconReq = MAP_EDIT_AVAILABLE
+          ? savePoiIconsData({ skipSync: true })
+          : Promise.resolve({ ok: true });
+        return Promise.all([mapReq, iconReq])
+          .then(function (results) {
+            var mapRes = results[0];
+            if (!mapRes.ok || !mapRes.j.ok) {
+              throw new Error((mapRes.j && mapRes.j.error) || "保存に失敗");
+            }
+            updateMarkerVisibility();
+            refreshFictionLabels();
+            var msg = "保存しました: data/map-data.json";
+            if (MAP_EDIT_AVAILABLE) msg += " / data/poi-icons.json";
+            setEditorStatus(msg);
+          })
+          .catch(function (err) {
+            setEditorStatus(String(err.message || err), true);
+          });
+      }
+
+      function findPinById(id) {
+        return PIN_DATA.find(function (p) {
+          return p.id === id;
+        });
+      }
+
+      function refreshEditorPinSelect() {
+        var sel = document.getElementById("gmEditorPinSelect");
+        if (!sel) return;
+        sel.innerHTML = "";
+        PIN_DATA.forEach(function (p) {
+          var opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = p.title + " (" + p.id + ")";
+          sel.appendChild(opt);
+        });
+        if (MAP_EDIT_PIN_ID && findPinById(MAP_EDIT_PIN_ID)) sel.value = MAP_EDIT_PIN_ID;
+        else if (PIN_DATA.length) {
+          MAP_EDIT_PIN_ID = PIN_DATA[0].id;
+          sel.value = MAP_EDIT_PIN_ID;
+        }
+        loadEditorPinFields();
+      }
+
+      function loadEditorPinFields() {
+        var sel = document.getElementById("gmEditorPinSelect");
+        var id = MAP_EDIT_PIN_ID || (sel && sel.value);
+        var p = findPinById(id);
+        if (!p) return;
+        MAP_EDIT_PIN_ID = id;
+        document.getElementById("gmEdTitle").value = p.title || "";
+        document.getElementById("gmEdArea").value = p.area || "";
+        document.getElementById("gmEdCategory").value = p.category || "unknown";
+        document.getElementById("gmEdIconId").value = getPinIconId(p);
+        var customEl = document.getElementById("gmEdIconColorCustom");
+        if (customEl) customEl.checked = !!p.useCustomIconColor;
+        document.getElementById("gmEdIconColor").value =
+          p.useCustomIconColor && p.iconColor
+            ? p.iconColor
+            : getPinIconMeta(getPinIconId(p)).defaultColor || "#78909c";
+        updatePinIconColorFieldState();
+        document.getElementById("gmEdLat").value = String(p.lat);
+        document.getElementById("gmEdLng").value = String(p.lng);
+        document.getElementById("gmEdBody").value = p.body || "";
+        document.getElementById("gmEdPinMinZoom").value =
+          typeof p.minZoom === "number" ? String(p.minZoom) : "";
+      }
+
+      function applyEditorPinFields() {
+        var p = findPinById(MAP_EDIT_PIN_ID);
+        if (!p) return;
+        p.title = document.getElementById("gmEdTitle").value.trim() || p.title;
+        p.area = document.getElementById("gmEdArea").value.trim();
+        p.category = document.getElementById("gmEdCategory").value;
+        syncPinIconColorFromEditor(p);
+        if (p.schoolGlyph) delete p.schoolGlyph;
+        p.lat = parseFloat(document.getElementById("gmEdLat").value);
+        p.lng = parseFloat(document.getElementById("gmEdLng").value);
+        p.body = document.getElementById("gmEdBody").value;
+        var pinMz = parseOptionalZoomInput(document.getElementById("gmEdPinMinZoom").value);
+        if (pinMz != null) p.minZoom = pinMz;
+        else delete p.minZoom;
+        renderMarkers();
+        refreshEditorPinSelect();
+        renderSidebar(activeListFilter);
+        updateMarkerVisibility();
+        setEditorStatus("ピンを反映しました（未保存）");
+      }
+
+      function deleteEditorPin() {
+        if (!MAP_EDIT_PIN_ID) return;
+        if (!window.confirm("このピンを削除しますか？")) return;
+        PIN_DATA = PIN_DATA.filter(function (p) {
+          return p.id !== MAP_EDIT_PIN_ID;
+        });
+        MAP_EDIT_PIN_ID = PIN_DATA.length ? PIN_DATA[0].id : null;
+        renderMarkers();
+        refreshEditorPinSelect();
+        renderSidebar(activeListFilter);
+        setEditorStatus("削除しました（未保存）");
+      }
+
+      function addPinAt(lng, lat) {
+        var id = "pin-" + Date.now();
+        var pin = {
+          id: id,
+          lat: lat,
+          lng: lng,
+          category: "tourism",
+          poiKind: 7,
+          iconId: "dot",
+          title: "新しいスポット",
+          area: "",
+          rating: 0,
+          body: "",
+        };
+        PIN_DATA.push(pin);
+        MAP_EDIT_PIN_ID = id;
+        renderMarkers();
+        refreshEditorPinSelect();
+        setEditorStatus("ピンを追加しました（未保存）");
+      }
+
+      function onEditMapClick(e) {
+        if (!MAP_EDIT_MODE) return;
+        if (getActiveEditorTab() === "labels") {
+          addExtraLabelAt(e.lngLat.lng, e.lngLat.lat);
+        } else {
+          addPinAt(e.lngLat.lng, e.lngLat.lat);
+        }
+      }
+
+      function setMapEditMode(on) {
+        if (!MAP_EDIT_AVAILABLE || !map) return;
+        MAP_EDIT_MODE = !!on;
+        document.documentElement.classList.toggle("gm-map-edit-on", MAP_EDIT_MODE);
+        if (MAP_EDIT_MODE) {
+          if (!mapEditClickBound) {
+            map.on("click", onEditMapClick);
+            mapEditClickBound = true;
+          }
+          loadGlobalSettingsFields();
+          refreshEditorIconSelect();
+          refreshEditorIconDefaultsSelect();
+          refreshEditorPinSelect();
+          refreshFictionLabelKindSelect();
+        } else if (mapEditClickBound) {
+          map.off("click", onEditMapClick);
+          mapEditClickBound = false;
+        }
+        renderMarkers();
+        refreshFictionLabels();
+        updateMarkerVisibility();
+      }
+
+      function toggleMapEditMode() {
+        if (!MAP_EDIT_AVAILABLE) return;
+        setMapEditMode(!MAP_EDIT_MODE);
+      }
+
+      function refreshFictionLabelKindSelect() {
+        var sel = document.getElementById("gmEdLabelKind");
+        if (!sel) return;
+        var prev = sel.value;
+        sel.innerHTML = "";
+        ["kasumi", "mikazuki", "suginami"].forEach(function (k) {
+          var opt = document.createElement("option");
+          opt.value = "region:" + k;
+          opt.textContent = "地域: " + (REGION[k] ? REGION[k].name : k);
+          sel.appendChild(opt);
+        });
+        FICTION_EXTRA_LABELS.forEach(function (lbl, i) {
+          var opt = document.createElement("option");
+          opt.value = "extra:" + i;
+          opt.textContent = "追加: " + (lbl.name || i);
+          sel.appendChild(opt);
+        });
+        if (prev) sel.value = prev;
+        loadEditorLabelFields();
+      }
+
+      function loadEditorLabelFields() {
+        var kindEl = document.getElementById("gmEdLabelKind");
+        if (!kindEl) return;
+        MAP_EDIT_LABEL_REF = kindEl.value;
+        var r = getLabelByRef(MAP_EDIT_LABEL_REF);
+        if (!r) return;
+        var s = resolveLabelStyle(r);
+        document.getElementById("gmEdLabelName").value = r.name || "";
+        document.getElementById("gmEdLabelSub").value = r.sub || "";
+        document.getElementById("gmEdLabelLat").value = String(r.lat);
+        document.getElementById("gmEdLabelLng").value = String(r.lng);
+        document.getElementById("gmEdLabelMinZoom").value =
+          typeof r.minZoom === "number" ? String(r.minZoom) : "";
+        document.getElementById("gmEdLabelAngle").value = String(parseLabelAngle(s.angle));
+        var uprightEl = document.getElementById("gmEdLabelUpright");
+        if (uprightEl) uprightEl.checked = !!r.upright && parseLabelAngle(s.angle) === 0;
+        updateLabelUprightFieldState();
+        document.getElementById("gmEdNameSize").value = String(s.nameSize);
+        document.getElementById("gmEdNameWeight").value = String(s.nameWeight);
+        document.getElementById("gmEdNameColor").value = s.nameColor;
+        document.getElementById("gmEdNameOutline").checked = !!s.nameOutline;
+        document.getElementById("gmEdNameOutlineColor").value = s.nameOutlineColor;
+        document.getElementById("gmEdSubSize").value = String(s.subSize);
+        document.getElementById("gmEdSubWeight").value = String(s.subWeight);
+        document.getElementById("gmEdSubColor").value = s.subColor;
+        document.getElementById("gmEdSubOutline").checked = !!s.subOutline;
+        document.getElementById("gmEdSubOutlineColor").value = s.subOutlineColor;
+        updateLabelDeleteButton();
+      }
+
+      function applyLabelStyleFromForm(r) {
+        var labelMz = parseOptionalZoomInput(document.getElementById("gmEdLabelMinZoom").value);
+        if (labelMz != null) r.minZoom = labelMz;
+        else delete r.minZoom;
+        var labelAngle = parseFloat(document.getElementById("gmEdLabelAngle").value);
+        if (!isNaN(labelAngle) && labelAngle !== 0) {
+          r.angle = labelAngle;
+          delete r.upright;
+        } else {
+          delete r.angle;
+          var uprightEl = document.getElementById("gmEdLabelUpright");
+          if (uprightEl && uprightEl.checked) r.upright = true;
+          else delete r.upright;
+        }
+        r.nameSize = parseInt(document.getElementById("gmEdNameSize").value, 10) || 14;
+        r.nameWeight = parseInt(document.getElementById("gmEdNameWeight").value, 10) || 700;
+        r.nameColor = document.getElementById("gmEdNameColor").value;
+        r.nameOutline = document.getElementById("gmEdNameOutline").checked;
+        r.nameOutlineColor = document.getElementById("gmEdNameOutlineColor").value;
+        r.subSize = parseInt(document.getElementById("gmEdSubSize").value, 10) || 10;
+        r.subWeight = parseInt(document.getElementById("gmEdSubWeight").value, 10) || 400;
+        r.subColor = document.getElementById("gmEdSubColor").value;
+        r.subOutline = document.getElementById("gmEdSubOutline").checked;
+        r.subOutlineColor = document.getElementById("gmEdSubOutlineColor").value;
+      }
+
+      function resetEditorLabelStyle() {
+        var r = getLabelByRef(MAP_EDIT_LABEL_REF);
+        if (!r) return;
+        [
+          "minZoom",
+          "nameSize",
+          "nameWeight",
+          "nameColor",
+          "nameOutline",
+          "nameOutlineColor",
+          "subSize",
+          "subWeight",
+          "subColor",
+          "subOutline",
+          "subOutlineColor",
+          "angle",
+          "upright",
+        ].forEach(function (k) {
+          delete r[k];
+        });
+        loadEditorLabelFields();
+        refreshFictionLabels();
+        setEditorStatus("見た目を既定に戻しました（未保存）");
+      }
+
+      function syncLabelFromForm(r, styleOnly) {
+        if (!r) return;
+        if (!styleOnly) {
+          r.name = document.getElementById("gmEdLabelName").value.trim();
+          r.sub = document.getElementById("gmEdLabelSub").value.trim();
+          r.lat = parseFloat(document.getElementById("gmEdLabelLat").value);
+          r.lng = parseFloat(document.getElementById("gmEdLabelLng").value);
+          if (MAP_EDIT_LABEL_REF === "region:kasumi") {
+            KASUMI_LAT = r.lat;
+            KASUMI_LNG = r.lng;
+          }
+        }
+        applyLabelStyleFromForm(r);
+      }
+
+      function previewEditorLabelOnMap() {
+        if (!MAP_EDIT_MODE || getActiveEditorTab() !== "labels") return;
+        updateLabelUprightFieldState();
+        var r = getLabelByRef(MAP_EDIT_LABEL_REF);
+        if (!r) return;
+        syncLabelFromForm(r, false);
+        refreshFictionLabels();
+      }
+
+      function applyEditorLabelFields() {
+        var r = getLabelByRef(MAP_EDIT_LABEL_REF);
+        if (!r) return;
+        syncLabelFromForm(r, false);
+        refreshFictionLabels();
+        refreshFictionLabelKindSelect();
+        setEditorStatus("ラベルを反映しました（未保存）");
+      }
+
+      function addExtraLabelAt(lng, lat) {
+        FICTION_EXTRA_LABELS.push({
+          name: "新しい名称",
+          sub: "サブタイトル",
+          lat: lat,
+          lng: lng,
+        });
+        var ref = "extra:" + (FICTION_EXTRA_LABELS.length - 1);
+        refreshFictionLabelKindSelect();
+        selectEditorLabel(ref);
+        setEditorStatus("追加ラベルを配置しました（未保存）");
+      }
+
+      function addExtraLabel() {
+        var center = map ? map.getCenter() : { lng: KASUMI_LNG, lat: KASUMI_LAT };
+        addExtraLabelAt(center.lng, center.lat);
+      }
+
+      function deleteEditorLabel() {
+        if (!MAP_EDIT_LABEL_REF || MAP_EDIT_LABEL_REF.indexOf("extra:") !== 0) {
+          window.alert("町名ラベル（三日月町・杉並ヶ岡・霞ノ杜町）は削除できません。\n川名などの追加ラベルのみ削除できます。");
+          return;
+        }
+        if (!window.confirm("この追加ラベルを削除しますか？")) return;
+        var idx = parseInt(MAP_EDIT_LABEL_REF.split(":")[1], 10);
+        FICTION_EXTRA_LABELS.splice(idx, 1);
+        MAP_EDIT_LABEL_REF = FICTION_EXTRA_LABELS.length ? "extra:0" : "region:kasumi";
+        refreshFictionLabelKindSelect();
+        selectEditorLabel(MAP_EDIT_LABEL_REF);
+        setEditorStatus("追加ラベルを削除しました（未保存）");
+      }
+
+      function initMapEditorUi() {
+        if (!MAP_EDIT_AVAILABLE) return;
+        document.querySelectorAll(".searchbar .logo").forEach(function (logo) {
+          logo.style.cursor = "pointer";
+          logo.title = "10回クリックで編集モード";
+          logo.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            logoTapCount++;
+            if (logoTapTimer) clearTimeout(logoTapTimer);
+            logoTapTimer = setTimeout(function () {
+              logoTapCount = 0;
+            }, 2500);
+            if (logoTapCount >= 10) {
+              logoTapCount = 0;
+              toggleMapEditMode();
+            }
+          });
+        });
+        var closeBtn = document.getElementById("gmEditorClose");
+        if (closeBtn) closeBtn.addEventListener("click", function () {
+          setMapEditMode(false);
+        });
+        document.querySelectorAll("[data-editor-tab]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var tab = btn.getAttribute("data-editor-tab");
+            document.querySelectorAll("[data-editor-tab]").forEach(function (b) {
+              b.classList.toggle("is-active", b === btn);
+            });
+            document.getElementById("gmEditorPanePins").hidden = tab !== "pins";
+            document.getElementById("gmEditorPaneLabels").hidden = tab !== "labels";
+            var iconsPane = document.getElementById("gmEditorPaneIcons");
+            if (iconsPane) iconsPane.hidden = tab !== "icons";
+            if (tab === "labels") refreshFictionLabels();
+            if (tab === "icons") loadEditorIconDefaultsFields();
+          });
+        });
+        var iconDefaultsSel = document.getElementById("gmEdIconDefaultsId");
+        var iconDefaultsSelPrev = null;
+        if (iconDefaultsSel) {
+          iconDefaultsSel.addEventListener("mousedown", function () {
+            iconDefaultsSelPrev = iconDefaultsSel.value;
+          });
+          iconDefaultsSel.addEventListener("change", function () {
+            if (iconDefaultsSelPrev && iconDefaultsSelPrev !== iconDefaultsSel.value) {
+              writeIconDefaultsEntry(iconDefaultsSelPrev, readIconDefaultsForm());
+            }
+            iconDefaultsSelPrev = iconDefaultsSel.value;
+            loadEditorIconDefaultsFields();
+          });
+        }
+        var applyIconDefaults = document.getElementById("gmEdApplyIconDefaults");
+        if (applyIconDefaults) applyIconDefaults.addEventListener("click", applyEditorIconDefaults);
+        var resetIconDefaults = document.getElementById("gmEdResetIconDefaults");
+        if (resetIconDefaults) resetIconDefaults.addEventListener("click", resetEditorIconDefaults);
+        ["gmEdIconScale", "gmEdIconDefaultColor", "gmEdIconOffX", "gmEdIconOffY"].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("input", previewEditorIconDefaultsOnMap);
+          el.addEventListener("change", previewEditorIconDefaultsOnMap);
+        });
+        var pinSel = document.getElementById("gmEditorPinSelect");
+        if (pinSel) {
+          pinSel.addEventListener("change", function () {
+            MAP_EDIT_PIN_ID = pinSel.value;
+            loadEditorPinFields();
+          });
+        }
+        function previewEditorPinOnMap() {
+          if (!MAP_EDIT_MODE || getActiveEditorTab() !== "pins") return;
+          var p = findPinById(MAP_EDIT_PIN_ID);
+          if (!p) return;
+          syncPinIconColorFromEditor(p);
+          renderMarkers();
+        }
+        var iconSel = document.getElementById("gmEdIconId");
+        if (iconSel) {
+          iconSel.addEventListener("change", function () {
+            updatePinIconColorFieldState();
+            previewEditorPinOnMap();
+          });
+        }
+        var iconColorCustom = document.getElementById("gmEdIconColorCustom");
+        if (iconColorCustom) {
+          iconColorCustom.addEventListener("change", function () {
+            updatePinIconColorFieldState();
+            previewEditorPinOnMap();
+          });
+        }
+        var iconColor = document.getElementById("gmEdIconColor");
+        if (iconColor) {
+          iconColor.addEventListener("input", previewEditorPinOnMap);
+          iconColor.addEventListener("change", previewEditorPinOnMap);
+        }
+        var labelKind = document.getElementById("gmEdLabelKind");
+        if (labelKind) {
+          labelKind.addEventListener("change", function () {
+            MAP_EDIT_LABEL_REF = labelKind.value;
+            loadEditorLabelFields();
+            refreshFictionLabels();
+          });
+        }
+        var applyPin = document.getElementById("gmEdApplyPin");
+        if (applyPin) applyPin.addEventListener("click", applyEditorPinFields);
+        var delPin = document.getElementById("gmEdDeletePin");
+        if (delPin) delPin.addEventListener("click", deleteEditorPin);
+        var applyLabel = document.getElementById("gmEdApplyLabel");
+        if (applyLabel) applyLabel.addEventListener("click", applyEditorLabelFields);
+        var resetStyle = document.getElementById("gmEdResetLabelStyle");
+        if (resetStyle) resetStyle.addEventListener("click", resetEditorLabelStyle);
+        [
+          "gmEdLabelName",
+          "gmEdLabelSub",
+          "gmEdLabelLat",
+          "gmEdLabelLng",
+          "gmEdLabelMinZoom",
+          "gmEdLabelAngle",
+          "gmEdLabelUpright",
+          "gmEdNameSize",
+          "gmEdNameWeight",
+          "gmEdNameColor",
+          "gmEdNameOutline",
+          "gmEdNameOutlineColor",
+          "gmEdSubSize",
+          "gmEdSubWeight",
+          "gmEdSubColor",
+          "gmEdSubOutline",
+          "gmEdSubOutlineColor",
+        ].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("input", previewEditorLabelOnMap);
+          el.addEventListener("change", previewEditorLabelOnMap);
+        });
+        var addLabel = document.getElementById("gmEdAddExtraLabel");
+        if (addLabel) addLabel.addEventListener("click", addExtraLabel);
+        var delLabel = document.getElementById("gmEdDeleteLabel");
+        if (delLabel) delLabel.addEventListener("click", deleteEditorLabel);
+        var saveBtn = document.getElementById("gmEdSave");
+        if (saveBtn) saveBtn.addEventListener("click", saveMapData);
+        ["gmEdDefPinZoom", "gmEdDefRegionZoom", "gmEdDefExtraZoom"].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("change", function () {
+            applyGlobalSettingsFields();
+            updateMarkerVisibility();
+            refreshFictionLabels();
+          });
+        });
+        var showPinNames = document.getElementById("gmEdShowPinNames");
+        if (showPinNames) {
+          showPinNames.addEventListener("change", function () {
+            applyGlobalSettingsFields();
+            renderMarkers();
+          });
+        }
       }
 
       function boot() {
         initMap();
+        initMapEditorUi();
       }
 
       /** iframe 埋め込み: コンテナに寸法が付くまで待ってから MapLibre を起動 */
@@ -2183,27 +3775,35 @@
         }
       });
 
-      if (EMBED_KASUMI_MODE) {
-        bootEmbedWhenSized();
-      } else {
-        var gatePoll = setInterval(function () {
-          if (document.documentElement.classList.contains("token-gate-ok")) {
-            clearInterval(gatePoll);
-            boot();
-            try {
-              var pq = new URLSearchParams(location.search);
-            } catch (e1) {
-              /* ignore */
+      function startApp() {
+        loadMapData()
+          .catch(function (err) {
+            console.error(err);
+            window.alert(
+              "data/map-data.json を読み込めませんでした。\nローカル編集は npm run dev で起動してください。"
+            );
+          })
+          .finally(function () {
+            if (EMBED_KASUMI_MODE) {
+              bootEmbedWhenSized();
+              return;
             }
-            setTimeout(function () {
-              if (map) {
-                map.resize();
-                scheduleApplyMapChromePadding();
+            var gatePoll = setInterval(function () {
+              if (document.documentElement.classList.contains("token-gate-ok")) {
+                clearInterval(gatePoll);
+                boot();
+                setTimeout(function () {
+                  if (map) {
+                    map.resize();
+                    scheduleApplyMapChromePadding();
+                  }
+                }, 200);
               }
-            }, 200);
-          }
-        }, 80);
+            }, 80);
+          });
       }
+
+      startApp();
     })();
   </script>
 </body>
