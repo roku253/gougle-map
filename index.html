@@ -784,7 +784,6 @@
     html.gm-embed-kasumi .gm-reopen-side,
     html.gm-embed-kasumi .gm-layer-thumb,
     html.gm-embed-kasumi .gm-layer-sheet,
-    html.gm-embed-kasumi .gm-place-panel,
     html.gm-embed-kasumi .gm-fiction-note,
     html.gm-embed-kasumi .map-shell .maplibregl-ctrl-bottom-right,
     html.gm-embed-kasumi .map-shell .maplibregl-ctrl-attrib {
@@ -817,8 +816,12 @@
       border: none;
       overflow: hidden;
     }
-    html.gm-embed-kasumi .gm-marker-root.gm-embed-static {
-      pointer-events: none;
+    html.gm-embed-kasumi .gm-place-panel {
+      z-index: 200;
+      width: min(360px, 92vw);
+    }
+    html.gm-embed-kasumi.gm-embed-kasumi--expand .gm-place-panel {
+      width: min(408px, calc(100vw - 24px));
     }
     .gm-embed-brand {
       display: none;
@@ -1922,8 +1925,15 @@
         return pad;
       }
 
+      function embedPlacePanelOpen() {
+        if (!EMBED_KASUMI_MODE) return false;
+        var place = document.getElementById("gmPlacePanel");
+        return !!(place && place.classList.contains("is-open"));
+      }
+
       function applyMapChromePadding() {
-        if (!map || SWEETS_THREAD_MODE || EMBED_KASUMI_MODE) return;
+        if (!map || SWEETS_THREAD_MODE) return;
+        if (EMBED_KASUMI_MODE && !embedPlacePanelOpen()) return;
         var p = computeMapPadding();
         try {
           if (typeof map.setPadding === "function") {
@@ -1952,7 +1962,8 @@
       }
 
       function scheduleApplyMapChromePadding() {
-        if (!map || SWEETS_THREAD_MODE || EMBED_KASUMI_MODE) return;
+        if (!map || SWEETS_THREAD_MODE) return;
+        if (EMBED_KASUMI_MODE && !embedPlacePanelOpen()) return;
         if (chromePadRaf) cancelAnimationFrame(chromePadRaf);
         chromePadRaf = requestAnimationFrame(function () {
           chromePadRaf = null;
@@ -1982,15 +1993,6 @@
 
       function updateMarkerVisibility() {
         if (!map || SWEETS_THREAD_MODE) return;
-        if (EMBED_KASUMI_MODE) {
-          pinMarkers.forEach(function (mk) {
-            var root = mk.getElement();
-            if (!root) return;
-            root.style.display = "";
-            root.style.pointerEvents = EMBED_KASUMI_STATIC ? "none" : "";
-          });
-          return;
-        }
         var z = map.getZoom();
         var tab = activeListFilter || "all";
         pinMarkers.forEach(function (mk) {
@@ -2003,11 +2005,11 @@
               ? parseFloat(minZAttr)
               : getPinsDefaultMinZoom();
           var show = z >= pinMinZoom;
-          if (tab === "sweets" && cat === "sweets") {
+          if (!EMBED_KASUMI_MODE && tab === "sweets" && cat === "sweets") {
             show = root.getAttribute("data-sweets-excluded") !== "1";
           }
           root.style.display = show ? "" : "none";
-          root.style.pointerEvents = show ? "" : "none";
+          root.style.pointerEvents = show ? "auto" : "none";
         });
         if (userMarker) {
           var ur = userMarker.getElement();
@@ -2507,6 +2509,15 @@
           panel.innerHTML = "";
         }
         clearPinSelectionVisual();
+        if (EMBED_KASUMI_MODE && map) {
+          try {
+            if (typeof map.setPadding === "function") {
+              map.setPadding({ top: 0, right: 0, bottom: 0, left: 0 });
+            }
+          } catch (err) {
+            /* 古い MapLibre 等 */
+          }
+        }
         scheduleApplyMapChromePadding();
       }
 
@@ -2860,7 +2871,8 @@
         if (c1) c1.addEventListener("click", shut);
         if (c2)
           c2.addEventListener("click", function () {
-            document.getElementById("searchInput").value = pin.title;
+            var searchInput = document.getElementById("searchInput");
+            if (searchInput) searchInput.value = pin.title;
             shut();
           });
       }
@@ -3131,7 +3143,7 @@
               loadEditorPinFields();
               openPlaceDetail(p, true);
             });
-          } else if (!EMBED_KASUMI_STATIC) {
+          } else {
             el.addEventListener("click", function (e) {
               e.stopPropagation();
               openPlaceDetail(p);
@@ -3556,6 +3568,9 @@
           if (EMBED_KASUMI_MODE) {
             refreshFictionLabels();
             setMapInteractionForEmbed();
+            map.on("click", function () {
+              closePlaceDetail();
+            });
             function embedResize() {
               if (map) map.resize();
             }
