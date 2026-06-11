@@ -712,6 +712,7 @@
     html.gm-embed-kasumi #map {
       position: absolute;
       inset: 0;
+      z-index: 0;
       width: 100%;
       height: 100%;
     }
@@ -729,10 +730,10 @@
     }
     html.gm-embed-kasumi .gm-embed-brand {
       display: flex;
-      position: fixed;
+      position: absolute;
       top: 10px;
       left: 10px;
-      z-index: 130;
+      z-index: 10;
       pointer-events: none;
       align-items: center;
       padding: 7px 14px 7px 12px;
@@ -751,6 +752,10 @@
     }
     html.gm-embed-kasumi.gm-embed-kasumi--expand .gm-embed-brand .logo {
       font-size: 21px;
+    }
+    /* 町サイト iframe 内は親ページ側でロゴを重ねる */
+    html.gm-embed-kasumi-in-iframe .gm-embed-brand {
+      display: none !important;
     }
 
     .gm-map-popup .stars { color: #fbbc05; }
@@ -839,10 +844,11 @@
       </nav>
       <div class="gm-stage">
         <div class="layout">
-          <div class="map-shell"><div id="map" role="application" aria-label="地図"></div></div>
-
-          <div class="gm-embed-brand" id="gmEmbedBrand">
-            <div class="logo" aria-label="Gougle"><span class="g">G</span><span class="o1">o</span><span class="o2">u</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span></div>
+          <div class="map-shell">
+            <div id="map" role="application" aria-label="地図"></div>
+            <div class="gm-embed-brand" id="gmEmbedBrand">
+              <div class="logo" aria-label="Gougle"><span class="g">G</span><span class="o1">o</span><span class="o2">u</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span></div>
+            </div>
           </div>
 
           <header class="topbar">
@@ -935,6 +941,9 @@
       var EMBED_KASUMI_STATIC = EMBED_KASUMI_MODE && !EMBED_KASUMI_EXPAND;
       if (EMBED_KASUMI_MODE) document.documentElement.classList.add("gm-embed-kasumi");
       if (EMBED_KASUMI_EXPAND) document.documentElement.classList.add("gm-embed-kasumi--expand");
+      if (EMBED_KASUMI_MODE && window.self !== window.top) {
+        document.documentElement.classList.add("gm-embed-kasumi-in-iframe");
+      }
 
       var KASUMI_LAT = 36.052096704400995;
       var KASUMI_LNG = 138.11843672052697;
