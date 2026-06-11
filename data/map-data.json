@@ -313,7 +313,8 @@
       "rating": 3.4,
       "body": "月〜金 8:30-17:15。町の窓口。",
       "iconId": "dot",
-      "websiteLabel": "gvv"
+      "websiteLabel": "kasuminomori",
+      "website": "https://roku253.github.io/kasuminomori/"
     },
     {
       "id": "school-01",
@@ -326,7 +327,7 @@
       "rating": 3.2,
       "body": "地域と連携した環境学習。",
       "website": "https://roku253.github.io/kasuminomori-shougakkou/",
-      "websiteLabel": "roku253.github.io/kasuminomori-shougakkou",
+      "websiteLabel": "kasuminomori-shougakkou",
       "iconId": "syogakkou",
       "minZoom": 16.5
     },
