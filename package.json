@@ -7,6 +7,8 @@
     "icons:generate": "node tools/generate-poi-icon-svgs.mjs",
     "fetch:osm": "node tools/fetch-overpass.mjs",
     "process:osm": "node tools/process-osm-for-fiction.mjs",
-    "osm:pipeline": "node tools/fetch-overpass.mjs && node tools/process-osm-for-fiction.mjs"
+    "osm:pipeline": "node tools/fetch-overpass.mjs && node tools/process-osm-for-fiction.mjs",
+    "pins:from-osm": "node tools/generate-kasumi-pins-from-osm.mjs",
+    "pins:from-osm:dry": "node tools/generate-kasumi-pins-from-osm.mjs --dry-run"
   }
 }

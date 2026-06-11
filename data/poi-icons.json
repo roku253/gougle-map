@@ -164,7 +164,9 @@
       "label": "銀行",
       "defaultColor": "#455a64",
       "file": "bank.png",
-      "raster": true
+      "raster": true,
+      "scale": 0.6,
+      "offsetY": -0.5
     },
     "insyoku": {
       "label": "飲食店",

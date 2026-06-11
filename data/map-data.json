@@ -234,6 +234,14 @@
         {
           "text": "山間部ではここが拠点。",
           "author": "kasumi_local"
+        },
+        {
+          "text": "役場の用事のついでに。",
+          "author": "町民T"
+        },
+        {
+          "text": "おにぎりの種類は少なめ。",
+          "author": "通勤族"
         }
       ]
     },
@@ -248,7 +256,17 @@
       "rating": 4.4,
       "body": "丘陵の鎮守。早朝は霧がかかる。",
       "iconId": "zinzya",
-      "minZoom": 15.5
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "石段の苔がきれい。静かで心が落ち着く。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "初詣は混むけど、平日はひっそり。",
+          "author": "kasumi_local"
+        }
+      ]
     },
     {
       "id": "tourism-02",
@@ -261,7 +279,17 @@
       "rating": 4.2,
       "body": "川上の木造橋。揺れる。",
       "iconId": "dot",
-      "minZoom": 13
+      "minZoom": 13,
+      "reviews": [
+        {
+          "text": "揺れます。渡るのは子どもと一緒だと楽しい。",
+          "author": "週末パパ"
+        },
+        {
+          "text": "川の音がいい。写真映えする。",
+          "author": "ぶらり旅"
+        }
+      ]
     },
     {
       "id": "tourism-03",
@@ -274,7 +302,17 @@
       "rating": 4,
       "body": "町史・古地図。火・水休館。",
       "iconId": "hakubutukann",
-      "minZoom": 15
+      "minZoom": 15,
+      "reviews": [
+        {
+          "text": "古地図の展示がおもしろい。町の歴史がわかる。",
+          "author": "地図好き"
+        },
+        {
+          "text": "火水休なので注意。小さめだけど充実。",
+          "author": "霞ノ杜在住"
+        }
+      ]
     },
     {
       "id": "tourism-04",
@@ -287,12 +325,22 @@
       "rating": 4.3,
       "body": "山道の中腹の小休憩所。",
       "iconId": "sizenn",
-      "minZoom": 16.5
+      "minZoom": 16.5,
+      "reviews": [
+        {
+          "text": "登り途中の休憩にちょうどいい。霧が晴れると景色が変わる。",
+          "author": "ハイカーA"
+        },
+        {
+          "text": "ベンチでおにぎり。風が気持ちいい。",
+          "author": "杜の散歩人"
+        }
+      ]
     },
     {
       "id": "tourism-05",
-      "lat": 36.05123920350253,
-      "lng": 138.11710815405957,
+      "lat": 36.05126748672913,
+      "lng": 138.1170761590343,
       "category": "tourism",
       "poiKind": 2,
       "title": "杜の湯（足湯）",
@@ -300,7 +348,21 @@
       "rating": 4.1,
       "body": "川沿いの足湯。無料。",
       "iconId": "onsenn",
-      "minZoom": 15
+      "minZoom": 15,
+      "reviews": [
+        {
+          "text": "無料で足が温まる。冬の散歩の定番。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "川沿いで雰囲気◎。タオル持参推奨。",
+          "author": "温泉巡り"
+        },
+        {
+          "text": "夕方は少し寂しいけど、それがいい。",
+          "author": "一人旅メモ"
+        }
+      ]
     },
     {
       "id": "civic-01",
@@ -314,7 +376,13 @@
       "body": "月〜金 8:30-17:15。町の窓口。",
       "iconId": "dot",
       "websiteLabel": "kasuminomori",
-      "website": "https://roku253.github.io/kasuminomori/"
+      "website": "https://roku253.github.io/kasuminomori/",
+      "reviews": [
+        {
+          "text": "窓口の対応は丁寧。用件がはっきりしてると早い。",
+          "author": "町民T"
+        }
+      ]
     },
     {
       "id": "school-01",
@@ -329,7 +397,13 @@
       "website": "https://roku253.github.io/kasuminomori-shougakkou/",
       "websiteLabel": "kasuminomori-shougakkou",
       "iconId": "syogakkou",
-      "minZoom": 16.5
+      "minZoom": 16.5,
+      "reviews": [
+        {
+          "text": "環境学習の発表を見学した。子どもたちの観察眼がすごい。",
+          "author": "PTAさん"
+        }
+      ]
     },
     {
       "id": "utodori-trail",
@@ -347,16 +421,34 @@
     },
     {
       "id": "pin-1781182006567",
-      "lat": 36.04434772248453,
-      "lng": 138.11479621776203,
+      "lat": 36.04446204080955,
+      "lng": 138.11477386660346,
       "category": "unknown",
       "poiKind": 10,
       "title": "霞湖商店街",
-      "area": "霞ノ杜町筒川",
-      "rating": 0,
-      "body": "霞湖に続く商店街",
+      "area": "霞ノ杜町大萩",
+      "rating": 4,
+      "body": "霞湖に続く商店街。土産・食料・日用雑貨が並ぶ。",
       "iconId": "shop",
-      "minZoom": 13.5
+      "minZoom": 13.5,
+      "reviews": [
+        {
+          "text": "朝市の日はにぎわう。地元野菜が安い。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "観光客向けの店もあるけど、生活感があっていい。",
+          "author": "週末ドライブ"
+        },
+        {
+          "text": "駐車場は早めに。人が多い日は混む。",
+          "author": "商店街好き"
+        },
+        {
+          "text": "老舗の和菓子屋がおすすめ。",
+          "author": "甘味らじお"
+        }
+      ]
     },
     {
       "id": "pin-1781188405647",
@@ -367,22 +459,46 @@
       "iconId": "yubinnkyoku",
       "title": "成沢郵便局",
       "area": "霞ノ杜町成沢",
-      "rating": 0,
-      "body": "",
-      "minZoom": 14
+      "rating": 3.8,
+      "body": "郵便・荷物の窓口。町の北寄り。",
+      "minZoom": 14,
+      "reviews": [
+        {
+          "text": "待ち時間は短め。局員さんが親切。",
+          "author": "成沢在住"
+        },
+        {
+          "text": "ゆうパックはここが便利。",
+          "author": "kasumi_local"
+        }
+      ]
     },
     {
       "id": "pin-1781188546538",
-      "lat": 36.046812853079786,
-      "lng": 138.11750161827342,
+      "lat": 36.046882669615414,
+      "lng": 138.11751463540617,
       "category": "tourism",
       "poiKind": 7,
       "iconId": "shop",
       "title": "ソルス霞ノ杜",
       "area": "霞ノ杜町木戸",
-      "rating": 0,
-      "body": "",
-      "minZoom": 15
+      "rating": 4.1,
+      "body": "生活雑貨と地元産の手作り小物。木戸エリアの小さな店。",
+      "minZoom": 15,
+      "reviews": [
+        {
+          "text": "インテリアがかわいい。つい長居する。",
+          "author": "雑貨好き"
+        },
+        {
+          "text": "店主と話せる距離感がいい。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "限定の霞ノ杜グッズがある。",
+          "author": "おみやげ部"
+        }
+      ]
     },
     {
       "id": "pin-1781189129978",
@@ -392,10 +508,16 @@
       "poiKind": 7,
       "iconId": "dot",
       "title": "町原製薬",
-      "area": "",
-      "rating": 2.5,
-      "body": "",
-      "minZoom": 15.5
+      "area": "霞ノ杜町三日月中央",
+      "rating": 3.2,
+      "body": "町営の製薬関連施設。一般立入不可の案内あり。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "外観だけ見学。歴史の説明板が詳しい。",
+          "author": "町史メモ"
+        }
+      ]
     },
     {
       "id": "pin-1781189567540",
@@ -406,9 +528,27 @@
       "iconId": "insyoku",
       "title": "原沢そば",
       "area": "霞ノ杜町木戸",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18
+      "rating": 4.3,
+      "body": "手打ちそばと天ぷら。ランチ限定メニューあり。",
+      "minZoom": 18,
+      "reviews": [
+        {
+          "text": "つゆが上品。十割そばの香りがいい。",
+          "author": "そば巡り"
+        },
+        {
+          "text": "平日は並ばず入れる。コスパ良し。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "天ぷら盛り合わせがボリュームある。",
+          "author": "ランチ難民"
+        },
+        {
+          "text": "店主の雰囲気が落ち着く。",
+          "author": "杜の散歩人"
+        }
+      ]
     },
     {
       "id": "pin-1781189743802",
@@ -417,11 +557,25 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "bar",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 15.5
+      "title": "バー・フォグテール",
+      "area": "霞ノ杜町箕浦",
+      "rating": 4,
+      "body": "杜川近くの小さなバー。地酒と軽食。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "霧の夜にぴったり。ジャズが流れる。",
+          "author": "夜更かしさん"
+        },
+        {
+          "text": "地元の芋焼酎のラインナップがいい。",
+          "author": "バー巡り"
+        },
+        {
+          "text": "一人でも入りやすい。",
+          "author": "旅人K"
+        }
+      ]
     },
     {
       "id": "pin-1781189992088",
@@ -432,9 +586,19 @@
       "iconId": "dot",
       "title": "霞湖花火大会会場",
       "area": "霞ノ杜町湖岸沿い",
-      "rating": 0,
-      "body": "",
-      "minZoom": 16
+      "rating": 4.5,
+      "body": "夏の花火大会のメイン会場。湖岸の特設席あり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "打ち上げ数は多い。早めの場取り必須。",
+          "author": "花火好き"
+        },
+        {
+          "text": "湖に映るのがきれい。感動した。",
+          "author": "夏の思い出"
+        }
+      ]
     },
     {
       "id": "pin-1781190646467",
@@ -443,11 +607,33 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "hotel",
-      "title": "サンソート",
+      "title": "レイクサイド・サンソート",
       "area": "霞ノ杜町湖岸沿い",
-      "rating": 0,
-      "body": "",
-      "minZoom": 16
+      "rating": 4.2,
+      "body": "霞湖を望むリゾートホテル。大浴場とレストラン付き。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "湖側の部屋は朝霧が幻想的。",
+          "author": "温泉巡り"
+        },
+        {
+          "text": "ビュッフェの地元野菜がおいしい。",
+          "author": "家族旅行"
+        },
+        {
+          "text": "チェックインがスムーズ。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "プールは子どもに人気。",
+          "author": "週末パパ"
+        },
+        {
+          "text": "夕食の魚料理が評判。",
+          "author": "グルメ旅"
+        }
+      ]
     },
     {
       "id": "pin-1781191141838",
@@ -458,9 +644,19 @@
       "iconId": "zinzya",
       "title": "霞湖神社",
       "area": "霞ノ杜町湖岸沿い",
-      "rating": 0,
-      "body": "",
-      "minZoom": 15
+      "rating": 4.3,
+      "body": "湖岸の小さな神社。水神様を祀る。",
+      "minZoom": 15,
+      "reviews": [
+        {
+          "text": "人が少なく静か。鳥の声だけ。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "湖を背にした鳥居が美しい。",
+          "author": "写真さんぽ"
+        }
+      ]
     },
     {
       "id": "pin-1781191711875",
@@ -469,24 +665,44 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "insyoku",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 15
+      "title": "駅前食堂 杜の灯",
+      "area": "霞ノ杜町柳川",
+      "rating": 3.9,
+      "body": "霞ノ杜駅前の大衆食堂。定食と日替わり。",
+      "minZoom": 15,
+      "reviews": [
+        {
+          "text": "朝ごはんに利用。出汁が効いてる。",
+          "author": "通勤族"
+        },
+        {
+          "text": "ボリューム満点の定食。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "駅待ちの時間つぶしに。",
+          "author": "旅人K"
+        }
+      ]
     },
     {
       "id": "pin-1781193571552",
-      "lat": 36.04708319000592,
-      "lng": 138.11658560879056,
+      "lat": 36.04708451711234,
+      "lng": 138.11655811103236,
       "category": "tourism",
       "poiKind": 7,
       "iconId": "koubann",
       "title": "霞ノ杜駅前交番",
       "area": "霞ノ杜町木戸",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18
+      "rating": 3.5,
+      "body": "霞ノ杜駅前の交番。町の安全拠点。",
+      "minZoom": 18,
+      "reviews": [
+        {
+          "text": "道に迷ったとき親切に教えてもらった。",
+          "author": "観光客"
+        }
+      ]
     },
     {
       "id": "pin-1781195725875",
@@ -495,11 +711,21 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "conbini",
-      "title": "OldDays霞ノ杜",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18
+      "title": "OldDays 霞ノ杜駅前店",
+      "area": "霞ノ杜町木戸",
+      "rating": 3.4,
+      "body": "駅直結のコンビニ。深夜はやや品切れしやすい。",
+      "minZoom": 18,
+      "reviews": [
+        {
+          "text": "電車を待つ間に便利。",
+          "author": "通勤族"
+        },
+        {
+          "text": "地元限定おにぎりがある日も。",
+          "author": "kasumi_local"
+        }
+      ]
     },
     {
       "id": "pin-1781195966637",
@@ -510,9 +736,15 @@
       "iconId": "toilet",
       "title": "霞ノ杜駅トイレ",
       "area": "霞ノ杜町木戸",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18
+      "rating": 3.6,
+      "body": "駅構内の公衆トイレ。清掃は行き届いている。",
+      "minZoom": 18,
+      "reviews": [
+        {
+          "text": "観光で急なとき助かった。",
+          "author": "旅人K"
+        }
+      ]
     },
     {
       "id": "pin-1781196119389",
@@ -523,9 +755,15 @@
       "iconId": "koukou",
       "title": "箕浦高等学校",
       "area": "霞ノ杜町箕浦",
-      "rating": 0,
-      "body": "",
-      "minZoom": 16.5
+      "rating": 3.8,
+      "body": "箕浦地区の公立高校。部活動が盛ん。",
+      "minZoom": 16.5,
+      "reviews": [
+        {
+          "text": "文化祭の時だけ見学した。雰囲気は真面目。",
+          "author": "卒業生の親"
+        }
+      ]
     },
     {
       "id": "pin-1781196284285",
@@ -536,35 +774,61 @@
       "iconId": "syogakkou",
       "title": "箕浦中学校",
       "area": "霞ノ杜町箕浦",
-      "rating": 0,
-      "body": "",
-      "minZoom": 16.5
+      "rating": 3.7,
+      "body": "箕浦地区の中学校。通学路は坂が多い。",
+      "minZoom": 16.5,
+      "reviews": [
+        {
+          "text": "吹奏楽の演奏会、上手だった。",
+          "author": "地域の方"
+        }
+      ]
     },
     {
       "id": "pin-1781196474750",
-      "lat": 36.045835002789545,
-      "lng": 138.11574858706422,
+      "lat": 36.04568884596047,
+      "lng": 138.11574808682792,
       "category": "tourism",
       "poiKind": 7,
       "iconId": "tyuusyazyou",
-      "title": "駅前",
+      "title": "霞ノ杜駅前駐車場",
       "area": "霞ノ杜町西木戸",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18
+      "rating": 3.6,
+      "body": "駅正面の短時間駐車場。観光バスの乗降あり。",
+      "minZoom": 18,
+      "reviews": [
+        {
+          "text": "駅を使うならここが無難。週末は混む。",
+          "author": "ドライブ旅"
+        }
+      ]
     },
     {
       "id": "pin-1781196585545",
-      "lat": 36.04647054634266,
-      "lng": 138.11530100439177,
+      "lat": 36.04651480309238,
+      "lng": 138.11534070417014,
       "category": "tourism",
       "poiKind": 7,
       "iconId": "shop",
       "title": "岡地文具",
       "area": "霞ノ杜町西木戸",
-      "rating": 0,
-      "body": "",
-      "minZoom": 16.5
+      "rating": 4,
+      "body": "文房具と雑貨の老舗。学校用品が揃う。",
+      "minZoom": 16.5,
+      "reviews": [
+        {
+          "text": "昔ながらの店構えがいい。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "ノートの品揃えが豊富。",
+          "author": "学生ママ"
+        },
+        {
+          "text": "店主が丁寧に相談に乗ってくれる。",
+          "author": "杜の散歩人"
+        }
+      ]
     },
     {
       "id": "pin-1781197197122",
@@ -573,11 +837,29 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "hotel",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 16
+      "title": "湖畔ホテル 霧観亭",
+      "area": "霞ノ杜町湖畔",
+      "rating": 4,
+      "body": "狐塚寄りの中規模ホテル。展望ロビーあり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "ロビーのコーヒーがおいしい。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "大浴場は広め。リラックスできる。",
+          "author": "温泉巡り"
+        },
+        {
+          "text": "朝食の和食が充実。",
+          "author": "家族旅行"
+        },
+        {
+          "text": "駐車場は無料。",
+          "author": "ドライブ旅"
+        }
+      ]
     },
     {
       "id": "pin-1781197215708",
@@ -586,11 +868,25 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "hotel",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 16.5
+      "title": "民宿 かすみや",
+      "area": "霞ノ杜町湖畔",
+      "rating": 4.4,
+      "body": "家族経営の民宿。囲炉裏と地元料理。",
+      "minZoom": 16.5,
+      "reviews": [
+        {
+          "text": "女将さんの朝ごはんが最高。",
+          "author": "宿泊記"
+        },
+        {
+          "text": "アットホームで居心地いい。",
+          "author": "週末ドライブ"
+        },
+        {
+          "text": "囲炉裏端での会話が楽しい。",
+          "author": "旅人K"
+        }
+      ]
     },
     {
       "id": "pin-1781197295075",
@@ -599,37 +895,91 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "hotel",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 16.5
+      "title": "霞湖ビューホテル",
+      "area": "霞ノ杜町湖畔",
+      "rating": 4.1,
+      "body": "全室湖ビュー志向のホテル。最上階にラウンジ。",
+      "minZoom": 16.5,
+      "reviews": [
+        {
+          "text": "ラウンジの夜景がきれい。",
+          "author": "カップル旅"
+        },
+        {
+          "text": "部屋から湖が一望。",
+          "author": "写真さんぽ"
+        },
+        {
+          "text": "ウェルカムドリンクが嬉しい。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "チェックアウトが遅めで助かった。",
+          "author": "家族旅行"
+        },
+        {
+          "text": "朝の霧がすごい。写真撮った。",
+          "author": "朝活さん"
+        }
+      ]
     },
     {
       "id": "pin-1781197302386",
-      "lat": 36.049251687964656,
-      "lng": 138.11323346965776,
+      "lat": 36.04944163561014,
+      "lng": 138.11346125477417,
       "category": "tourism",
       "poiKind": 7,
       "iconId": "hotel",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 17
+      "title": "ペンション 杜の詩",
+      "area": "霞ノ杜町湖畔",
+      "rating": 4.3,
+      "body": "少人数向けのペンション。星空観察会を季節開催。",
+      "minZoom": 17,
+      "reviews": [
+        {
+          "text": "星空ツアーに参加。感動。",
+          "author": "天体観測好き"
+        },
+        {
+          "text": "静かで本が読める。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "朝食のパンが自家製。",
+          "author": "朝活さん"
+        }
+      ]
     },
     {
       "id": "pin-1781197358282",
-      "lat": 36.048893174589395,
-      "lng": 138.11453272459573,
+      "lat": 36.048871950595895,
+      "lng": 138.11455772491092,
       "category": "tourism",
       "poiKind": 7,
       "iconId": "hotel",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 16
+      "title": "湖岸旅館 明月",
+      "area": "霞ノ杜町西木戸",
+      "rating": 4.2,
+      "body": "湖岸沿いの旅館。舟乗り場まで徒歩2分。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "舟遊びの拠点にした。便利。",
+          "author": "湖好き"
+        },
+        {
+          "text": "夕食の川魚が新鮮。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "露天風呂は小さいけど雰囲気◎。",
+          "author": "温泉巡り"
+        },
+        {
+          "text": "館主の案内で散策コースを教えてもらった。",
+          "author": "杜の散歩人"
+        }
+      ]
     },
     {
       "id": "pin-1781197377182",
@@ -639,9 +989,9 @@
       "poiKind": 7,
       "iconId": "insyoku",
       "title": "桂亭",
-      "area": "",
+      "area": "霞ノ杜町湖畔",
       "rating": 3.6,
-      "body": "",
+      "body": "地魚と季節の野菜料理。観光客に人気の老舗食堂。",
       "minZoom": 15.5,
       "reviews": [
         {
@@ -663,9 +1013,15 @@
       "iconId": "tyuusyazyou",
       "title": "霧見展望駐車場",
       "area": "霞ノ杜町大字杜ケ丘",
-      "rating": 0,
-      "body": "",
-      "minZoom": 17.5
+      "rating": 3.7,
+      "body": "霧見展望への登山口駐車場。台数に限りあり。",
+      "minZoom": 17.5,
+      "reviews": [
+        {
+          "text": "早朝なら空いてた。トイレあり。",
+          "author": "ハイカーA"
+        }
+      ]
     },
     {
       "id": "pin-1781198034620",
@@ -674,11 +1030,25 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "hotel",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 17.5
+      "title": "ホテル 霞ノ杜ステーション",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.9,
+      "body": "駅徒歩3分のビジネスホテル。連泊割あり。",
+      "minZoom": 17.5,
+      "reviews": [
+        {
+          "text": "駅近で便利。部屋はコンパクト。",
+          "author": "出張族"
+        },
+        {
+          "text": "朝食バイキングは標準的。",
+          "author": "旅人K"
+        },
+        {
+          "text": "フロントの対応が早い。",
+          "author": "通勤族"
+        }
+      ]
     },
     {
       "id": "pin-1781198059499",
@@ -688,10 +1058,24 @@
       "poiKind": 7,
       "iconId": "onsenn",
       "title": "ゴシック館風呂",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 17.5
+      "area": "霞ノ杜町湖畔",
+      "rating": 4.4,
+      "body": "ゴシック館併設の日帰り温泉。歴史建築を眺めながら入浴。",
+      "minZoom": 17.5,
+      "reviews": [
+        {
+          "text": "建物とのコントラストが好き。",
+          "author": "建築好き"
+        },
+        {
+          "text": "露天から湖がちらりと見える。",
+          "author": "温泉巡り"
+        },
+        {
+          "text": "平日は空いている。",
+          "author": "kasumi_local"
+        }
+      ]
     },
     {
       "id": "pin-1781198096746",
@@ -701,10 +1085,20 @@
       "poiKind": 7,
       "iconId": "siseki",
       "title": "ゴシック館",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 17
+      "area": "霞ノ杜町湖畔",
+      "rating": 4.5,
+      "body": "明治期の洋館。町指定文化財。内部は要予約見学。",
+      "minZoom": 17,
+      "reviews": [
+        {
+          "text": "外観だけでも価値あり。写真映え。",
+          "author": "建築好き"
+        },
+        {
+          "text": "ガイドツアーは予約必須。詳しい説明がうれしい。",
+          "author": "町史メモ"
+        }
+      ]
     },
     {
       "id": "pin-1781198313028",
@@ -714,10 +1108,16 @@
       "poiKind": 7,
       "iconId": "siseki",
       "title": "旧ゴシック館",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18
+      "area": "霞ノ杜町湖畔",
+      "rating": 4,
+      "body": "移築前の旧館跡。説明板と庭園のみ公開。",
+      "minZoom": 18,
+      "reviews": [
+        {
+          "text": "静かに散策。歴史を感じる。",
+          "author": "杜の散歩人"
+        }
+      ]
     },
     {
       "id": "pin-1781198342469",
@@ -726,11 +1126,21 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "conbini",
-      "title": "ゴシック館",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18.5
+      "title": "館前ストア ゴシック",
+      "area": "霞ノ杜町湖畔",
+      "rating": 3.3,
+      "body": "ゴシック館前の小さなコンビニ。お土産コーナーあり。",
+      "minZoom": 18.5,
+      "reviews": [
+        {
+          "text": "見学の前に飲み物調達。",
+          "author": "観光客"
+        },
+        {
+          "text": "限定ステッカーがかわいい。",
+          "author": "おみやげ部"
+        }
+      ]
     },
     {
       "id": "pin-1781198418666",
@@ -739,11 +1149,17 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "tyuusyazyou",
-      "title": "駐車場",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18.5
+      "title": "霞ノ杜駅西駐車場",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.5,
+      "body": "駅西口の時間制駐車場。最大24時間。",
+      "minZoom": 18.5,
+      "reviews": [
+        {
+          "text": "駅利用のついでに停めやすい。",
+          "author": "ドライブ旅"
+        }
+      ]
     },
     {
       "id": "pin-1781198458477",
@@ -752,24 +1168,56 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "insyoku",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18.5
+      "title": "ラーメン 霧切",
+      "area": "霞ノ杜町木戸",
+      "rating": 4.1,
+      "body": "駅前の豚骨ラーメン。チャーシュー厚切り。",
+      "minZoom": 18.5,
+      "reviews": [
+        {
+          "text": "スープが濃いめ。好み。",
+          "author": "ラーメン部"
+        },
+        {
+          "text": "夜遅くまでやってる。",
+          "author": "夜更かしさん"
+        },
+        {
+          "text": "替え玉必須。",
+          "author": "学生"
+        },
+        {
+          "text": "カウンター席が落ち着く。",
+          "author": "一人飯"
+        }
+      ]
     },
     {
       "id": "pin-1781198459466",
-      "lat": 36.04740097546957,
-      "lng": 138.1172978952199,
+      "lat": 36.04742109822561,
+      "lng": 138.11728136489108,
       "category": "tourism",
       "poiKind": 7,
       "iconId": "insyoku",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18.5
+      "title": "焼肉 山杜",
+      "area": "霞ノ杜町木戸",
+      "rating": 4,
+      "body": "駅前通りの焼肉店。地元牛を使用。",
+      "minZoom": 18.5,
+      "reviews": [
+        {
+          "text": "カルビが甘い。家族でよく行く。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "予約した方が安心。",
+          "author": "週末パパ"
+        },
+        {
+          "text": "ライス大盛り無料は助かる。",
+          "author": "学生"
+        }
+      ]
     },
     {
       "id": "pin-1781198460035",
@@ -778,11 +1226,29 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "insyoku",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18.5
+      "title": "寿司 霞水",
+      "area": "霞ノ杜町木戸",
+      "rating": 4.4,
+      "body": "ネタは地元港と湖の魚。カウンター8席。",
+      "minZoom": 18.5,
+      "reviews": [
+        {
+          "text": "握りがしっかり。大将と話せる。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "予約しないと入れない日も。",
+          "author": "寿司好き"
+        },
+        {
+          "text": "湖魚の炙りが絶品。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "小さな店だけど満足度高い。",
+          "author": "杜の散歩人"
+        }
+      ]
     },
     {
       "id": "pin-1781198460451",
@@ -791,11 +1257,25 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "insyoku",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 17.5
+      "title": "定食屋 ひより",
+      "area": "霞ノ杜町木戸",
+      "rating": 3.8,
+      "body": "日替わり定食と自家製漬物。ランチタイムは混雑。",
+      "minZoom": 17.5,
+      "reviews": [
+        {
+          "text": "漬物おかわり自由がいい。",
+          "author": "ランチ難民"
+        },
+        {
+          "text": "ボリューム系で男性に人気。",
+          "author": "通勤族"
+        },
+        {
+          "text": "地味に通ってる。",
+          "author": "kasumi_local"
+        }
+      ]
     },
     {
       "id": "pin-1781198460877",
@@ -804,11 +1284,29 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "insyoku",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 18
+      "title": "カレー屋 ねぼけ",
+      "area": "霞ノ杜町木戸",
+      "rating": 4.2,
+      "body": "スパイス香る欧風カレー。辛さ選べる。",
+      "minZoom": 18,
+      "reviews": [
+        {
+          "text": "中辛がちょうどいい。",
+          "author": "カレー好き"
+        },
+        {
+          "text": "ランチセットのサラダが新鮮。",
+          "author": "一人飯"
+        },
+        {
+          "text": "店主の雰囲気がおだやか。",
+          "author": "旅人K"
+        },
+        {
+          "text": "待ち時間あるけど値する。",
+          "author": "グルメ旅"
+        }
+      ]
     },
     {
       "id": "pin-1781199832945",
@@ -817,11 +1315,25 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "hotel",
-      "title": "新しいスポット",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 17
+      "title": "成沢ヒルズホテル",
+      "area": "霞ノ杜町成沢",
+      "rating": 3.9,
+      "body": "成沢地区の丘の上のホテル。町一望のテラス。",
+      "minZoom": 17,
+      "reviews": [
+        {
+          "text": "テラスからの眺めが開けている。",
+          "author": "写真さんぽ"
+        },
+        {
+          "text": "静かでゆっくりできる。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "朝食のパンが美味しい。",
+          "author": "家族旅行"
+        }
+      ]
     },
     {
       "id": "pin-1781199897223",
@@ -830,11 +1342,21 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "shop",
-      "title": "たばこ店",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 16.5
+      "title": "煙草屋 大萩",
+      "area": "霞ノ杜町三日月中央",
+      "rating": 3.6,
+      "body": "大萩の角にある老舗タバコ店。日用品も少量。",
+      "minZoom": 16.5,
+      "reviews": [
+        {
+          "text": "昔ながらの店。地元の人がたむろしてる。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "限定マッチがお土産になる。",
+          "author": "おみやげ部"
+        }
+      ]
     },
     {
       "id": "pin-1781200007715",
@@ -844,10 +1366,2293 @@
       "poiKind": 7,
       "iconId": "cafe",
       "title": "喫茶メルト",
-      "area": "",
-      "rating": 0,
-      "body": "",
-      "minZoom": 16.5
+      "area": "霞ノ杜町木戸",
+      "rating": 4.1,
+      "body": "レトロな喫茶。手作りチーズケーキが名物。",
+      "minZoom": 16.5,
+      "reviews": [
+        {
+          "text": "ケーキがしっとり。コーヒーも深煎り。",
+          "author": "甘味らじお"
+        },
+        {
+          "text": "店内のジャズがいい。",
+          "author": "カフェ巡り"
+        },
+        {
+          "text": "窓際席で駅を眺めるのが好き。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "読書に最適な静かさ。",
+          "author": "一人旅メモ"
+        }
+      ]
+    },
+    {
+      "id": "pin-1781202698462",
+      "lat": 36.05317913616376,
+      "lng": 138.11523366680848,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "役場前駐車場",
+      "area": "霞ノ杜町三日月中央",
+      "rating": 3.5,
+      "body": "町役場正面の公営駐車場。窓口利用の方用。",
+      "minZoom": 18,
+      "reviews": [
+        {
+          "text": "役場の用件ついでに停めやすい。",
+          "author": "町民T"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-11350476571",
+      "lat": 36.0484043,
+      "lng": 138.1122374,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "toilet",
+      "title": "湖岸公衆トイレ",
+      "area": "霞ノ杜町湖岸",
+      "rating": 3.1,
+      "body": "公衆トイレ。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-node-13014805121",
+      "lat": 36.0529119,
+      "lng": 138.1249408,
+      "category": "tourism",
+      "poiKind": 9,
+      "iconId": "insyoku",
+      "title": "木戸膳",
+      "area": "霞ノ杜町大字杜ケ丘",
+      "rating": 4.1,
+      "body": "木戸膳。地元食材を使った定食と日替わり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "店主の雰囲気がいい。",
+          "author": "町民T"
+        },
+        {
+          "text": "ランチがお得。",
+          "author": "一人旅メモ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-13049195801",
+      "lat": 36.0503381,
+      "lng": 138.1130227,
+      "category": "tourism",
+      "poiKind": 9,
+      "iconId": "insyoku",
+      "title": "霧見味処",
+      "area": "霞ノ杜町湖岸",
+      "rating": 4.3,
+      "body": "霧見味処。地元食材を使った定食と日替わり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "素材の味がしっかり。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "素材の味がしっかり。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "店主の雰囲気がいい。",
+          "author": "町民T"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-280418659",
+      "lat": 36.04912561,
+      "lng": 138.11262278,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "湖岸駐車場",
+      "area": "霞ノ杜町湖岸",
+      "rating": 3.2,
+      "body": "駐車場。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-way-375186917",
+      "lat": 36.049508821256424,
+      "lng": 138.1146040841429,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "山荘ホテル 3号店",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.8,
+      "body": "宿泊施設。観光の拠点に。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "眺望がよい。",
+          "author": "町民T"
+        },
+        {
+          "text": "朝食が好評。",
+          "author": "旅人K"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375207806",
+      "lat": 36.05272846,
+      "lng": 138.11382571,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "霞薬局",
+      "area": "霞ノ杜町狐塚",
+      "rating": 4,
+      "body": "調剤薬局。処方箋と一般用医薬品。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "一人旅メモ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-377472056",
+      "lat": 36.05625654,
+      "lng": 138.11836923,
+      "category": "school",
+      "poiKind": 4,
+      "iconId": "syogakkou",
+      "title": "霞ノ杜町立三日月中央小学校",
+      "area": "霞ノ杜町三日月中央",
+      "rating": 3.3,
+      "body": "公立小学校。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "グルメ旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-1014596590",
+      "lat": 36.05170594,
+      "lng": 138.11270798,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "孤塚駐車場",
+      "area": "霞ノ杜町孤塚",
+      "rating": 3.7,
+      "body": "駐車場。",
+      "minZoom": 17,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "グルメ旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-1335835421",
+      "lat": 36.05262849288387,
+      "lng": 138.12313716607395,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "杜ケ丘駐車場",
+      "area": "霞ノ杜町大字杜ケ丘",
+      "rating": 3.6,
+      "body": "駐車場。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-node-4326696563",
+      "lat": 36.0529427,
+      "lng": 138.1124188,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "三日月中央記念碑",
+      "area": "霞ノ杜町三日月中央",
+      "rating": 3.9,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-4395635208",
+      "lat": 36.0517107,
+      "lng": 138.1132198,
+      "category": "tourism",
+      "poiKind": 9,
+      "iconId": "insyoku",
+      "title": "霧見味処",
+      "area": "霞ノ杜町孤塚",
+      "rating": 4.3,
+      "body": "霧見味処。地元食材を使った定食と日替わり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "素材の味がしっかり。",
+          "author": "旅人K"
+        },
+        {
+          "text": "店主の雰囲気がいい。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "ランチがお得。",
+          "author": "町民T"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-4395643511",
+      "lat": 36.048698764566225,
+      "lng": 138.11358094519727,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "駅前旅館",
+      "area": "霞ノ杜町西木戸",
+      "rating": 4,
+      "body": "宿泊施設。観光の拠点に。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "朝食が好評。",
+          "author": "旅人K"
+        },
+        {
+          "text": "朝食が好評。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "眺望がよい。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "朝食が好評。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-5936432085",
+      "lat": 36.0499491,
+      "lng": 138.1130898,
+      "category": "conv",
+      "poiKind": 3,
+      "iconId": "conbini",
+      "title": "駅前ショップ 西木戸店",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.7,
+      "body": "コンビニエンスストア。日用品と軽食。",
+      "minZoom": 15,
+      "reviews": [
+        {
+          "text": "深夜まで助かる。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "ATMが便利。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-6440663751",
+      "lat": 36.05493605396386,
+      "lng": 138.1170839648201,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "dot",
+      "title": "杜の商事",
+      "area": "霞ノ杜町三日月中央",
+      "rating": 3.7,
+      "body": "公共施設。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "旅人K"
+        },
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "旅人K"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-6926020690",
+      "lat": 36.05350421963813,
+      "lng": 138.1229480801672,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "toilet",
+      "title": "杜ケ丘公衆トイレ",
+      "area": "霞ノ杜町大字杜ケ丘",
+      "rating": 3,
+      "body": "公衆トイレ。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-node-7293505921",
+      "lat": 36.048255,
+      "lng": 138.1105099,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "霞史跡",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.7,
+      "body": "霞史跡。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "杜の散歩人"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-13109442053",
+      "lat": 36.053498459277066,
+      "lng": 138.12279098780522,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "湖畔史跡",
+      "area": "霞ノ杜町大字杜ケ丘",
+      "rating": 3.7,
+      "body": "湖畔史跡。",
+      "minZoom": 16
+    },
+    {
+      "id": "pin-osm-node-13333140911",
+      "lat": 36.0533364,
+      "lng": 138.1235217,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "湖畔史跡 8号店",
+      "area": "霞ノ杜町大字杜ケ丘",
+      "rating": 3.7,
+      "body": "湖畔史跡 8号店。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "グルメ旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-140466046",
+      "lat": 36.05191955907249,
+      "lng": 138.11791866402132,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "狐塚記念碑",
+      "area": "霞ノ杜町狐塚",
+      "rating": 3.4,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5
+    },
+    {
+      "id": "pin-osm-way-140466854",
+      "lat": 36.05642575307131,
+      "lng": 138.11601154889468,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "三日月北記念碑",
+      "area": "霞ノ杜町三日月北",
+      "rating": 3.5,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5
+    },
+    {
+      "id": "pin-osm-way-140466879",
+      "lat": 36.05470025966925,
+      "lng": 138.11750960990395,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "三日月中央史跡",
+      "area": "霞ノ杜町三日月中央",
+      "rating": 3.6,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "杜の散歩人"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-140467623",
+      "lat": 36.04852596,
+      "lng": 138.11762036,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "木戸史跡 5号店",
+      "area": "霞ノ杜町木戸",
+      "rating": 3.7,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "町民T"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-140467658",
+      "lat": 36.05005786971877,
+      "lng": 138.11700357529935,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "孤塚史跡",
+      "area": "霞ノ杜町孤塚",
+      "rating": 3.7,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "一人旅メモ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-249345107",
+      "lat": 36.05150629,
+      "lng": 138.11337213,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "霞旅館",
+      "area": "霞ノ杜町孤塚",
+      "rating": 4,
+      "body": "宿泊施設。観光の拠点に。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "静かに過ごせた。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "静かに過ごせた。",
+          "author": "一人旅メモ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375207788",
+      "lat": 36.05231212,
+      "lng": 138.11285193,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "霞ホテル",
+      "area": "霞ノ杜町狐塚",
+      "rating": 3.8,
+      "body": "宿泊施設。観光の拠点に。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "眺望がよい。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "眺望がよい。",
+          "author": "週末ドライブ"
+        },
+        {
+          "text": "静かに過ごせた。",
+          "author": "週末ドライブ"
+        },
+        {
+          "text": "朝食が好評。",
+          "author": "町民T"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-377472105",
+      "lat": 36.05607461,
+      "lng": 138.11666743,
+      "category": "school",
+      "poiKind": 4,
+      "iconId": "syogakkou",
+      "title": "霞ノ杜町立三日月中央小学校",
+      "area": "霞ノ杜町三日月中央",
+      "rating": 3,
+      "body": "公立小学校。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "旅人K"
+        },
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "kasumi_local"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-429432575",
+      "lat": 36.0481189,
+      "lng": 138.11286533,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "西木戸駐車場（2番）",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.2,
+      "body": "駐車場。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-way-732568147",
+      "lat": 36.047783,
+      "lng": 138.11222027,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "西木戸駐車場（2番）",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.5,
+      "body": "駐車場。",
+      "minZoom": 17,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "グルメ旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-4385522141",
+      "lat": 36.046491983999545,
+      "lng": 138.11654303737362,
+      "category": "tourism",
+      "poiKind": 8,
+      "iconId": "cafe",
+      "title": "山荘カフェ",
+      "area": "霞ノ杜町駅前",
+      "rating": 4.1,
+      "body": "山荘カフェ。手淹れコーヒーと軽食。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "窓際席がおすすめ。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "静かで読書に向く。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "静かで読書に向く。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "静かで読書に向く。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "ケーキがしっとり。",
+          "author": "グルメ旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-374581432",
+      "lat": 36.04602042,
+      "lng": 138.11691275,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "駅前店",
+      "area": "霞ノ杜町駅前",
+      "rating": 4.2,
+      "body": "生活雑貨と土産。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "店主と話せる距離感。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "町民T"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-374674605",
+      "lat": 36.04672134,
+      "lng": 138.11595562,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "toilet",
+      "title": "駅前公衆トイレ",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.5,
+      "body": "公衆トイレ。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-way-440881574",
+      "lat": 36.04593411437807,
+      "lng": 138.11583893992065,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "駅前駐車場",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.7,
+      "body": "駐車場。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-way-374581429",
+      "lat": 36.04597729,
+      "lng": 138.11700671,
+      "category": "tourism",
+      "poiKind": 9,
+      "iconId": "insyoku",
+      "title": "狐塚味処",
+      "area": "霞ノ杜町駅前",
+      "rating": 4.3,
+      "body": "狐塚味処。地元食材を使った定食と日替わり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "ランチがお得。",
+          "author": "町民T"
+        },
+        {
+          "text": "ランチがお得。",
+          "author": "町民T"
+        },
+        {
+          "text": "素材の味がしっかり。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "素材の味がしっかり。",
+          "author": "杜の散歩人"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-374581433",
+      "lat": 36.04593294,
+      "lng": 138.11694068,
+      "category": "tourism",
+      "poiKind": 6,
+      "iconId": "zinzya",
+      "title": "駅前神社",
+      "area": "霞ノ杜町駅前",
+      "rating": 4.1,
+      "body": "地域の神社。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "町民T"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-7171001626",
+      "lat": 36.046588474276135,
+      "lng": 138.11712273217648,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "霞雑貨店",
+      "area": "霞ノ杜町駅前",
+      "rating": 4,
+      "body": "生活雑貨と土産。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "店主と話せる距離感。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "週末ドライブ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-4385522142",
+      "lat": 36.04656175377569,
+      "lng": 138.11655604092516,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "dot",
+      "title": "駅前工業",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.8,
+      "body": "公共施設。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "グルメ旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-374581434",
+      "lat": 36.04583906,
+      "lng": 138.11694357,
+      "category": "tourism",
+      "poiKind": 9,
+      "iconId": "insyoku",
+      "title": "霞食堂",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.8,
+      "body": "霞食堂。地元食材を使った定食と日替わり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "観光客も多いけど回転早い。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "ランチがお得。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "ランチがお得。",
+          "author": "町民T"
+        },
+        {
+          "text": "素材の味がしっかり。",
+          "author": "町民T"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-374675913",
+      "lat": 36.04712554,
+      "lng": 138.11679914,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "dot",
+      "title": "山荘商事",
+      "area": "霞ノ杜町駅前",
+      "rating": 4,
+      "body": "事務所・会社。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "週末ドライブ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-374675922",
+      "lat": 36.04722159742374,
+      "lng": 138.11678268941557,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "山荘雑貨店",
+      "area": "霞ノ杜町駅前",
+      "rating": 4,
+      "body": "生活雑貨と土産。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "週末ドライブ"
+        },
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "週末ドライブ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-11542286710",
+      "lat": 36.0457092,
+      "lng": 138.1171333,
+      "category": "conv",
+      "poiKind": 3,
+      "iconId": "conbini",
+      "title": "駅前マート 駅前店",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.4,
+      "body": "コンビニエンスストア。日用品と軽食。",
+      "minZoom": 15,
+      "reviews": [
+        {
+          "text": "深夜まで助かる。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "深夜まで助かる。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "深夜まで助かる。",
+          "author": "週末ドライブ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-374581424",
+      "lat": 36.04744534,
+      "lng": 138.1163243,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "駅前駐車場（7番）",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.7,
+      "body": "駐車場。",
+      "minZoom": 17,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "kasumi_local"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375043948",
+      "lat": 36.04576563,
+      "lng": 138.11519384,
+      "category": "tourism",
+      "poiKind": 9,
+      "iconId": "insyoku",
+      "title": "霞厨房",
+      "area": "霞ノ杜町駅前",
+      "rating": 4,
+      "body": "霞厨房。地元食材を使った定食と日替わり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "観光客も多いけど回転早い。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "素材の味がしっかり。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "店主の雰囲気がいい。",
+          "author": "週末ドライブ"
+        },
+        {
+          "text": "ランチがお得。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-374581439",
+      "lat": 36.04552983,
+      "lng": 138.11715856,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "bar",
+      "title": "駅前スナック",
+      "area": "霞ノ杜町駅前",
+      "rating": 4.2,
+      "body": "駅前スナック。夜は静かに一杯。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "地酒の種類が豊富。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "地酒の種類が豊富。",
+          "author": "杜の散歩人"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-4385351235",
+      "lat": 36.04642378573375,
+      "lng": 138.11522451360884,
+      "category": "tourism",
+      "poiKind": 9,
+      "iconId": "insyoku",
+      "title": "霧見味処",
+      "area": "霞ノ杜町駅前",
+      "rating": 4.2,
+      "body": "霧見味処。地元食材を使った定食と日替わり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "店主の雰囲気がいい。",
+          "author": "旅人K"
+        },
+        {
+          "text": "店主の雰囲気がいい。",
+          "author": "町民T"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375092784",
+      "lat": 36.0475078,
+      "lng": 138.1169809,
+      "category": "tourism",
+      "poiKind": 9,
+      "iconId": "insyoku",
+      "title": "木戸膳",
+      "area": "霞ノ杜町駅前",
+      "rating": 4.1,
+      "body": "木戸膳。地元食材を使った定食と日替わり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "ランチがお得。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "店主の雰囲気がいい。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "店主の雰囲気がいい。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "素材の味がしっかり。",
+          "author": "グルメ旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-374581451",
+      "lat": 36.0453117,
+      "lng": 138.11691424,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "bar",
+      "title": "木戸スナック",
+      "area": "霞ノ杜町駅前",
+      "rating": 4.1,
+      "body": "木戸スナック。夜は静かに一杯。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "地酒の種類が豊富。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "夜は静かに飲める。",
+          "author": "一人旅メモ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-440881573",
+      "lat": 36.04523035,
+      "lng": 138.11632245,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "筒川駐車場",
+      "area": "霞ノ杜町筒川",
+      "rating": 3.7,
+      "body": "駐車場。",
+      "minZoom": 17,
+      "reviews": [
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "一人旅メモ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375092806",
+      "lat": 36.04774778,
+      "lng": 138.11662716,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "bar",
+      "title": "木戸酒場",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.9,
+      "body": "木戸酒場。夜は静かに一杯。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "雰囲気が良い。",
+          "author": "週末ドライブ"
+        },
+        {
+          "text": "雰囲気が良い。",
+          "author": "週末ドライブ"
+        },
+        {
+          "text": "夜は静かに飲める。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "夜は静かに飲める。",
+          "author": "旅人K"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-374581392",
+      "lat": 36.04590371,
+      "lng": 138.11800898,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "駅前駐車場（8番）",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.7,
+      "body": "駐車場。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-way-374581454",
+      "lat": 36.04521953,
+      "lng": 138.11685309,
+      "category": "tourism",
+      "poiKind": 9,
+      "iconId": "insyoku",
+      "title": "霞厨房 4号店",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.8,
+      "body": "霞厨房 4号店。地元食材を使った定食と日替わり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "素材の味がしっかり。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "ランチがお得。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "素材の味がしっかり。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "地元の人でにぎわう。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "店主の雰囲気がいい。",
+          "author": "杜の散歩人"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-11542203887",
+      "lat": 36.046709391196714,
+      "lng": 138.11734101815586,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "supermarket",
+      "title": "木戸マーケット",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.7,
+      "body": "食料品と日用品。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "食材が揃う。",
+          "author": "旅人K"
+        },
+        {
+          "text": "食材が揃う。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-440886588",
+      "lat": 36.04529852,
+      "lng": 138.11731332,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "駅前駐車場（6番）",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.4,
+      "body": "駐車場。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-node-2130354970",
+      "lat": 36.0451947,
+      "lng": 138.1171281,
+      "category": "tourism",
+      "poiKind": 9,
+      "iconId": "insyoku",
+      "title": "杜の厨房",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.8,
+      "body": "杜の厨房。地元食材を使った定食と日替わり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "ランチがお得。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "素材の味がしっかり。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-374801109",
+      "lat": 36.04745707,
+      "lng": 138.11500174,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "bank",
+      "title": "西木戸信用金庫",
+      "area": "霞ノ杜町西木戸",
+      "rating": 4,
+      "body": "ATMと窓口。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "町民T"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375224988",
+      "lat": 36.04514182,
+      "lng": 138.11742846,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "狐塚商店",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.5,
+      "body": "生活雑貨と土産。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "店主と話せる距離感。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "週末ドライブ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375043963",
+      "lat": 36.04494784103686,
+      "lng": 138.11559942416255,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "駅前店 8号店",
+      "area": "霞ノ杜町筒川",
+      "rating": 4.2,
+      "body": "生活雑貨と土産。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "町民T"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375641023",
+      "lat": 36.04519772,
+      "lng": 138.11773546,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "杜の薬局",
+      "area": "霞ノ杜町駅前",
+      "rating": 4,
+      "body": "調剤薬局。処方箋と一般用医薬品。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "店主と話せる距離感。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375092802",
+      "lat": 36.047372663120015,
+      "lng": 138.11779529720235,
+      "category": "tourism",
+      "poiKind": 8,
+      "iconId": "cafe",
+      "title": "霧見喫茶",
+      "area": "霞ノ杜町木戸",
+      "rating": 4,
+      "body": "霧見喫茶。手淹れコーヒーと軽食。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "コーヒーが深煎り。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "コーヒーが深煎り。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "ケーキがしっとり。",
+          "author": "kasumi_local"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-4385351238",
+      "lat": 36.0469270685428,
+      "lng": 138.11470821866726,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "霞雑貨店 6号店",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.7,
+      "body": "生活雑貨と土産。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "一人旅メモ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375224959",
+      "lat": 36.044946007395254,
+      "lng": 138.11720538531478,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "木戸店",
+      "area": "霞ノ杜町筒川",
+      "rating": 4.1,
+      "body": "生活雑貨と土産。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "杜の散歩人"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375224958",
+      "lat": 36.04491287865203,
+      "lng": 138.11710052842363,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "霧見雑貨店",
+      "area": "霞ノ杜町筒川",
+      "rating": 4,
+      "body": "生活雑貨と土産。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "旅人K"
+        },
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "町民T"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-140466697",
+      "lat": 36.04656487528074,
+      "lng": 138.11783867743026,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "駅前記念碑",
+      "area": "霞ノ杜町駅前",
+      "rating": 4.1,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5
+    },
+    {
+      "id": "pin-osm-node-4158867792",
+      "lat": 36.045095682912844,
+      "lng": 138.11791838805425,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "bank",
+      "title": "駅前信用金庫",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.7,
+      "body": "ATMと窓口。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "杜の散歩人"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375224957",
+      "lat": 36.04466606838342,
+      "lng": 138.11723866176527,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "筒川駐車場（7番）",
+      "area": "霞ノ杜町筒川",
+      "rating": 3.6,
+      "body": "駐車場。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-way-374582351",
+      "lat": 36.046558499950194,
+      "lng": 138.1181790295101,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "byouinn",
+      "title": "山荘診療所",
+      "area": "霞ノ杜町駅前",
+      "rating": 3.6,
+      "body": "診療・調剤。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "週末ドライブ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375163737",
+      "lat": 36.04721734,
+      "lng": 138.11828238,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "byouinn",
+      "title": "霧見診療所",
+      "area": "霞ノ杜町木戸",
+      "rating": 3.6,
+      "body": "診療・調剤。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "グルメ旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375641037",
+      "lat": 36.04480322,
+      "lng": 138.11831576,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "山荘商店",
+      "area": "霞ノ杜町箕浦",
+      "rating": 3.6,
+      "body": "生活雑貨と土産。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "kasumi_local"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-140466296",
+      "lat": 36.04490576,
+      "lng": 138.11890384,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "箕浦史跡",
+      "area": "霞ノ杜町箕浦",
+      "rating": 3.6,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5
+    },
+    {
+      "id": "pin-osm-way-971252628",
+      "lat": 36.04418784,
+      "lng": 138.11883272,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "箕浦駐車場",
+      "area": "霞ノ杜町箕浦",
+      "rating": 3.6,
+      "body": "駐車場。",
+      "minZoom": 17,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "旅人K"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-2130354997",
+      "lat": 36.044673369091356,
+      "lng": 138.11375217632371,
+      "category": "tourism",
+      "poiKind": 9,
+      "iconId": "insyoku",
+      "title": "木戸亭",
+      "area": "霞ノ杜町大萩",
+      "rating": 4.4,
+      "body": "木戸亭。地元食材を使った定食と日替わり。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "地元の人でにぎわう。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "店主の雰囲気がいい。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "ランチがお得。",
+          "author": "週末ドライブ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-751164072",
+      "lat": 36.04681574,
+      "lng": 138.11329962,
+      "category": "conv",
+      "poiKind": 3,
+      "iconId": "conbini",
+      "title": "山荘マート 西木戸店",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.4,
+      "body": "コンビニエンスストア。日用品と軽食。",
+      "minZoom": 15,
+      "reviews": [
+        {
+          "text": "深夜まで助かる。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "おにぎりの種類は標準的。",
+          "author": "週末ドライブ"
+        },
+        {
+          "text": "深夜まで助かる。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "おにぎりの種類は標準的。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "深夜まで助かる。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-4395640418",
+      "lat": 36.0477942,
+      "lng": 138.1130535,
+      "category": "tourism",
+      "poiKind": 1,
+      "iconId": "hakubutukann",
+      "title": "霧見資料館",
+      "area": "霞ノ杜町西木戸",
+      "rating": 4,
+      "body": "資料・展示。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "グルメ旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375678974",
+      "lat": 36.04569536,
+      "lng": 138.11209399,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "山荘ホテル",
+      "area": "霞ノ杜町大萩",
+      "rating": 3.8,
+      "body": "宿泊施設。観光の拠点に。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "朝食が好評。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "朝食が好評。",
+          "author": "杜の散歩人"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-4395641747",
+      "lat": 36.0471756674219,
+      "lng": 138.11332331398341,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "狐塚ペンション",
+      "area": "霞ノ杜町西木戸",
+      "rating": 4.3,
+      "body": "宿泊施設。観光の拠点に。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "眺望がよい。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "眺望がよい。",
+          "author": "週末ドライブ"
+        },
+        {
+          "text": "静かに過ごせた。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-11542181638",
+      "lat": 36.0484325,
+      "lng": 138.1132297,
+      "category": "tourism",
+      "poiKind": 2,
+      "iconId": "onsenn",
+      "title": "山荘足湯",
+      "area": "霞ノ杜町西木戸",
+      "rating": 4,
+      "body": "日帰り入浴。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "kasumi_local"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375040235",
+      "lat": 36.0483114,
+      "lng": 138.11311803,
+      "category": "tourism",
+      "poiKind": 2,
+      "iconId": "onsenn",
+      "title": "駅前温泉",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.4,
+      "body": "日帰り入浴。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "kasumi_local"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-2168230607",
+      "lat": 36.04485237903907,
+      "lng": 138.1118959087691,
+      "category": "tourism",
+      "poiKind": 1,
+      "iconId": "hakubutukann",
+      "title": "霞資料館",
+      "area": "霞ノ杜町大萩",
+      "rating": 3.9,
+      "body": "資料・展示。",
+      "minZoom": 16
+    },
+    {
+      "id": "pin-osm-way-233643269",
+      "lat": 36.04458092,
+      "lng": 138.11231692,
+      "category": "tourism",
+      "poiKind": 1,
+      "iconId": "hakubutukann",
+      "title": "霧見資料館 4号店",
+      "area": "霞ノ杜町大萩",
+      "rating": 3.6,
+      "body": "資料・展示。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "一人旅メモ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-233643320",
+      "lat": 36.04437834648688,
+      "lng": 138.11179385459536,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "大萩駐車場",
+      "area": "霞ノ杜町大萩",
+      "rating": 3.7,
+      "body": "駐車場。",
+      "minZoom": 17,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "週末ドライブ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375042375",
+      "lat": 36.04665458,
+      "lng": 138.11173967,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "木戸商店",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.5,
+      "body": "生活雑貨と土産。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "週末ドライブ"
+        },
+        {
+          "text": "店主と話せる距離感。",
+          "author": "町民T"
+        },
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-3624167823",
+      "lat": 36.0462928,
+      "lng": 138.1107696,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "木戸旅館",
+      "area": "霞ノ杜町大萩",
+      "rating": 4.1,
+      "body": "宿泊施設。観光の拠点に。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "静かに過ごせた。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "眺望がよい。",
+          "author": "杜の散歩人"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-375042377",
+      "lat": 36.0465664,
+      "lng": 138.11149517,
+      "category": "conv",
+      "poiKind": 3,
+      "iconId": "conbini",
+      "title": "霞マート 大萩店",
+      "area": "霞ノ杜町大萩",
+      "rating": 3.5,
+      "body": "コンビニエンスストア。日用品と軽食。",
+      "minZoom": 15,
+      "reviews": [
+        {
+          "text": "おにぎりの種類は標準的。",
+          "author": "kasumi_local"
+        },
+        {
+          "text": "ATMが便利。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "おにぎりの種類は標準的。",
+          "author": "杜の散歩人"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-233643311",
+      "lat": 36.04425717377984,
+      "lng": 138.11065334660378,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "大萩駐車場（4番）",
+      "area": "霞ノ杜町大萩",
+      "rating": 3.5,
+      "body": "駐車場。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-way-280418660",
+      "lat": 36.04721274,
+      "lng": 138.11176604,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "西木戸駐車場",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.7,
+      "body": "駐車場。",
+      "minZoom": 17,
+      "reviews": [
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "旅人K"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-732901116",
+      "lat": 36.04691653,
+      "lng": 138.11131996,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "西木戸駐車場（5番）",
+      "area": "霞ノ杜町西木戸",
+      "rating": 3.7,
+      "body": "駐車場。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-node-6744063285",
+      "lat": 36.0512589,
+      "lng": 138.1131555,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "山荘商店 4号店",
+      "area": "霞ノ杜町孤塚",
+      "rating": 3.9,
+      "body": "生活雑貨と土産。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "品揃えは地味に充実。",
+          "author": "旅人K"
+        },
+        {
+          "text": "お土産にちょうどいい。",
+          "author": "グルメ旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-4395630983",
+      "lat": 36.05627258516783,
+      "lng": 138.11143928418,
+      "category": "tourism",
+      "poiKind": 1,
+      "iconId": "hakubutukann",
+      "title": "霧見資料館",
+      "area": "霞ノ杜町成沢",
+      "rating": 3.5,
+      "body": "資料・展示。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "杜の散歩人"
+        },
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "kasumi_local"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-7293470176",
+      "lat": 36.0495686,
+      "lng": 138.1090586,
+      "category": "tourism",
+      "poiKind": 6,
+      "iconId": "zinzya",
+      "title": "西木戸神社",
+      "area": "霞ノ杜町西木戸",
+      "rating": 4.5,
+      "body": "地域の神社。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "一人旅メモ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-440886589",
+      "lat": 36.04468935,
+      "lng": 138.11640867,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "sizenn",
+      "title": "筒川遊び場",
+      "area": "霞ノ杜町筒川",
+      "rating": 4.4,
+      "body": "公園・緑地。散歩に。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "ベンチで一息。",
+          "author": "kasumi_local"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-7171001624",
+      "lat": 36.0447863,
+      "lng": 138.1172794,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "sizenn",
+      "title": "筒川公園",
+      "area": "霞ノ杜町筒川",
+      "rating": 4,
+      "body": "公園・緑地。散歩に。",
+      "minZoom": 15.5
+    },
+    {
+      "id": "pin-osm-node-6442185660",
+      "lat": 36.0481665,
+      "lng": 138.1178239,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "木戸記念碑",
+      "area": "霞ノ杜町木戸",
+      "rating": 4.5,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "説明板がわかりやすい。",
+          "author": "杜の散歩人"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-1986400608",
+      "lat": 36.048554703604225,
+      "lng": 138.11626795250157,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "renntaka",
+      "title": "杜のレンタカー",
+      "area": "霞ノ杜町木戸",
+      "rating": 4,
+      "body": "レンタカー。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "車種が選べる。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "車種が選べる。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-6440663740",
+      "lat": 36.05094588523522,
+      "lng": 138.11703840530987,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "孤塚記念碑",
+      "area": "霞ノ杜町孤塚",
+      "rating": 4.3,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "歴史を感じる。",
+          "author": "一人旅メモ"
+        },
+        {
+          "text": "説明板がわかりやすい。",
+          "author": "ぶらり旅"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-687112757",
+      "lat": 36.050990975601096,
+      "lng": 138.11770359590082,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "sizenn",
+      "title": "孤塚遊び場",
+      "area": "霞ノ杜町孤塚",
+      "rating": 4.4,
+      "body": "公園・緑地。散歩に。",
+      "minZoom": 15.5
+    },
+    {
+      "id": "pin-osm-node-13624182863",
+      "lat": 36.054758718078034,
+      "lng": 138.11151035811355,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "sizenn",
+      "title": "三日月中央緑地",
+      "area": "霞ノ杜町三日月中央",
+      "rating": 4.2,
+      "body": "公園・緑地。散歩に。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "桜の季節がきれい。",
+          "author": "町民T"
+        },
+        {
+          "text": "桜の季節がきれい。",
+          "author": "一人旅メモ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-4395631817",
+      "lat": 36.05672656951806,
+      "lng": 138.11254937094344,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "狐塚民宿",
+      "area": "霞ノ杜町成沢",
+      "rating": 4.1,
+      "body": "宿泊施設。観光の拠点に。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "朝食が好評。",
+          "author": "ぶらり旅"
+        },
+        {
+          "text": "朝食が好評。",
+          "author": "週末ドライブ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-4395630223",
+      "lat": 36.056502868132895,
+      "lng": 138.11132972200835,
+      "category": "civic",
+      "poiKind": 7,
+      "iconId": "koubann",
+      "title": "成沢交番",
+      "area": "霞ノ杜町成沢",
+      "rating": 3.5,
+      "body": "地域の交番。",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-osm-way-140466676",
+      "lat": 36.05820567412589,
+      "lng": 138.11448894196855,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "三日月北史跡",
+      "area": "霞ノ杜町三日月北",
+      "rating": 4.2,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "説明板がわかりやすい。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "歴史を感じる。",
+          "author": "kasumi_local"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-280418657",
+      "lat": 36.053506845613654,
+      "lng": 138.11170850021568,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "sizenn",
+      "title": "三日月中央公園",
+      "area": "霞ノ杜町三日月中央",
+      "rating": 3.9,
+      "body": "公園・緑地。散歩に。",
+      "minZoom": 15.5
+    },
+    {
+      "id": "pin-osm-node-6440663754",
+      "lat": 36.05866227784831,
+      "lng": 138.11367923994084,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "三日月北記念碑",
+      "area": "霞ノ杜町三日月北",
+      "rating": 4.4,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "説明板がわかりやすい。",
+          "author": "週末ドライブ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-node-6442185657",
+      "lat": 36.05873480894665,
+      "lng": 138.11361881291583,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "dot",
+      "title": "霞会館",
+      "area": "霞ノ杜町三日月北",
+      "rating": 3.3,
+      "body": "公共施設。",
+      "minZoom": 16,
+      "reviews": [
+        {
+          "text": "案内板がわかりやすい。",
+          "author": "グルメ旅"
+        },
+        {
+          "text": "町歩きの途中に寄った。",
+          "author": "週末ドライブ"
+        }
+      ]
+    },
+    {
+      "id": "pin-osm-way-140466391",
+      "lat": 36.06033410012037,
+      "lng": 138.11266864631085,
+      "category": "tourism",
+      "poiKind": 10,
+      "iconId": "siseki",
+      "title": "成沢史跡",
+      "area": "霞ノ杜町成沢",
+      "rating": 4,
+      "body": "史跡・記念碑。",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "歴史を感じる。",
+          "author": "kasumi_local"
+        }
+      ]
     }
   ],
   "region": {
@@ -1193,6 +3998,23 @@
       "subColor": "#5d4037",
       "subOutline": true,
       "subOutlineColor": "#ffffff"
+    },
+    {
+      "name": "箕浦",
+      "sub": "",
+      "lat": 36.04344584381613,
+      "lng": 138.12067109096398,
+      "nameSize": 12,
+      "nameWeight": 700,
+      "nameColor": "#3e2723",
+      "nameOutline": true,
+      "nameOutlineColor": "#ffffff",
+      "subSize": 10,
+      "subWeight": 400,
+      "subColor": "#5d4037",
+      "subOutline": true,
+      "subOutlineColor": "#ffffff",
+      "minZoom": 16
     }
   ]
 }

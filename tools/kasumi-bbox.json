@@ -1,0 +1,15 @@
+{
+  "comment": "NW 36.05887,138.11132 — SE 36.04442,138.12150",
+  "south": 36.04442,
+  "west": 138.11132,
+  "north": 36.05887,
+  "east": 138.1215,
+  "skipRadiusManualMeters": 6,
+  "skipRadiusAnyMeters": 2.5,
+  "skipRadiusNewBatchMeters": 2,
+  "station": { "lat": 36.04684, "lng": 138.11629 },
+  "maxPerArea": {
+    "霞ノ杜町湖畔": 4,
+    "霞ノ杜町湖岸": 3
+  }
+}

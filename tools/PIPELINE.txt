@@ -38,6 +38,16 @@ OSM ベクタ → 読んで加工 → 再配信（PMTiles 等）までの流れ
    - index.html の MapLibre に pmtiles プロトコルで source 追加（別途実装）
 
 
+霞ノ杜町: OSM から架空ピンを追加（既存ピンは維持）
+------------------------------------------------
+   npm run pins:from-osm:dry    # 件数確認のみ
+   npm run pins:from-osm        # data/map-data.json に追加
+
+   範囲: tools/kasumi-bbox.json
+   距離: 手置きピン12m / 全ピン6m / 新規同士5m（kasumi-bbox.json で変更可）。
+   生成後は npm run dev → 編集パネルで微調整 → JSONに保存。
+
+
 注意
 ----
 - Overpass は負荷に弱いので連打しない。取得失敗時は時間を空けて再試行。
