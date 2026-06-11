@@ -15,7 +15,7 @@
   "icons": {
     "dot": {
       "label": "その他（●）",
-      "defaultColor": "#ababab",
+      "defaultColor": "#858585",
       "file": "dot.svg",
       "raster": false,
       "scale": 0.75
@@ -39,7 +39,8 @@
       "label": "カフェ・喫茶",
       "defaultColor": "#fb8c00",
       "file": "cafe.png",
-      "raster": true
+      "raster": true,
+      "scale": 0.75
     },
     "bar": {
       "label": "バー",
@@ -52,7 +53,7 @@
     },
     "toilet": {
       "label": "トイレ",
-      "defaultColor": "#26a69a",
+      "defaultColor": "#9173a5",
       "file": "toilet.png",
       "raster": true
     },
@@ -82,13 +83,13 @@
     },
     "syogakkou": {
       "label": "小学校",
-      "defaultColor": "#5c6bc0",
+      "defaultColor": "#84858b",
       "file": "syogakkou.png",
       "raster": true
     },
     "koukou": {
       "label": "高校",
-      "defaultColor": "#3949ab",
+      "defaultColor": "#5b5d67",
       "file": "koukou.png",
       "raster": true
     },
@@ -106,7 +107,7 @@
     },
     "onsenn": {
       "label": "温泉・足湯",
-      "defaultColor": "#268bf7",
+      "defaultColor": "#1ca02c",
       "file": "onsenn.png",
       "raster": true
     },
@@ -154,7 +155,7 @@
     },
     "siseki": {
       "label": "史跡",
-      "defaultColor": "#9e9e9e",
+      "defaultColor": "#904cc8",
       "file": "siseki.png",
       "raster": true,
       "scale": 0.8
@@ -167,7 +168,7 @@
     },
     "insyoku": {
       "label": "飲食店",
-      "defaultColor": "#ff0400",
+      "defaultColor": "#ff7300",
       "file": "insyoku.png",
       "raster": true,
       "scale": 0.7
@@ -176,7 +177,8 @@
       "label": "駐車場",
       "defaultColor": "#607d8b",
       "file": "tyuusyazyou.png",
-      "raster": true
+      "raster": true,
+      "scale": 0.65
     }
   }
 }

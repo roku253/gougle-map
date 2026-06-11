@@ -4,6 +4,7 @@
     "pinsDefaultMinZoom": 12,
     "regionDefaultMinZoom": 12,
     "extraDefaultMinZoom": 13,
+    "showPinNames": true,
     "labelStyleDefaults": {
       "nameSize": 14,
       "nameWeight": 700,
@@ -29,9 +30,13 @@
       "area": "北海道・札幌",
       "rating": 4.6,
       "body": "札幌駅北口から徒歩圏。ショコラと季節のタルトが定評。",
-      "reviewer": "kasumi_local",
-      "review": "道産子スイーツ部の定番寄り道。",
-      "iconId": "insyoku"
+      "iconId": "insyoku",
+      "reviews": [
+        {
+          "text": "道産子スイーツ部の定番寄り道。",
+          "author": "kasumi_local"
+        }
+      ]
     },
     {
       "id": "sweets-02",
@@ -43,9 +48,13 @@
       "area": "宮城・仙台",
       "rating": 4.3,
       "body": "勾当台公園寄りの小さな喫茶。ずんだプリン。",
-      "reviewer": "night_owl_42",
-      "review": "ずんだの香りが上品。",
-      "iconId": "cafe"
+      "iconId": "cafe",
+      "reviews": [
+        {
+          "text": "ずんだの香りが上品。",
+          "author": "night_owl_42"
+        }
+      ]
     },
     {
       "id": "sweets-03",
@@ -57,9 +66,13 @@
       "area": "東京・新宿",
       "rating": 4.1,
       "body": "和菓子と抹茶スイーツ。駅から徒歩5分。",
-      "reviewer": "甘味らじお",
-      "review": "みたらし団子の焼き目◎。",
-      "iconId": "insyoku"
+      "iconId": "insyoku",
+      "reviews": [
+        {
+          "text": "みたらし団子の焼き目◎。",
+          "author": "甘味らじお"
+        }
+      ]
     },
     {
       "id": "sweets-04",
@@ -71,9 +84,13 @@
       "area": "愛知・名古屋",
       "rating": 4.5,
       "body": "ロールケーキ専門。平日も並ぶ。",
-      "reviewer": "ご当地スイーツ部",
-      "review": "生地がしっとり。",
-      "iconId": "insyoku"
+      "iconId": "insyoku",
+      "reviews": [
+        {
+          "text": "生地がしっとり。",
+          "author": "ご当地スイーツ部"
+        }
+      ]
     },
     {
       "id": "sweets-05",
@@ -85,9 +102,13 @@
       "area": "大阪・梅田",
       "rating": 4,
       "body": "深夜まで営業のカフェ。タルトと紅茶。",
-      "reviewer": "夜更かしさん",
-      "review": "夜景側の席が落ち着く。",
-      "iconId": "cafe"
+      "iconId": "cafe",
+      "reviews": [
+        {
+          "text": "夜景側の席が落ち着く。",
+          "author": "夜更かしさん"
+        }
+      ]
     },
     {
       "id": "sweets-06",
@@ -99,9 +120,13 @@
       "area": "広島・紙屋町",
       "rating": 3.9,
       "body": "瓶プリンとレモンケーキ。",
-      "reviewer": "kasumi_local",
-      "review": "瓶がかわいい。",
-      "iconId": "insyoku"
+      "iconId": "insyoku",
+      "reviews": [
+        {
+          "text": "瓶がかわいい。",
+          "author": "kasumi_local"
+        }
+      ]
     },
     {
       "id": "sweets-07",
@@ -113,9 +138,13 @@
       "area": "福岡・天神",
       "rating": 4.4,
       "body": "ジェラートと焼き菓子。",
-      "reviewer": "甘味らじお",
-      "review": "九州フルーツの酸味が効いてる。",
-      "iconId": "insyoku"
+      "iconId": "insyoku",
+      "reviews": [
+        {
+          "text": "九州フルーツの酸味が効いてる。",
+          "author": "甘味らじお"
+        }
+      ]
     },
     {
       "id": "conv-01",
@@ -127,9 +156,13 @@
       "area": "三日月町",
       "rating": 3.6,
       "body": "24時間営業。スイーツ系新作は強め入荷の店舗らしい。",
-      "reviewer": "コンビ二スイーツ部",
-      "review": "問題のチョコ新作、ここは毎週水曜に大量入荷。",
-      "iconId": "conbini"
+      "iconId": "conbini",
+      "reviews": [
+        {
+          "text": "問題のチョコ新作、ここは毎週水曜に大量入荷。",
+          "author": "コンビ二スイーツ部"
+        }
+      ]
     },
     {
       "id": "conv-02",
@@ -153,9 +186,13 @@
       "area": "杉並ヶ岡",
       "rating": 3.7,
       "body": "杉並ヶ岡駅北口を出てすぐ。",
-      "reviewer": "甘味らじお",
-      "review": "新作スイーツの再入荷スピードが早い。",
-      "iconId": "conbini"
+      "iconId": "conbini",
+      "reviews": [
+        {
+          "text": "新作スイーツの再入荷スピードが早い。",
+          "author": "甘味らじお"
+        }
+      ]
     },
     {
       "id": "conv-04",
@@ -191,10 +228,14 @@
       "area": "霞ノ杜町",
       "rating": 3.2,
       "body": "町内の生活路線。新作は控えめ。",
-      "reviewer": "kasumi_local",
-      "review": "山間部ではここが拠点。",
       "iconId": "conbini",
-      "minZoom": 15
+      "minZoom": 15,
+      "reviews": [
+        {
+          "text": "山間部ではここが拠点。",
+          "author": "kasumi_local"
+        }
+      ]
     },
     {
       "id": "tourism-01",
@@ -237,8 +278,8 @@
     },
     {
       "id": "tourism-04",
-      "lat": 36.05322409503192,
-      "lng": 138.12237812685697,
+      "lat": 36.05336481920078,
+      "lng": 138.12237179706364,
       "category": "tourism",
       "poiKind": 7,
       "title": "霧見展望休憩所",
@@ -269,9 +310,10 @@
       "poiKind": 4,
       "title": "霞ノ杜町役場",
       "area": "霞ノ杜町",
-      "rating": 0,
+      "rating": 3.4,
       "body": "月〜金 8:30-17:15。町の窓口。",
-      "iconId": "dot"
+      "iconId": "dot",
+      "websiteLabel": "gvv"
     },
     {
       "id": "school-01",
@@ -281,8 +323,8 @@
       "poiKind": 4,
       "title": "霞ノ杜町立第一小学校",
       "area": "霞ノ杜町大字杜ケ丘",
-      "rating": 0,
-      "body": "地域と連携した環境学習。（表記ゆれ: 霞ノ杜小学校）",
+      "rating": 3.2,
+      "body": "地域と連携した環境学習。",
       "website": "https://roku253.github.io/kasuminomori-shougakkou/",
       "websiteLabel": "roku253.github.io/kasuminomori-shougakkou",
       "iconId": "syogakkou",
@@ -313,7 +355,7 @@
       "rating": 0,
       "body": "霞湖に続く商店街",
       "iconId": "shop",
-      "minZoom": 12.5
+      "minZoom": 13.5
     },
     {
       "id": "pin-1781188405647",
@@ -322,8 +364,8 @@
       "category": "tourism",
       "poiKind": 7,
       "iconId": "yubinnkyoku",
-      "title": "新しいスポット",
-      "area": "",
+      "title": "成沢郵便局",
+      "area": "霞ノ杜町成沢",
       "rating": 0,
       "body": "",
       "minZoom": 14
@@ -391,7 +433,7 @@
       "area": "霞ノ杜町湖岸沿い",
       "rating": 0,
       "body": "",
-      "minZoom": 15
+      "minZoom": 16
     },
     {
       "id": "pin-1781190646467",
@@ -434,8 +476,8 @@
     },
     {
       "id": "pin-1781193571552",
-      "lat": 36.047086918047185,
-      "lng": 138.11655029015702,
+      "lat": 36.04708319000592,
+      "lng": 138.11658560879056,
       "category": "tourism",
       "poiKind": 7,
       "iconId": "koubann",
@@ -444,6 +486,367 @@
       "rating": 0,
       "body": "",
       "minZoom": 18
+    },
+    {
+      "id": "pin-1781195725875",
+      "lat": 36.04689564437598,
+      "lng": 138.1164792671027,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "conbini",
+      "title": "OldDays霞ノ杜",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 18
+    },
+    {
+      "id": "pin-1781195966637",
+      "lat": 36.04636226971108,
+      "lng": 138.1166016324471,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "toilet",
+      "title": "霞ノ杜駅トイレ",
+      "area": "霞ノ杜町木戸",
+      "rating": 0,
+      "body": "",
+      "minZoom": 18
+    },
+    {
+      "id": "pin-1781196119389",
+      "lat": 36.044848319518195,
+      "lng": 138.12089998873006,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "koukou",
+      "title": "箕浦高等学校",
+      "area": "霞ノ杜町箕浦",
+      "rating": 0,
+      "body": "",
+      "minZoom": 16.5
+    },
+    {
+      "id": "pin-1781196284285",
+      "lat": 36.04442166030361,
+      "lng": 138.12149673522924,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "syogakkou",
+      "title": "箕浦中学校",
+      "area": "霞ノ杜町箕浦",
+      "rating": 0,
+      "body": "",
+      "minZoom": 16.5
+    },
+    {
+      "id": "pin-1781196474750",
+      "lat": 36.045835002789545,
+      "lng": 138.11574858706422,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "駅前",
+      "area": "霞ノ杜町西木戸",
+      "rating": 0,
+      "body": "",
+      "minZoom": 18
+    },
+    {
+      "id": "pin-1781196585545",
+      "lat": 36.04647054634266,
+      "lng": 138.11530100439177,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "岡地文具",
+      "area": "霞ノ杜町西木戸",
+      "rating": 0,
+      "body": "",
+      "minZoom": 16.5
+    },
+    {
+      "id": "pin-1781197197122",
+      "lat": 36.05212295343753,
+      "lng": 138.11301702202383,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 16
+    },
+    {
+      "id": "pin-1781197215708",
+      "lat": 36.05268496601633,
+      "lng": 138.11285245259904,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 16.5
+    },
+    {
+      "id": "pin-1781197295075",
+      "lat": 36.04959309579898,
+      "lng": 138.11309282812772,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 16.5
+    },
+    {
+      "id": "pin-1781197302386",
+      "lat": 36.049251687964656,
+      "lng": 138.11323346965776,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-1781197358282",
+      "lat": 36.048893174589395,
+      "lng": 138.11453272459573,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 16
+    },
+    {
+      "id": "pin-1781197377182",
+      "lat": 36.04958318128472,
+      "lng": 138.11523397689905,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "insyoku",
+      "title": "桂亭",
+      "area": "",
+      "rating": 3.6,
+      "body": "",
+      "minZoom": 15.5,
+      "reviews": [
+        {
+          "text": "値段もお手頃でいい",
+          "author": "kzu"
+        },
+        {
+          "text": "止まっていたホテルに近かったので、このお店にしました。お刺身が分厚く、店主の人柄も良かった。こういうお店に出会えるのも旅の魅力だなと感じました。",
+          "author": "ぶらぶらり"
+        }
+      ]
+    },
+    {
+      "id": "pin-1781197827589",
+      "lat": 36.053312964455685,
+      "lng": 138.12303424151713,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "霧見展望駐車場",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 17.5
+    },
+    {
+      "id": "pin-1781198034620",
+      "lat": 36.047211397156616,
+      "lng": 138.11516370192658,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 17.5
+    },
+    {
+      "id": "pin-1781198059499",
+      "lat": 36.04841444681321,
+      "lng": 138.11314496082252,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "onsenn",
+      "title": "ゴシック館風呂",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 17.5
+    },
+    {
+      "id": "pin-1781198096746",
+      "lat": 36.04812020777453,
+      "lng": 138.11308348820404,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "siseki",
+      "title": "ゴシック館",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-1781198313028",
+      "lat": 36.0475628486857,
+      "lng": 138.11305130202317,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "siseki",
+      "title": "旧ゴシック館",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 18
+    },
+    {
+      "id": "pin-1781198342469",
+      "lat": 36.047136816229866,
+      "lng": 138.11331633171517,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "conbini",
+      "title": "ゴシック館",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 18.5
+    },
+    {
+      "id": "pin-1781198418666",
+      "lat": 36.04735249582431,
+      "lng": 138.11648338660774,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "tyuusyazyou",
+      "title": "駐車場",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 18.5
+    },
+    {
+      "id": "pin-1781198458477",
+      "lat": 36.047536216233524,
+      "lng": 138.11725318412158,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "insyoku",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 18.5
+    },
+    {
+      "id": "pin-1781198459466",
+      "lat": 36.04740097546957,
+      "lng": 138.1172978952199,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "insyoku",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 18.5
+    },
+    {
+      "id": "pin-1781198460035",
+      "lat": 36.04730647775688,
+      "lng": 138.1173090839858,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "insyoku",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 18.5
+    },
+    {
+      "id": "pin-1781198460451",
+      "lat": 36.04731097446371,
+      "lng": 138.11740489177873,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "insyoku",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 17.5
+    },
+    {
+      "id": "pin-1781198460877",
+      "lat": 36.047442418749824,
+      "lng": 138.11739155238593,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "insyoku",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 18
+    },
+    {
+      "id": "pin-1781199832945",
+      "lat": 36.05657967613122,
+      "lng": 138.11231861010788,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "hotel",
+      "title": "新しいスポット",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 17
+    },
+    {
+      "id": "pin-1781199897223",
+      "lat": 36.05504899649067,
+      "lng": 138.11541493596275,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "shop",
+      "title": "たばこ店",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 16.5
+    },
+    {
+      "id": "pin-1781200007715",
+      "lat": 36.04769934940887,
+      "lng": 138.1170333932297,
+      "category": "tourism",
+      "poiKind": 7,
+      "iconId": "cafe",
+      "title": "喫茶メルト",
+      "area": "",
+      "rating": 0,
+      "body": "",
+      "minZoom": 16.5
     }
   ],
   "region": {
@@ -488,7 +891,7 @@
       "lng": 138.12581136553797,
       "nameSize": 12,
       "nameWeight": 700,
-      "nameColor": "#2e4256",
+      "nameColor": "#6b6b6b",
       "nameOutline": true,
       "nameOutlineColor": "#ffffff",
       "subSize": 10,
@@ -501,8 +904,8 @@
     {
       "name": "大萩",
       "sub": "",
-      "lat": 36.045356555196406,
-      "lng": 138.1134625196678,
+      "lat": 36.04540862404488,
+      "lng": 138.11367613056575,
       "nameSize": 10,
       "nameWeight": 700,
       "nameColor": "#3e2723",
@@ -513,7 +916,7 @@
       "subColor": "#5d4037",
       "subOutline": true,
       "subOutlineColor": "#ffffff",
-      "minZoom": 15
+      "minZoom": 16
     },
     {
       "name": "杜川",
@@ -565,13 +968,13 @@
       "subOutline": true,
       "subOutlineColor": "#ffffff",
       "angle": -70,
-      "minZoom": 14.5
+      "minZoom": 15.5
     },
     {
       "name": "霞ノ杜平木田街道",
       "sub": "",
-      "lat": 36.040530642211706,
-      "lng": 138.12485096698606,
+      "lat": 36.0406288148899,
+      "lng": 138.12510302033485,
       "nameSize": 14,
       "nameWeight": 700,
       "nameColor": "#3e2723",
@@ -583,15 +986,14 @@
       "subOutline": true,
       "subOutlineColor": "#ffffff",
       "angle": -27,
-      "minZoom": 14.5,
-      "upright": true
+      "minZoom": 15.5
     },
     {
       "name": "木戸",
       "sub": "",
-      "lat": 36.04758508710488,
-      "lng": 138.11829054435015,
-      "nameSize": 11,
+      "lat": 36.048095789167746,
+      "lng": 138.11852594182614,
+      "nameSize": 10,
       "nameWeight": 700,
       "nameColor": "#3e2723",
       "nameOutline": true,
@@ -601,7 +1003,7 @@
       "subColor": "#5d4037",
       "subOutline": true,
       "subOutlineColor": "#ffffff",
-      "minZoom": 15
+      "minZoom": 16
     },
     {
       "name": "大字杜ケ丘",
@@ -618,7 +1020,7 @@
       "subColor": "#5d4037",
       "subOutline": true,
       "subOutlineColor": "#ffffff",
-      "minZoom": 15
+      "minZoom": 16
     },
     {
       "name": "駅前通り",
@@ -637,6 +1039,74 @@
       "subOutline": true,
       "subOutlineColor": "#ffffff",
       "minZoom": 16
+    },
+    {
+      "name": "成沢",
+      "sub": "",
+      "lat": 36.05883157158334,
+      "lng": 138.11070315535346,
+      "nameSize": 10,
+      "nameWeight": 700,
+      "nameColor": "#3e2723",
+      "nameOutline": true,
+      "nameOutlineColor": "#ffffff",
+      "subSize": 10,
+      "subWeight": 400,
+      "subColor": "#5d4037",
+      "subOutline": true,
+      "subOutlineColor": "#ffffff",
+      "minZoom": 15
+    },
+    {
+      "name": "西木戸",
+      "sub": "",
+      "lat": 36.04733406716949,
+      "lng": 138.11486393442647,
+      "nameSize": 10,
+      "nameWeight": 700,
+      "nameColor": "#3e2723",
+      "nameOutline": true,
+      "nameOutlineColor": "#ffffff",
+      "subSize": 10,
+      "subWeight": 400,
+      "subColor": "#5d4037",
+      "subOutline": true,
+      "subOutlineColor": "#ffffff",
+      "minZoom": 16
+    },
+    {
+      "name": "柳川",
+      "sub": "",
+      "lat": 36.04732186721505,
+      "lng": 138.12172263286072,
+      "nameSize": 10,
+      "nameWeight": 700,
+      "nameColor": "#3e2723",
+      "nameOutline": true,
+      "nameOutlineColor": "#ffffff",
+      "subSize": 10,
+      "subWeight": 400,
+      "subColor": "#5d4037",
+      "subOutline": true,
+      "subOutlineColor": "#ffffff",
+      "minZoom": 16
+    },
+    {
+      "name": "湖畔公園",
+      "sub": "",
+      "lat": 36.04978133996603,
+      "lng": 138.11249749159413,
+      "nameSize": 10,
+      "nameWeight": 700,
+      "nameColor": "#4dbc24",
+      "nameOutline": true,
+      "nameOutlineColor": "#ffffff",
+      "subSize": 10,
+      "subWeight": 400,
+      "subColor": "#3e2723",
+      "subOutline": true,
+      "subOutlineColor": "#ffffff",
+      "minZoom": 15
     }
   ]
 }

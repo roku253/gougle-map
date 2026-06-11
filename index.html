@@ -954,6 +954,60 @@
       background: #f1f3f4;
       border-radius: 8px;
     }
+    .gm-ed-photo-drop {
+      border: 2px dashed #dadce0;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: #5f6368;
+      background: #f8f9fa;
+      cursor: pointer;
+      margin-bottom: 6px;
+    }
+    .gm-ed-photo-drop.is-dragover { border-color: #1a73e8; background: #e8f0fe; color: #1a73e8; }
+    .gm-ed-photo-drop.has-photo { padding: 6px; }
+    .gm-ed-photo-preview {
+      max-height: 100px;
+      overflow: hidden;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+    .gm-ed-photo-preview img { display: block; width: 100%; height: auto; max-height: 100px; object-fit: cover; }
+    .gm-ed-review-row {
+      border: 1px solid #e8eaed;
+      border-radius: 8px;
+      padding: 8px;
+      margin-bottom: 8px;
+      background: #fff;
+    }
+    .gm-ed-review-row textarea,
+    .gm-ed-review-row input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    .gm-ed-review-row textarea { min-height: 44px; margin-bottom: 6px; resize: vertical; }
+    .gm-ed-review-row-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      font-size: 11px;
+      color: #5f6368;
+    }
+    .gm-ed-review-row .gm-ed-review-remove {
+      border: none;
+      background: transparent;
+      color: #c5221f;
+      font-size: 11px;
+      cursor: pointer;
+      padding: 2px 4px;
+    }
     .gm-ed-icon-preview .gm-gpin-wrap {
       filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
       transform: scale(1.35);
@@ -1183,6 +1237,39 @@
                 <span>本文</span>
                 <textarea id="gmEdBody"></textarea>
               </label>
+              <p class="gm-editor-section">詳細パネル（ピンを押したとき）</p>
+              <label class="gm-editor-field">
+                <span>評価（0＝星なし、0.1〜5.0）</span>
+                <input id="gmEdRating" type="number" min="0" max="5" step="0.1" placeholder="例: 4.5" />
+              </label>
+              <label class="gm-editor-field">
+                <span>補足（ⓘ 行）</span>
+                <input id="gmEdMeta" type="text" placeholder="例: 立入禁止 / 2019年夏に周知強化" />
+              </label>
+              <label class="gm-editor-field">
+                <span>Webサイト URL</span>
+                <input id="gmEdWebsite" type="url" placeholder="https://..." />
+              </label>
+              <label class="gm-editor-field">
+                <span>URL 表示ラベル（空欄＝URLから自動）</span>
+                <input id="gmEdWebsiteLabel" type="text" placeholder="roku253.github.io/..." />
+              </label>
+              <div class="gm-editor-field">
+                <span>口コミ（複数可）</span>
+                <div id="gmEdReviewsList"></div>
+                <button type="button" id="gmEdAddReview">口コミを追加</button>
+              </div>
+              <label class="gm-editor-field">
+                <span>メイン写真（ドロップで img/pin-photos/ に保存）</span>
+                <div class="gm-ed-photo-drop" id="gmEdPhotoDrop" tabindex="0">
+                  <div class="gm-ed-photo-preview" id="gmEdPhotoPreview"></div>
+                  <span id="gmEdPhotoHint">画像をドロップ、またはクリックして選択</span>
+                </div>
+                <input id="gmEdPhotoFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
+              </label>
+              <div class="gm-editor-actions" style="margin-top:0;margin-bottom:8px;">
+                <button type="button" id="gmEdClearPhoto">写真を削除</button>
+              </div>
               <label class="gm-editor-field">
                 <span>表示開始ズーム（空欄＝全体既定）</span>
                 <input id="gmEdPinMinZoom" type="number" min="0" max="22" step="0.5" placeholder="例: 12" />
@@ -1471,6 +1558,7 @@
         LOCAL_DEV_HOST && !EMBED_KASUMI_MODE && !SWEETS_THREAD_MODE && allowsFullGougleMapUrlMain();
       var MAP_EDIT_MODE = false;
       var MAP_EDIT_PIN_ID = null;
+      var OPEN_PLACE_PIN_ID = null;
       var MAP_EDIT_LABEL_REF = "region:kasumi";
       var mapEditClickBound = false;
       var logoTapCount = 0;
@@ -1667,6 +1755,7 @@
             }
             POI_PINS_MIN_ZOOM = getPinsDefaultMinZoom();
             normalizePinIconColorsOnLoad();
+            normalizePinReviewsOnLoad();
             if (REGION.kasumi && typeof REGION.kasumi.lat === "number") {
               KASUMI_LAT = REGION.kasumi.lat;
               KASUMI_LNG = REGION.kasumi.lng;
@@ -1744,9 +1833,11 @@
           "\n" +
           String(p.body || "") +
           "\n" +
-          String(p.review || "") +
-          "\n" +
-          String(p.reviewer || "") +
+          getPinReviews(p)
+            .map(function (r) {
+              return String(r.text || "") + "\n" + String(r.author || "");
+            })
+            .join("\n") +
           "\n" +
           String(p.meta || "");
         if (/霞ノ杜|かすみのもり|kasumi_local/i.test(blob)) return true;
@@ -2408,6 +2499,7 @@
       }
 
       function closePlaceDetail() {
+        OPEN_PLACE_PIN_ID = null;
         var panel = document.getElementById("gmPlacePanel");
         if (panel) {
           panel.classList.remove("is-open");
@@ -2416,6 +2508,256 @@
         }
         clearPinSelectionVisual();
         scheduleApplyMapChromePadding();
+      }
+
+      function pinHeroSrc(pin) {
+        if (!pin || !pin.heroImage) return "";
+        var s = String(pin.heroImage);
+        if (/^https?:\/\//i.test(s) || s.indexOf("data:") === 0) return s;
+        return s.indexOf("./") === 0 ? s : "./" + s.replace(/^\//, "");
+      }
+
+      function parseRatingInput(val) {
+        var n = parseFloat(val);
+        if (isNaN(n) || n <= 0) return 0;
+        return Math.min(5, Math.max(0, n));
+      }
+
+      function getPinReviews(pin) {
+        if (!pin) return [];
+        if (Array.isArray(pin.reviews) && pin.reviews.length) {
+          return pin.reviews.filter(function (r) {
+            return r && (String(r.text || "").trim() || String(r.author || "").trim());
+          });
+        }
+        if (pin.review) {
+          return [{ text: String(pin.review), author: String(pin.reviewer || "") }];
+        }
+        return [];
+      }
+
+      function normalizePinReviewsOnLoad() {
+        PIN_DATA.forEach(function (p) {
+          if (Array.isArray(p.reviews) && p.reviews.length) {
+            p.reviews = p.reviews
+              .map(function (r) {
+                return {
+                  text: String((r && r.text) || "").trim(),
+                  author: String((r && r.author) || "").trim(),
+                };
+              })
+              .filter(function (r) {
+                return r.text || r.author;
+              });
+            if (!p.reviews.length) delete p.reviews;
+            delete p.review;
+            delete p.reviewer;
+            return;
+          }
+          if (p.review) {
+            p.reviews = [{ text: String(p.review), author: String(p.reviewer || "").trim() }];
+            delete p.review;
+            delete p.reviewer;
+          }
+        });
+      }
+
+      function readEditorReviewsFromDom() {
+        var list = document.getElementById("gmEdReviewsList");
+        if (!list) return [];
+        return Array.prototype.slice
+          .call(list.querySelectorAll(".gm-ed-review-row"))
+          .map(function (row) {
+            var textEl = row.querySelector(".gm-ed-review-text");
+            var authorEl = row.querySelector(".gm-ed-review-author");
+            return {
+              text: textEl ? textEl.value.trim() : "",
+              author: authorEl ? authorEl.value.trim() : "",
+            };
+          })
+          .filter(function (r) {
+            return r.text || r.author;
+          });
+      }
+
+      function renderEditorReviewsList(reviews) {
+        var list = document.getElementById("gmEdReviewsList");
+        if (!list) return;
+        list.innerHTML = "";
+        var items = reviews && reviews.length ? reviews : [{ text: "", author: "" }];
+        items.forEach(function (r, i) {
+          var row = document.createElement("div");
+          row.className = "gm-ed-review-row";
+          row.innerHTML =
+            '<div class="gm-ed-review-row-head"><span>口コミ ' +
+            (i + 1) +
+            '</span><button type="button" class="gm-ed-review-remove">削除</button></div>' +
+            '<textarea class="gm-ed-review-text" placeholder="口コミ本文"></textarea>' +
+            '<input class="gm-ed-review-author" type="text" placeholder="投稿者名（kasumi_local など）" />';
+          row.querySelector(".gm-ed-review-text").value = r.text || "";
+          row.querySelector(".gm-ed-review-author").value = r.author || "";
+          list.appendChild(row);
+        });
+      }
+
+      function addEditorReviewRow() {
+        var list = document.getElementById("gmEdReviewsList");
+        if (!list) return;
+        var reviews = readEditorReviewsFromDom();
+        reviews.push({ text: "", author: "" });
+        renderEditorReviewsList(reviews);
+        refreshOpenPlaceDetail();
+      }
+
+      function removeEditorReviewRow(btn) {
+        var list = document.getElementById("gmEdReviewsList");
+        if (!list) return;
+        var rows = list.querySelectorAll(".gm-ed-review-row");
+        if (rows.length <= 1) {
+          var row = rows[0];
+          if (row) {
+            row.querySelector(".gm-ed-review-text").value = "";
+            row.querySelector(".gm-ed-review-author").value = "";
+          }
+          refreshOpenPlaceDetail();
+          return;
+        }
+        var row = btn.closest(".gm-ed-review-row");
+        if (!row) return;
+        var reviews = readEditorReviewsFromDom();
+        var idx = Array.prototype.indexOf.call(rows, row);
+        if (idx >= 0) reviews.splice(idx, 1);
+        renderEditorReviewsList(reviews.length ? reviews : [{ text: "", author: "" }]);
+        refreshOpenPlaceDetail();
+      }
+
+      function readEditorDetailFieldsIntoPin(p) {
+        if (!p) return;
+        p.rating = parseRatingInput(document.getElementById("gmEdRating").value);
+        var meta = document.getElementById("gmEdMeta").value.trim();
+        if (meta) p.meta = meta;
+        else delete p.meta;
+        var website = document.getElementById("gmEdWebsite").value.trim();
+        if (website) p.website = website;
+        else delete p.website;
+        var websiteLabel = document.getElementById("gmEdWebsiteLabel").value.trim();
+        if (websiteLabel) p.websiteLabel = websiteLabel;
+        else delete p.websiteLabel;
+        var reviews = readEditorReviewsFromDom();
+        if (reviews.length) p.reviews = reviews;
+        else {
+          delete p.reviews;
+        }
+        delete p.review;
+        delete p.reviewer;
+      }
+
+      function loadEditorDetailFields(p) {
+        document.getElementById("gmEdRating").value =
+          typeof p.rating === "number" && p.rating > 0 ? String(p.rating) : "";
+        document.getElementById("gmEdMeta").value = p.meta || "";
+        document.getElementById("gmEdWebsite").value = p.website || "";
+        document.getElementById("gmEdWebsiteLabel").value = p.websiteLabel || "";
+        var reviews = getPinReviews(p);
+        renderEditorReviewsList(reviews.length ? reviews : [{ text: "", author: "" }]);
+        refreshEditorPhotoPreview();
+      }
+
+      function refreshEditorPhotoPreview() {
+        var preview = document.getElementById("gmEdPhotoPreview");
+        var drop = document.getElementById("gmEdPhotoDrop");
+        var hint = document.getElementById("gmEdPhotoHint");
+        if (!preview || !drop) return;
+        var p = findPinById(MAP_EDIT_PIN_ID);
+        var src = p && pinHeroSrc(p);
+        preview.innerHTML = src ? '<img src="' + escHtml(src) + '" alt="">' : "";
+        drop.classList.toggle("has-photo", !!src);
+        if (hint) hint.textContent = src ? "別の画像をドロップで差し替え" : "画像をドロップ、またはクリックして選択";
+      }
+
+      function refreshOpenPlaceDetail() {
+        if (!OPEN_PLACE_PIN_ID) return;
+        var base = findPinById(OPEN_PLACE_PIN_ID);
+        if (!base) return;
+        var panel = document.getElementById("gmPlacePanel");
+        if (!panel || !panel.classList.contains("is-open")) return;
+        var previewPin = Object.assign({}, base);
+        if (MAP_EDIT_MODE && MAP_EDIT_PIN_ID === base.id) {
+          previewPin.title = document.getElementById("gmEdTitle").value.trim() || previewPin.title;
+          previewPin.area = document.getElementById("gmEdArea").value.trim();
+          previewPin.body = document.getElementById("gmEdBody").value;
+          readEditorDetailFieldsIntoPin(previewPin);
+        }
+        panel.innerHTML = buildPlacePanelHtml(previewPin);
+        wirePlacePanel(previewPin);
+      }
+
+      function uploadPinHeroPhoto(file) {
+        var p = findPinById(MAP_EDIT_PIN_ID);
+        if (!p) {
+          setEditorStatus("先にピンを選択してください", true);
+          return Promise.resolve();
+        }
+        if (!file || !file.type || file.type.indexOf("image/") !== 0) {
+          setEditorStatus("画像ファイルを選んでください", true);
+          return Promise.resolve();
+        }
+        setEditorStatus("写真を保存中…");
+        return new Promise(function (resolve) {
+          var reader = new FileReader();
+          reader.onload = function () {
+            fetch("/api/pin-photo", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ pinId: p.id, dataUrl: reader.result }),
+            })
+              .then(parseDevApiResponse)
+              .then(function (res) {
+                if (!res.ok || !res.j.ok) {
+                  throw new Error((res.j && res.j.error) || "写真の保存に失敗");
+                }
+                if (res.j.heroImage) p.heroImage = res.j.heroImage;
+                else delete p.heroImage;
+                refreshEditorPhotoPreview();
+                refreshOpenPlaceDetail();
+                setEditorStatus("写真を保存しました: " + (res.j.heroImage || "(削除)"));
+                resolve();
+              })
+              .catch(function (err) {
+                setEditorStatus(String(err.message || err), true);
+                resolve();
+              });
+          };
+          reader.onerror = function () {
+            setEditorStatus("画像の読み込みに失敗しました", true);
+            resolve();
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function clearPinHeroPhoto() {
+        var p = findPinById(MAP_EDIT_PIN_ID);
+        if (!p || !p.heroImage) return;
+        setEditorStatus("写真を削除中…");
+        fetch("/api/pin-photo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pinId: p.id, delete: true }),
+        })
+          .then(parseDevApiResponse)
+          .then(function (res) {
+            if (!res.ok || !res.j.ok) {
+              throw new Error((res.j && res.j.error) || "写真の削除に失敗");
+            }
+            delete p.heroImage;
+            refreshEditorPhotoPreview();
+            refreshOpenPlaceDetail();
+            setEditorStatus("写真を削除しました（未保存）");
+          })
+          .catch(function (err) {
+            setEditorStatus(String(err.message || err), true);
+          });
       }
 
       function gmGlobeIconSvg() {
@@ -2452,17 +2794,22 @@
               "（サンプル）"
             : "";
         var catLabel = getPinIconLabel(pin);
-        var hero = '<div class="gm-place-hero">写真なし</div>';
+        var heroSrc = pinHeroSrc(pin);
+        var hero = heroSrc
+          ? '<div class="gm-place-hero"><img src="' + escHtml(heroSrc) + '" alt=""></div>'
+          : '<div class="gm-place-hero">写真なし</div>';
         var bodyHtml = escHtml(pin.body || "").replace(/\n/g, "<br>");
-        var reviewBlock = "";
-        if (pin.review) {
-          reviewBlock =
-            '<div class="gm-place-row"><span class="gm-place-row-ic">💬</span><div>「' +
-            escHtml(pin.review) +
-            '」<div style="color:#70757a;font-size:12px;margin-top:4px;">— ' +
-            escHtml(pin.reviewer || "") +
-            "</div></div>";
-        }
+        var reviewBlock = getPinReviews(pin)
+          .map(function (r) {
+            return (
+              '<div class="gm-place-row"><span class="gm-place-row-ic">💬</span><div>「' +
+              escHtml(r.text) +
+              '」<div style="color:#70757a;font-size:12px;margin-top:4px;">— ' +
+              escHtml(r.author || "") +
+              "</div></div></div>"
+            );
+          })
+          .join("");
         return (
           '<div class="gm-place-panel-header">' +
           '<button type="button" class="back-pill" id="gmPlaceBackSearch">' +
@@ -2520,7 +2867,8 @@
 
       function openPlaceDetail(pin, skipPaddingSchedule) {
         closeMapPopup();
-        closePlaceDetail();
+        if (OPEN_PLACE_PIN_ID && OPEN_PLACE_PIN_ID !== pin.id) closePlaceDetail();
+        OPEN_PLACE_PIN_ID = pin.id;
         setPinSelected(pin.id);
         var panel = document.getElementById("gmPlacePanel");
         panel.innerHTML = buildPlacePanelHtml(pin);
@@ -2743,8 +3091,9 @@
       }
 
       function renderMarkers() {
+        var reopenPinId = OPEN_PLACE_PIN_ID;
         clearPinMarkers();
-        closePlaceDetail();
+        if (!reopenPinId) closePlaceDetail();
         if (SWEETS_THREAD_MODE) return;
         PIN_DATA.forEach(function (p) {
           if (EMBED_KASUMI_MODE && !isEmbedKasumiPublicPin(p)) return;
@@ -2780,6 +3129,7 @@
               var sel = document.getElementById("gmEditorPinSelect");
               if (sel) sel.value = p.id;
               loadEditorPinFields();
+              openPlaceDetail(p, true);
             });
           } else if (!EMBED_KASUMI_STATIC) {
             el.addEventListener("click", function (e) {
@@ -2791,6 +3141,21 @@
           markerIndex[p.id] = mk;
         });
         updateMarkerVisibility();
+        if (reopenPinId) {
+          var reopenPin = findPinById(reopenPinId);
+          if (reopenPin) {
+            var panel = document.getElementById("gmPlacePanel");
+            if (panel && panel.classList.contains("is-open")) {
+              OPEN_PLACE_PIN_ID = reopenPinId;
+              panel.innerHTML = buildPlacePanelHtml(reopenPin);
+              wirePlacePanel(reopenPin);
+            } else {
+              openPlaceDetail(reopenPin, true);
+            }
+          } else {
+            closePlaceDetail();
+          }
+        }
         if (EMBED_KASUMI_MODE) return;
         var raw = localStorage.getItem(STATE_KEY);
         if (!raw) return;
@@ -2941,7 +3306,7 @@
           shopList.appendChild(li);
         });
         var reviewed = PIN_DATA.filter(function (p) {
-          return p.review && !isKasumiMapPin(p);
+          return getPinReviews(p).length && !isKasumiMapPin(p);
         });
         if (filter === "sweets") {
           reviewed = reviewed.filter(function (p) {
@@ -2949,6 +3314,8 @@
           });
         }
         reviewed.slice(0, 4).forEach(function (p) {
+          var firstReview = getPinReviews(p)[0];
+          var snippet = firstReview ? firstReview.text : "";
           var li = document.createElement("li");
           li.innerHTML =
             '<span class="pin-mini" style="background:' +
@@ -2957,8 +3324,8 @@
             '<div class="row-main"><div class="row-title">' +
             p.title +
             '</div><div class="row-sub">「' +
-            p.review.substring(0, 26) +
-            (p.review.length > 26 ? "…" : "") +
+            snippet.substring(0, 26) +
+            (snippet.length > 26 ? "…" : "") +
             "」</div></div>";
           li.addEventListener("click", function () {
             flyToPin(p, true);
@@ -3322,6 +3689,7 @@
         document.getElementById("gmEdLat").value = String(p.lat);
         document.getElementById("gmEdLng").value = String(p.lng);
         document.getElementById("gmEdBody").value = p.body || "";
+        loadEditorDetailFields(p);
         document.getElementById("gmEdPinMinZoom").value =
           typeof p.minZoom === "number" ? String(p.minZoom) : "";
       }
@@ -3337,6 +3705,7 @@
         p.lat = parseFloat(document.getElementById("gmEdLat").value);
         p.lng = parseFloat(document.getElementById("gmEdLng").value);
         p.body = document.getElementById("gmEdBody").value;
+        readEditorDetailFieldsIntoPin(p);
         var pinMz = parseOptionalZoomInput(document.getElementById("gmEdPinMinZoom").value);
         if (pinMz != null) p.minZoom = pinMz;
         else delete p.minZoom;
@@ -3344,6 +3713,7 @@
         refreshEditorPinSelect();
         renderSidebar(activeListFilter);
         updateMarkerVisibility();
+        refreshOpenPlaceDetail();
         setEditorStatus("ピンを反映しました（未保存）");
       }
 
@@ -3691,6 +4061,58 @@
         if (applyPin) applyPin.addEventListener("click", applyEditorPinFields);
         var delPin = document.getElementById("gmEdDeletePin");
         if (delPin) delPin.addEventListener("click", deleteEditorPin);
+        var photoDrop = document.getElementById("gmEdPhotoDrop");
+        var photoFile = document.getElementById("gmEdPhotoFile");
+        if (photoDrop && photoFile) {
+          photoDrop.addEventListener("click", function () {
+            photoFile.click();
+          });
+          photoDrop.addEventListener("dragover", function (e) {
+            e.preventDefault();
+            photoDrop.classList.add("is-dragover");
+          });
+          photoDrop.addEventListener("dragleave", function () {
+            photoDrop.classList.remove("is-dragover");
+          });
+          photoDrop.addEventListener("drop", function (e) {
+            e.preventDefault();
+            photoDrop.classList.remove("is-dragover");
+            var file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+            if (file) uploadPinHeroPhoto(file);
+          });
+          photoFile.addEventListener("change", function () {
+            var file = photoFile.files && photoFile.files[0];
+            photoFile.value = "";
+            if (file) uploadPinHeroPhoto(file);
+          });
+        }
+        var clearPhoto = document.getElementById("gmEdClearPhoto");
+        if (clearPhoto) clearPhoto.addEventListener("click", clearPinHeroPhoto);
+        var addReview = document.getElementById("gmEdAddReview");
+        if (addReview) addReview.addEventListener("click", addEditorReviewRow);
+        var reviewsList = document.getElementById("gmEdReviewsList");
+        if (reviewsList) {
+          reviewsList.addEventListener("click", function (e) {
+            var btn = e.target.closest(".gm-ed-review-remove");
+            if (btn) removeEditorReviewRow(btn);
+          });
+          reviewsList.addEventListener("input", refreshOpenPlaceDetail);
+          reviewsList.addEventListener("change", refreshOpenPlaceDetail);
+        }
+        [
+          "gmEdRating",
+          "gmEdMeta",
+          "gmEdWebsite",
+          "gmEdWebsiteLabel",
+          "gmEdTitle",
+          "gmEdArea",
+          "gmEdBody",
+        ].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("input", refreshOpenPlaceDetail);
+          el.addEventListener("change", refreshOpenPlaceDetail);
+        });
         var applyLabel = document.getElementById("gmEdApplyLabel");
         if (applyLabel) applyLabel.addEventListener("click", applyEditorLabelFields);
         var resetStyle = document.getElementById("gmEdResetLabelStyle");
