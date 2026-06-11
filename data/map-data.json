@@ -1176,6 +1176,22 @@
       "subOutlineColor": "#ffffff",
       "minZoom": 15.5,
       "angle": -72
+    },
+    {
+      "name": "霞湖",
+      "sub": "",
+      "lat": 36.04988506673209,
+      "lng": 138.08626763864874,
+      "nameSize": 14,
+      "nameWeight": 700,
+      "nameColor": "#988cf3",
+      "nameOutline": true,
+      "nameOutlineColor": "#ffffff",
+      "subSize": 10,
+      "subWeight": 400,
+      "subColor": "#5d4037",
+      "subOutline": true,
+      "subOutlineColor": "#ffffff"
     }
   ]
 }

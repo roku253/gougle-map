@@ -2879,15 +2879,23 @@
 
       function openPlaceDetail(pin, skipPaddingSchedule) {
         closeMapPopup();
-        if (OPEN_PLACE_PIN_ID && OPEN_PLACE_PIN_ID !== pin.id) closePlaceDetail();
+        var panel = document.getElementById("gmPlacePanel");
+        var panelWasOpen = !!(panel && panel.classList.contains("is-open"));
+        var switchingPin = panelWasOpen && OPEN_PLACE_PIN_ID && OPEN_PLACE_PIN_ID !== pin.id;
+        if (OPEN_PLACE_PIN_ID && OPEN_PLACE_PIN_ID !== pin.id && !panelWasOpen) {
+          closePlaceDetail();
+        }
         OPEN_PLACE_PIN_ID = pin.id;
         setPinSelected(pin.id);
-        var panel = document.getElementById("gmPlacePanel");
         panel.innerHTML = buildPlacePanelHtml(pin);
         panel.classList.add("is-open");
         panel.setAttribute("aria-hidden", "false");
         wirePlacePanel(pin);
-        if (!skipPaddingSchedule) {
+        if (switchingPin) {
+          var scroll = panel.querySelector(".gm-place-scroll");
+          if (scroll) scroll.scrollTop = 0;
+        }
+        if (!skipPaddingSchedule && !switchingPin) {
           scheduleApplyMapChromePadding();
           setTimeout(scheduleApplyMapChromePadding, 280);
         }
