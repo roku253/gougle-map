@@ -1576,7 +1576,8 @@
       ];
       var KASUMI_TOWN_MIN_ZOOM = 13.35;
       var KASUMI_TOWN_MAX_ZOOM = 17.8;
-      var KASUMI_EMBED_YAKUBA = { lat: 36.0524, lng: 138.1189, zoom: 15.6 };
+      /** 町サイト iframe 埋め込み: 霞ノ杜町役場を画面中央付近に */
+      var KASUMI_EMBED_YAKUBA = { lat: 36.053894, lng: 138.115069, zoom: 15.55 };
       var KASUMI_EMBED_TOWN = { lat: KASUMI_LAT, lng: KASUMI_LNG, zoom: 13.65 };
 
       var ANSWER_LAT = KASUMI_LAT;
@@ -1857,6 +1858,14 @@
 
       function getEmbedKasumiView() {
         if (EMBED_KASUMI_EXPAND) return KASUMI_EMBED_TOWN;
+        var office = findPinById("civic-01");
+        if (office) {
+          return {
+            lat: office.lat,
+            lng: office.lng,
+            zoom: KASUMI_EMBED_YAKUBA.zoom,
+          };
+        }
         return KASUMI_EMBED_YAKUBA;
       }
 
