@@ -879,6 +879,16 @@
       z-index: 200;
       width: min(360px, 92vw);
     }
+    html.gm-embed-kasumi:not(.gm-embed-kasumi--expand) .gm-place-panel {
+      display: none !important;
+    }
+    html.gm-embed-kasumi:not(.gm-embed-kasumi--expand) .gm-marker-root {
+      pointer-events: none !important;
+      cursor: default;
+    }
+    html.gm-embed-kasumi:not(.gm-embed-kasumi--expand) .gm-marker-root:hover .gm-gpin-wrap {
+      transform: none;
+    }
     html.gm-embed-kasumi.gm-embed-kasumi--expand .gm-place-panel {
       width: min(408px, calc(100vw - 24px));
     }
@@ -1936,6 +1946,39 @@
         return KASUMI_EMBED_YAKUBA;
       }
 
+      var embedStaticViewLocked = null;
+
+      function captureEmbedStaticView() {
+        if (!map || !EMBED_KASUMI_STATIC) return;
+        embedStaticViewLocked = {
+          center: map.getCenter(),
+          zoom: map.getZoom(),
+          bearing: 0,
+          pitch: 0,
+        };
+      }
+
+      function enforceEmbedStaticView() {
+        if (!map || !EMBED_KASUMI_STATIC || !embedStaticViewLocked) return;
+        var c = map.getCenter();
+        var z = map.getZoom();
+        var locked = embedStaticViewLocked;
+        if (
+          Math.abs(c.lng - locked.center.lng) > 1e-6 ||
+          Math.abs(c.lat - locked.center.lat) > 1e-6 ||
+          Math.abs(z - locked.zoom) > 0.01 ||
+          Math.abs(map.getBearing()) > 0.01 ||
+          Math.abs(map.getPitch()) > 0.01
+        ) {
+          map.jumpTo({
+            center: locked.center,
+            zoom: locked.zoom,
+            bearing: 0,
+            pitch: 0,
+          });
+        }
+      }
+
       function setMapInteractionForEmbed() {
         if (!map || !EMBED_KASUMI_MODE) return;
         if (EMBED_KASUMI_STATIC) {
@@ -1945,7 +1988,17 @@
           map.doubleClickZoom.disable();
           map.touchZoomRotate.disable();
           map.keyboard.disable();
+          if (map.dragRotate) map.dragRotate.disable();
+          if (map.touchPitch) map.touchPitch.disable();
+          captureEmbedStaticView();
+          if (embedStaticViewLocked) {
+            var lockedZoom = embedStaticViewLocked.zoom;
+            map.setMinZoom(lockedZoom);
+            map.setMaxZoom(lockedZoom);
+          }
         } else {
+          map.setMinZoom(KASUMI_TOWN_MIN_ZOOM);
+          map.setMaxZoom(KASUMI_TOWN_MAX_ZOOM);
           map.dragPan.enable();
           map.scrollZoom.enable();
           map.boxZoom.enable();
@@ -2953,6 +3006,7 @@
       }
 
       function openPlaceDetail(pin, skipPaddingSchedule) {
+        if (EMBED_KASUMI_STATIC) return;
         closeMapPopup();
         var panel = document.getElementById("gmPlacePanel");
         var panelWasOpen = !!(panel && panel.classList.contains("is-open"));
@@ -3226,7 +3280,7 @@
               loadEditorPinFields();
               openPlaceDetail(p, true);
             });
-          } else {
+          } else if (!EMBED_KASUMI_STATIC) {
             el.addEventListener("click", function (e) {
               e.stopPropagation();
               openPlaceDetail(p);
@@ -3546,6 +3600,22 @@
         }
       }
 
+      function bindFictionReportUi() {
+        if (window.__gmFictionReportBound) return;
+        var fictionWrap = document.getElementById("gmFictionReportWrap");
+        var fictionBtn = document.getElementById("gmFictionReportBtn");
+        var fictionPopover = document.getElementById("gmFictionPopover");
+        if (!fictionBtn || !fictionWrap) return;
+        window.__gmFictionReportBound = true;
+        fictionBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          var open = !fictionWrap.classList.contains("is-open");
+          fictionWrap.classList.toggle("is-open", open);
+          fictionBtn.setAttribute("aria-expanded", open ? "true" : "false");
+          if (fictionPopover) fictionPopover.setAttribute("aria-hidden", open ? "false" : "true");
+        });
+      }
+
       function bindUi() {
         document.querySelectorAll(".sp-tab, .chip").forEach(function (t) {
           t.addEventListener("click", function () {
@@ -3600,18 +3670,7 @@
             e.stopPropagation();
           });
         }
-        var fictionWrap = document.getElementById("gmFictionReportWrap");
-        var fictionBtn = document.getElementById("gmFictionReportBtn");
-        var fictionPopover = document.getElementById("gmFictionPopover");
-        if (fictionBtn && fictionWrap) {
-          fictionBtn.addEventListener("click", function (e) {
-            e.stopPropagation();
-            var open = !fictionWrap.classList.contains("is-open");
-            fictionWrap.classList.toggle("is-open", open);
-            fictionBtn.setAttribute("aria-expanded", open ? "true" : "false");
-            if (fictionPopover) fictionPopover.setAttribute("aria-hidden", open ? "false" : "true");
-          });
-        }
+        bindFictionReportUi();
       }
 
       function initMap() {
@@ -3645,6 +3704,7 @@
 
         map.on("style.load", function () {
           suppressBasemapSymbols();
+          if (EMBED_KASUMI_STATIC) setMapInteractionForEmbed();
         });
 
         map.on("load", function () {
@@ -3663,9 +3723,14 @@
           if (EMBED_KASUMI_MODE) {
             refreshFictionLabels();
             setMapInteractionForEmbed();
-            map.on("click", function () {
-              closePlaceDetail();
-            });
+            if (EMBED_KASUMI_STATIC) {
+              map.on("moveend", enforceEmbedStaticView);
+              map.on("zoomend", enforceEmbedStaticView);
+            } else {
+              map.on("click", function () {
+                closePlaceDetail();
+              });
+            }
             function embedResize() {
               if (map) map.resize();
             }
@@ -4276,6 +4341,7 @@
       }
 
       function boot() {
+        bindFictionReportUi();
         initMap();
         initMapEditorUi();
       }
